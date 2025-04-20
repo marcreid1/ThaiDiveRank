@@ -25,8 +25,12 @@ export default function Navbar() {
                   Vote
                 </a>
               </Link>
-              <Link href="/#rankings">
-                <a className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              <Link href="/rankings">
+                <a className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location === "/rankings" 
+                    ? "border-ocean-500 text-ocean-600" 
+                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                }`}>
                   Rankings
                 </a>
               </Link>
@@ -88,8 +92,12 @@ export default function Navbar() {
                 Vote
               </a>
             </Link>
-            <Link href="/#rankings">
-              <a className="border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+            <Link href="/rankings">
+              <a className={`${
+                location === "/rankings" 
+                  ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
+                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
+              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
                 Rankings
               </a>
             </Link>

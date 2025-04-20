@@ -54,7 +54,7 @@ export class MemStorage implements IStorage {
       {
         name: "Richelieu Rock",
         location: "Surin Islands, Andaman Sea",
-        types: ["Reef", "Wall", "Pinnacle"],
+        types: ["Reef", "Wall", "Pinnacle", "Drift", "Channel"],
         description: "Famous for whale sharks and rich marine biodiversity. One of Thailand's premier dive sites with exceptional visibility.",
         imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
       },
@@ -134,6 +134,133 @@ export class MemStorage implements IStorage {
         types: ["Wreck", "Ocean"],
         description: "A purposely sunk vessel that's become an artificial reef, attracting schools of snappers and jacks.",
         imageUrl: "https://images.unsplash.com/photo-1579189880841-43ddba8d2746?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      // Adding more dive sites from PADI Thailand list
+      {
+        name: "Three Trees",
+        location: "Koh Tao, Gulf of Thailand",
+        types: ["Reef"],
+        description: "Named for the three distinct coral pinnacles that rise from the sea floor. Popular for both beginner and advanced divers.",
+        imageUrl: "https://images.unsplash.com/photo-1559983001-d088c8213eb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Kata Beach South",
+        location: "Phuket, Andaman Sea",
+        types: ["Beach", "Reef"],
+        description: "Easily accessible shore dive with gentle slopes and vibrant coral formations close to the beach.",
+        imageUrl: "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Koh Tachai Similan National Park",
+        location: "Similan Islands, Andaman Sea",
+        types: ["Drift", "Reef"],
+        description: "Stunning formations with swift currents offering exciting drift dives and encounters with pelagic species.",
+        imageUrl: "https://images.unsplash.com/photo-1519279158122-15152b9d463a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Samaesan",
+        location: "Eastern Gulf of Thailand",
+        types: ["Reef", "Ocean"],
+        description: "Collection of dive sites managed by the Thai Navy with diverse marine life and varied underwater landscapes.",
+        imageUrl: "https://images.unsplash.com/photo-1564381564020-272ede5a512e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Hin Bida",
+        location: "Koh Phi Phi, Andaman Sea",
+        types: ["Reef", "Pinnacle"],
+        description: "Impressive underwater pinnacle known for leopard sharks, vibrant anemones, and diverse marine life.",
+        imageUrl: "https://images.unsplash.com/photo-1520302638242-5280d93d07a8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Koh Bon Similan National Park",
+        location: "Similan National Park",
+        types: ["Drift", "Reef", "Wall"],
+        description: "Famous for manta ray encounters with dramatic drop-offs and vibrant hard and soft corals.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Koh Doc Mai",
+        location: "Phuket, Andaman Sea",
+        types: ["Cave", "Wall"],
+        description: "Small limestone island with vertical walls, caves, and crevices rich in macro life and nudibranchs.",
+        imageUrl: "https://images.unsplash.com/photo-1551244072-a05f4c7c71f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Koh Sii",
+        location: "Koh Lanta, Andaman Sea",
+        types: ["Reef"],
+        description: "Small colorful reef with incredible biodiversity and ideal conditions for underwater photography.",
+        imageUrl: "https://images.unsplash.com/photo-1654861082361-0ac142c7acad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Sail Rock",
+        location: "Koh Phangan, Gulf of Thailand",
+        types: ["Pinnacle", "Reef"],
+        description: "Massive underwater pinnacle with swim-throughs and abundant marine life, including whale sharks during certain seasons.",
+        imageUrl: "https://images.unsplash.com/photo-1562059392-096320bccc7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Koh Tao Pinnacle",
+        location: "Koh Tao, Gulf of Thailand",
+        types: ["Pinnacle", "Reef"],
+        description: "Submerged granite pinnacle descending to 30m with diverse marine life and occasional whale shark sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1559599746-8823b38544c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Anemone Reef",
+        location: "Phuket, Andaman Sea",
+        types: ["Reef", "Pinnacle"],
+        description: "Completely covered in colorful anemones and home to diverse marine life including leopard sharks.",
+        imageUrl: "https://images.unsplash.com/photo-1570741066052-817c6de995c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "King Cruiser Wreck",
+        location: "Phuket, Andaman Sea",
+        types: ["Wreck", "Ocean"],
+        description: "A large passenger ferry that sank in 1997, now an artificial reef teeming with marine life.",
+        imageUrl: "https://images.unsplash.com/photo-1536776823777-622b158c2594?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Chumphon Pinnacle",
+        location: "Koh Tao, Gulf of Thailand",
+        types: ["Pinnacle", "Reef"],
+        description: "Massive granite pinnacle with schools of barracuda, batfish, and occasional whale shark sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1539579352611-59cbae6a4d9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Southwest Pinnacle",
+        location: "Koh Tao, Gulf of Thailand",
+        types: ["Pinnacle", "Reef"],
+        description: "A series of underwater peaks covered in anemones and home to diverse tropical fish species.",
+        imageUrl: "https://images.unsplash.com/photo-1503954588319-0a6df7534770?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Racha Noi",
+        location: "Phuket, Andaman Sea",
+        types: ["Reef", "Wall"],
+        description: "Varied dive sites around the island featuring dramatic drop-offs, vibrant reefs, and manta ray sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Racha Yai",
+        location: "Phuket, Andaman Sea",
+        types: ["Reef", "Ocean"],
+        description: "Popular dive destination with good visibility, gentle currents, and abundant marine life ideal for all levels.",
+        imageUrl: "https://images.unsplash.com/photo-1534765703734-b24973712383?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Similan Islands",
+        location: "Andaman Sea",
+        types: ["Reef", "Wall", "Boulder", "Pinnacle"],
+        description: "World-renowned destination with incredible boulder formations, white sandy beaches, and diverse marine ecosystems.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Surin Islands",
+        location: "Andaman Sea",
+        types: ["Reef", "Wall", "Beach"],
+        description: "National park with pristine reefs, healthy corals, and amazing biodiversity including manta rays and whale sharks.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-a3d5975fae4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
       }
     ];
 
