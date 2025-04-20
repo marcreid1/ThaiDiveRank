@@ -10,4 +10,47 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  
+  /* Improve responsive text sizes */
+  h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  }
+  
+  h2 {
+    @apply text-xl sm:text-2xl md:text-3xl font-bold;
+  }
+  
+  h3 {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+  }
+  
+  /* Improved mobile touch targets */
+  button, a {
+    @apply min-h-[36px] sm:min-h-[40px];
+  }
+  
+  /* Ensure images are responsive */
+  img {
+    @apply max-w-full h-auto;
+  }
+}
+
+/* Custom responsive utility classes */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+}
+
+/* Mobile optimized spacing */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .accordion-content {
+    @apply px-4 py-3;
+  }
+  
+  .card-mobile {
+    @apply rounded-lg shadow-md overflow-hidden;
+  }
 }

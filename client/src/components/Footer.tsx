@@ -16,7 +16,7 @@ export default function Footer() {
             </Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/#dive-sites">
+            <Link href="/dive-sites">
               <a className="text-base text-slate-500 hover:text-slate-900">Dive Sites</a>
             </Link>
           </div>

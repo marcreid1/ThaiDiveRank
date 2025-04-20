@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { DiveSite } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RegionDiveSites } from "../../server/storage";
+import { RegionDiveSites } from "@/types/region-dive-sites";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 
