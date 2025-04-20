@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Rankings from "@/pages/Rankings";
+import DiveSites from "@/pages/DiveSites";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -19,6 +20,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/about" component={About} />
           <Route path="/rankings" component={Rankings} />
+          <Route path="/dive-sites" component={DiveSites} />
           <Route component={NotFound} />
         </Switch>
       </div>

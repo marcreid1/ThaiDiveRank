@@ -1,6 +1,13 @@
 import { DiveSite, InsertDiveSite, Vote, InsertVote, User, InsertUser, VoteActivity, DiveSiteRanking } from "@shared/schema";
 
 // Modify the interface with CRUD methods
+// Define the interface for region-based organization
+export interface RegionDiveSites {
+  region: string;
+  description: string;
+  diveSites: DiveSite[];
+}
+
 export interface IStorage {
   // User methods (kept from original)
   getUser(id: number): Promise<User | undefined>;
@@ -13,6 +20,7 @@ export interface IStorage {
   createDiveSite(diveSite: InsertDiveSite): Promise<DiveSite>;
   updateDiveSite(id: number, diveSite: Partial<DiveSite>): Promise<DiveSite | undefined>;
   getDiveSiteRankings(): Promise<{ rankings: DiveSiteRanking[], lastUpdated: string }>;
+  getDiveSitesByRegion(): Promise<RegionDiveSites[]>;
   
   // Matchup methods
   getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
@@ -334,6 +342,77 @@ export class MemStorage implements IStorage {
       rankings,
       lastUpdated: this.lastUpdated
     };
+  }
+  
+  async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
+    const diveSites = Array.from(this.diveSites.values());
+    
+    // Extract regions from locations
+    const regionMap = new Map<string, {
+      diveSites: DiveSite[],
+      description: string
+    }>();
+    
+    // Define descriptions for each region
+    const regionDescriptions: Record<string, string> = {
+      "Similan Islands": "The Similan Islands are an archipelago in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences.",
+      "Surin Islands": "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. Famous for Richelieu Rock, these protected waters host an incredible diversity of marine life including manta rays and whale sharks.",
+      "Koh Tao": "Known as 'Turtle Island,' Koh Tao in the Gulf of Thailand is a premier diving destination for beginners and experienced divers alike, offering vibrant reefs, numerous dive schools, and warm, clear waters year-round.",
+      "Phuket": "Thailand's largest island offers diverse diving experiences from shallow reefs to deep drop-offs. The waters surrounding Phuket host a multitude of marine ecosystems, making it a popular destination for divers of all levels.",
+      "Koh Phi Phi": "The Phi Phi Islands feature dramatic limestone cliffs both above and below the water. The crystal-clear waters reveal vibrant coral gardens and diverse marine life, making it a favorite for underwater photographers.",
+      "Krabi": "The coastline of Krabi province offers spectacular diving with limestone formations extending underwater. Its varied dive sites include caves, caverns, and walls with diverse soft and hard coral ecosystems.",
+      "Koh Lanta": "This relaxed island in the Andaman Sea provides access to over 50 dive sites. Koh Lanta is particularly known for its healthy reefs, macro life, and as a gateway to the famous Hin Daeng and Hin Muang dive sites.",
+      "Koh Chang": "Located in the eastern Gulf of Thailand, Koh Chang offers a variety of dive sites including shallow reefs and shipwrecks. Less crowded than many Thai diving destinations, it provides a more relaxed diving experience.",
+      "Khao Lak": "This coastal area north of Phuket serves as a gateway to the Similan and Surin Islands. Khao Lak itself offers accessible shore diving and wreck sites, making it popular for both day trips and liveaboard departures.",
+      "Koh Phangan": "Famous for its Full Moon parties, Koh Phangan also offers excellent diving opportunities. The highlight is Sail Rock, a pinnacle rising from the depths that attracts large pelagic species and schools of fish.",
+      "Koh Lipe": "Located in the southern Andaman Sea near Malaysia, Koh Lipe offers easy access to pristine and less-visited dive sites. It features healthy coral reefs with high biodiversity and excellent visibility.",
+      "Chumphon": "Situated in the western Gulf of Thailand, Chumphon is the gateway to Koh Tao. Its waters feature interesting pinnacles and artificial reefs created from purposely sunk vessels, offering diverse diving experiences.",
+      "Eastern Gulf of Thailand": "This region encompasses several dive destinations including Pattaya and the islands of Koh Samet and Koh Chang. The area offers accessible dive sites with artificial reefs, wrecks, and diverse marine ecosystems."
+    };
+    
+    // Function to extract region from location string
+    const extractRegion = (location: string): string => {
+      for (const region of Object.keys(regionDescriptions)) {
+        if (location.includes(region)) {
+          return region;
+        }
+      }
+      
+      // For locations that don't directly mention a region, use these mappings
+      if (location.includes("Andaman Sea")) return "Other Andaman Sea Sites";
+      if (location.includes("Gulf of Thailand")) return "Other Gulf of Thailand Sites";
+      
+      return "Other Sites";
+    };
+    
+    // Add default descriptions for the catch-all categories
+    regionDescriptions["Other Andaman Sea Sites"] = "The Andaman Sea along Thailand's west coast features hundreds of dive sites with incredible biodiversity. From shallow reefs to deep drop-offs, these waters offer diving experiences for all levels.";
+    regionDescriptions["Other Gulf of Thailand Sites"] = "The Gulf of Thailand features warmer waters with good visibility year-round. Its varied dive sites include shallow reefs, pinnacles, and wrecks that host a diverse array of tropical marine life.";
+    regionDescriptions["Other Sites"] = "Thailand boasts over 100 dive sites across its diverse coastal regions, each offering unique underwater experiences with rich marine biodiversity.";
+    
+    // Group dive sites by region
+    diveSites.forEach(site => {
+      const region = extractRegion(site.location);
+      
+      if (!regionMap.has(region)) {
+        regionMap.set(region, {
+          diveSites: [],
+          description: regionDescriptions[region] || `A collection of dive sites in the ${region} area of Thailand.`
+        });
+      }
+      
+      regionMap.get(region)?.diveSites.push(site);
+    });
+    
+    // Convert map to array of RegionDiveSites
+    const regionDiveSites: RegionDiveSites[] = Array.from(regionMap.entries()).map(([region, data]) => ({
+      region,
+      description: data.description,
+      diveSites: data.diveSites.sort((a, b) => a.name.localeCompare(b.name))
+    }));
+    
+    // Sort regions alphabetically
+    return regionDiveSites.sort((a, b) => a.region.localeCompare(b.region));
   }
 
   // Matchup methods

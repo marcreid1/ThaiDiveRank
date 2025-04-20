@@ -54,6 +54,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get dive sites organized by region
+  app.get("/api/dive-sites-by-region", async (req, res) => {
+    try {
+      const diveSitesByRegion = await storage.getDiveSitesByRegion();
+      res.json(diveSitesByRegion);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get dive sites by region" 
+      });
+    }
+  });
+  
   // Get a specific dive site
   app.get("/api/dive-sites/:id", async (req, res) => {
     try {
