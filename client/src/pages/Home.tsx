@@ -1,0 +1,30 @@
+import VotingSection from "@/components/VotingSection";
+import RankingsTable from "@/components/RankingsTable";
+import RecentActivity from "@/components/RecentActivity";
+
+export default function Home() {
+  return (
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      {/* PageHeader */}
+      <div className="text-center my-8">
+        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+          Rank Thailand's Best Dive Sites
+        </h1>
+        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
+          Vote for your favorite dive spots and help create the ultimate Thailand diving guide.
+        </p>
+      </div>
+      
+      {/* Voting Section */}
+      <VotingSection />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Rankings Table */}
+        <RankingsTable />
+        
+        {/* Recent Activity */}
+        <RecentActivity />
+      </div>
+    </main>
+  );
+}
