@@ -100,7 +100,7 @@ export default function RankingsTable() {
   const { rankings, lastUpdated } = rankingsData;
 
   return (
-    <div className="lg:col-span-2">
+    <div>
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
           <h2 className="text-lg font-medium text-slate-900">
