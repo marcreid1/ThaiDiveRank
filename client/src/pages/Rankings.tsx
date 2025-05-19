@@ -3,6 +3,7 @@ import { DiveSiteRanking } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
+import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 
 export default function Rankings() {
   const { data: rankingsData, isLoading, isError } = useQuery<{ 
@@ -146,7 +147,11 @@ export default function Rankings() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
-                        <img src={site.imageUrl} alt={site.name} className="h-10 w-10 object-cover" />
+                        <img 
+                          src={diveSiteImages[site.name] || defaultDiveSiteImage} 
+                          alt={site.name} 
+                          className="h-10 w-10 object-cover" 
+                        />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-slate-900">{site.name}</div>
