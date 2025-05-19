@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DiveSite } from "@shared/schema";
 import DiveSiteCard from "./DiveSiteCard";
@@ -9,26 +9,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function VotingSection() {
   // State to track the currently winning dive site
   const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(null);
-  const [keepWinner, setKeepWinner] = useState(false);
   
-  const { data: matchup, isLoading, isError, error } = useQuery<{
+  // Regular query to get matchups
+  const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
     queryKey: ["/api/matchup"]
   });
-
-  // When new matchup data arrives, manage the previous winner
-  useEffect(() => {
-    if (!matchup || !previousWinner) return;
-    
-    // If neither of the dive sites in the new matchup is our previous winner, reset state
-    if (matchup.diveSiteA.id !== previousWinner.id && 
-        matchup.diveSiteB.id !== previousWinner.id) {
-      setPreviousWinner(null);
-      setKeepWinner(false);
+  
+  // Create the final matchup to display
+  let matchup = fetchedMatchup;
+  
+  // If we have a previous winner and the fetched matchup data
+  if (previousWinner && fetchedMatchup) {
+    // Check if our previous winner is in the current matchup
+    const winnerIsInMatchup = 
+      fetchedMatchup.diveSiteA.id === previousWinner.id || 
+      fetchedMatchup.diveSiteB.id === previousWinner.id;
+      
+    // If the winner isn't already in the matchup, replace diveSiteA with our winner
+    if (!winnerIsInMatchup) {
+      matchup = {
+        diveSiteA: previousWinner,
+        diveSiteB: fetchedMatchup.diveSiteB
+      };
     }
-  }, [matchup, previousWinner]);
+  }
 
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
@@ -53,7 +60,6 @@ export default function VotingSection() {
   const handleVote = (winner: DiveSite, loser: DiveSite) => {
     // Store the winner for the next matchup
     setPreviousWinner(winner);
-    setKeepWinner(true);
     
     voteMutation.mutate({ 
       winnerId: winner.id, 
@@ -64,7 +70,6 @@ export default function VotingSection() {
   const handleSkip = () => {
     // Reset winner tracking when skipping
     setPreviousWinner(null);
-    setKeepWinner(false);
     skipMutation.mutate();
   };
 
