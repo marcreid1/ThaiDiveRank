@@ -46,15 +46,14 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
       <div className="absolute top-3 left-3 z-10">
         <div className="bg-white/90 backdrop-blur-sm rounded-md px-2 py-1 flex items-center shadow-sm">
           {diveSite.types[0] === "Reef" ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-ocean-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-ocean-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             </svg>
           )}
-          <span className="text-xs font-medium text-slate-700">{diveSite.name}</span>
         </div>
       </div>
       
@@ -68,8 +67,8 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
       
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <div>
-            <h3 className="font-semibold text-ocean-900 text-lg">{diveSite.name}</h3>
+          <div className="w-full">
+            <h3 className="font-semibold text-ocean-900 text-lg truncate">{diveSite.name}</h3>
           </div>
           {rank && (
             <div className="flex items-center">
