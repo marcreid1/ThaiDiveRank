@@ -195,7 +195,7 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
           
           {/* Difficulty level */}
           <div className="flex flex-col">
-            <span className="text-xs text-slate-400">Difficulty</span>
+            <span className="text-xs text-slate-400 text-right w-full block">Difficulty</span>
             <span className={`text-sm font-medium text-right w-full block ${
               diveSite.difficulty === "Advanced" 
                 ? "text-red-600" 
