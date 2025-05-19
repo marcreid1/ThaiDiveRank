@@ -87,41 +87,41 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
           <div className="pt-2 pb-3 space-y-1">
-            <Link href="/">
-              <a className={`${
+            <Link 
+              href="/"
+              className={`${
                 location === "/" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-                Vote
-              </a>
+              Vote
             </Link>
-            <Link href="/rankings">
-              <a className={`${
+            <Link 
+              href="/rankings"
+              className={`${
                 location === "/rankings" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-center`}>
-                Rankings
-              </a>
+              Rankings
             </Link>
-            <Link href="/dive-sites">
-              <a className={`${
+            <Link 
+              href="/dive-sites"
+              className={`${
                 location === "/dive-sites" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-center`}>
-                Directory
-              </a>
+              Directory
             </Link>
-            <Link href="/about">
-              <a className={`${
+            <Link 
+              href="/about"
+              className={`${
                 location === "/about" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-                About
-              </a>
+              About
             </Link>
           </div>
         </div>
