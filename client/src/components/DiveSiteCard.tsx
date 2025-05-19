@@ -55,8 +55,11 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
       <div className="p-4">
         <div className="mb-3">
           <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-ocean-900 text-lg">{diveSite.name}</h3>
-            <div className="flex flex-shrink-0 ml-2">
+            <div className="flex items-baseline gap-2">
+              <h3 className="font-semibold text-ocean-900 text-lg">{diveSite.name}</h3>
+              <span className="text-sm text-slate-500">• {diveSite.location}</span>
+            </div>
+            <div className="flex flex-shrink-0">
               {diveSite.types.map((type, index) => (
                 <span key={index} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
                   {type}
@@ -64,7 +67,6 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
               ))}
             </div>
           </div>
-          <p className="text-sm text-slate-500 mt-1">{diveSite.location}</p>
           {rank && (
             <div className="flex-shrink-0 ml-2">
               <Badge variant="ocean">
