@@ -1,6 +1,6 @@
 import { DiveSite, InsertDiveSite, Vote, InsertVote, User, InsertUser, VoteActivity, DiveSiteRanking } from "@shared/schema";
+import { calculateEloChange } from "./utils/elo";
 
-// Modify the interface with CRUD methods
 // Define the interface for region-based organization
 export interface RegionDiveSites {
   region: string;
@@ -54,448 +54,486 @@ export class MemStorage implements IStorage {
     this.diveSiteCurrentId = 1;
     this.voteCurrentId = 1;
     
-    // Initialize with some example dive sites
+    // Initialize with dive sites from the CSV file
     this.initializeDiveSites();
   }
 
   private initializeDiveSites() {
-    // Initialize with the 43 dive sites from Similan and Surin Islands
+    // CSV data converted to dive site objects
     const initialDiveSites: (InsertDiveSite & { depthMin: number, depthMax: number, difficulty: string })[] = [
-      // Similan Islands sites (Island #1-9)
+      // Site 1
       {
         name: "Coral Gardens",
-        location: "Ko Huyong (Island #1), Similan Islands",
-        types: ["Coral Garden", "Reef"],
-        description: "Shallow reef area featuring vibrant hard corals. Perfect for beginners.",
+        location: "Ko Huyong, Island #1, South, Similan Islands",
+        types: ["Coral Garden"],
+        description: "Shallow reef area featuring vibrant hard corals",
         imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 0,
         depthMax: 10,
         difficulty: "Beginner"
       },
+      // Site 2
       {
         name: "Shark Fin Reef",
-        location: "Ko Payan (Island #3), Similan Islands",
+        location: "Ko Payan, Island #3, South, Similan Islands",
         types: ["Reef"],
-        description: "Distinctive rock formation resembling a shark fin. Suitable for intermediate divers.",
+        description: "Distinctive rock formation resembling a shark fin",
         imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
       },
+      // Site 3
       {
         name: "Boulder City",
-        location: "Ko Payan (Island #3), Similan Islands",
-        types: ["Boulder", "Reef"],
-        description: "Massive underwater boulders create an impressive underwater landscape. For advanced divers.",
+        location: "Ko Payan, Island #3, South, Similan Islands",
+        types: ["Boulder"],
+        description: "Massive underwater boulders",
         imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 15,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 4
       {
         name: "Princess Bay",
-        location: "Ko Miang (Island #4), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Shallow bay with coral gardens, ideal for beginners and photographers.",
+        location: "Ko Miang, Island #4, Central, Similan Islands",
+        types: ["Bay"],
+        description: "Shallow bay with coral gardens",
         imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 18,
         difficulty: "Beginner"
       },
+      // Site 5
       {
         name: "Honeymoon Bay",
-        location: "Ko Miang (Island #4), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Popular for night dives with diverse marine life. Good for intermediate divers.",
+        location: "Ko Miang, Island #4, Central, Similan Islands",
+        types: ["Bay"],
+        description: "Popular for night dives",
         imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 6
       {
         name: "Bird Rock (Chinese Wall)",
-        location: "Ko Miang (Island #4), Similan Islands",
-        types: ["Wall", "Reef"],
-        description: "Large granite boulders which form a wall-like structure with abundant marine life.",
+        location: "Ko Miang, Island #4, Central, Similan Islands",
+        types: ["Wall"],
+        description: "Large granite boulders which form a wall-like structure",
         imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 7
       {
         name: "Stonehenge",
-        location: "Ko Miang (Island #4), Similan Islands",
-        types: ["Boulder", "Reef"],
-        description: "Named for the towering rocks that rise from the depths, featuring swim-throughs and rich marine biodiversity.",
+        location: "Ko Miang, Island #4, Central, Similan Islands",
+        types: ["Boulder"],
+        description: "Named for the towering rocks that rise from the depths",
         imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 0,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 8
       {
         name: "Hideaway Bay (Barracuda Point)",
-        location: "Ko Ha (Island #5), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Gentle sloping reef with scattered boulders and frequent barracuda sightings.",
+        location: "Ko Ha, Island #5, Central, Similan Islands",
+        types: ["Bay"],
+        description: "Gentle sloping reef with scattered boulders",
         imageUrl: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 9
       {
         name: "Anita's Reef",
-        location: "Ko Payu (Island #6), Similan Islands",
-        types: ["Coral Garden", "Reef"],
-        description: "Hard coral garden with gentle currents, making it perfect for intermediate divers.",
+        location: "Ko Payu, Island #6, Central, Similan Islands",
+        types: ["Coral Garden"],
+        description: "Hard coral garden with gentle currents",
         imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 10
       {
         name: "Deep Six",
-        location: "Ko Hin Pousar (Island #7), Similan Islands",
-        types: ["Boulder", "Reef"],
-        description: "Deep dive with boulder formations and challenging conditions. For advanced divers only.",
-        imageUrl: "https://images.unsplash.com/photo-1560275619-4cc5fa59d3ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
+        types: ["Boulder"],
+        description: "Deep dive with boulder formations",
+        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 18,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 11
       {
         name: "East of Eden",
-        location: "Ko Hin Pousar (Island #7), Similan Islands",
-        types: ["Coral Garden", "Reef"],
-        description: "Rich coral garden with abundant sea life and excellent visibility.",
-        imageUrl: "https://images.unsplash.com/photo-1515765317588-ccc88719e62c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
+        types: ["Coral Garden"],
+        description: "Rich coral garden with abundant sea life",
+        imageUrl: "https://images.unsplash.com/photo-1546500840-ae38a0817ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
       },
+      // Site 12
       {
         name: "West of Eden",
-        location: "Ko Hin Pousar (Island #7), Similan Islands",
-        types: ["Wall", "Reef"],
-        description: "Dramatic drop-offs and abundant soft corals with occasional strong currents.",
-        imageUrl: "https://images.unsplash.com/photo-1621394241361-ebfbfdff9f4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
+        types: ["Wall"],
+        description: "Dramatic drop-offs and abundant soft corals",
+        imageUrl: "https://images.unsplash.com/photo-1534766066-ffe2a5e5dbdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 13
       {
         name: "Turtle Rock",
-        location: "Ko Similan (Island #8), Similan Islands",
+        location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Reef"],
-        description: "Popular for turtle sightings and colorful reef fish. Great for underwater photography.",
-        imageUrl: "https://images.unsplash.com/photo-1529928520614-7c76e2d99740?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Popular for turtle sightings",
+        imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 14
       {
         name: "Waterfall Bay",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Named for a seasonal waterfall, offers easy diving conditions and rich coral life.",
-        imageUrl: "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Bay"],
+        description: "Named for a seasonal waterfall",
+        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
       },
+      // Site 15
       {
         name: "Elephant Head Rock",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Boulder", "Reef"],
-        description: "Famous for swim-throughs and caverns that test advanced diving skills.",
-        imageUrl: "https://images.unsplash.com/photo-1622476054629-7d57a5435317?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Boulder"],
+        description: "Famous for swim-throughs and caverns",
+        imageUrl: "https://images.unsplash.com/photo-1510655619096-bded3c463dff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 16
       {
         name: "Beacon Point",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Point", "Reef"],
-        description: "Named for a navigation beacon, features a mix of hard and soft corals with pelagic species.",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Point"],
+        description: "Named for a navigation beacon",
+        imageUrl: "https://images.unsplash.com/photo-1551244072-ac97de61a25e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
       },
+      // Site 17
       {
         name: "Fantasy Reef",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Coral Garden", "Reef"],
-        description: "Colorful coral formations with abundant reef fish and occasional turtle sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1588644525273-f37b60d78512?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Coral Garden"],
+        description: "Colorful coral formations",
+        imageUrl: "https://images.unsplash.com/photo-1562741789-fd05816d507e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 18
       {
         name: "Beacon Reef (Beacon Beach)",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Reef", "Wreck"],
-        description: "Extension of Beacon Point, also features the Atlantis Wreck which adds interest for wreck enthusiasts.",
-        imageUrl: "https://images.unsplash.com/photo-1557111513-7a0abb62ae83?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Reef"],
+        description: "Extension of Beacon Point, also features the Atlantis Wreck",
+        imageUrl: "https://images.unsplash.com/photo-1517627043994-d54cc14d8a26?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
       },
+      // Site 19
       {
         name: "Donald Duck Bay",
-        location: "Ko Similan (Island #8), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Named for a rock formation resembling Donald Duck, offers gentle conditions for beginners.",
-        imageUrl: "https://images.unsplash.com/photo-1559983001-d088c8213eb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Similan, Island #8, North, Similan Islands",
+        types: ["Bay"],
+        description: "Named for a rock formation resembling Donald Duck",
+        imageUrl: "https://images.unsplash.com/photo-1571468219372-3e13c87572bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
       },
+      // Site 20
       {
         name: "Snapper Alley",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
-        description: "Known for large schools of snappers that create mesmerizing underwater scenery.",
-        imageUrl: "https://images.unsplash.com/photo-1478029305454-2835ba7d6e76?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Known for large schools of snappers",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-35245d18edad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 6,
         depthMax: 20,
         difficulty: "Beginner"
       },
+      // Site 21
       {
         name: "Three Trees",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
-        description: "Named for three large trees visible from the sea, offering varied marine life and coral formations.",
-        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Named for three large trees visible from the sea",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 22
       {
         name: "North Point (Rocky Point)",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
-        types: ["Point", "Reef"],
-        description: "Boulders and coral formations with occasional strong currents bringing pelagic visitors.",
-        imageUrl: "https://images.unsplash.com/photo-1562059392-096320bccc7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
+        types: ["Point"],
+        description: "Boulders and coral formations",
+        imageUrl: "https://images.unsplash.com/photo-1618760439476-74b01344cd8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
       },
+      // Site 23
       {
         name: "Breakfast Bend",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
-        description: "Morning dive with gentle current that's perfect for enjoying the vibrant coral gardens.",
-        imageUrl: "https://images.unsplash.com/photo-1576086276648-319822031d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Morning dive with gentle current",
+        imageUrl: "https://images.unsplash.com/photo-1622644101256-8206c4842a7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 24
       {
         name: "Christmas Point",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
-        types: ["Point", "Reef"],
-        description: "Rock formations resembling a Christmas tree with challenging swim-throughs and depths.",
-        imageUrl: "https://images.unsplash.com/photo-1545592097-adc686a2da1c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
+        types: ["Point"],
+        description: "Rock formations resembling a Christmas tree",
+        imageUrl: "https://images.unsplash.com/photo-1514125669375-59ee3985d08b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 25
       {
         name: "Batfish Bend",
-        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
-        description: "Large schools of longfin batfish create spectacular underwater scenery against coral backgrounds.",
-        imageUrl: "https://images.unsplash.com/photo-1571813092106-e1e434774891?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Large schools of longfin batfish",
+        imageUrl: "https://images.unsplash.com/photo-1618854979324-af6c7dbece8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 8,
         depthMax: 30,
         difficulty: "Intermediate"
       },
-      
-      // Similan Islands extended sites (Island #10-11)
+      // Site 26
       {
         name: "Koh Bon Pinnacle",
-        location: "Ko Bon (Island #10), Similan Islands",
-        types: ["Pinnacle", "Wall"],
-        description: "Deep pinnacle with vertical wall that attracts manta rays and other large pelagics.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Bon, Island #10, North, Similan Islands",
+        types: ["Pinnacle"],
+        description: "Deep pinnacle with vertical wall",
+        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 20,
         depthMax: 45,
         difficulty: "Advanced"
       },
+      // Site 27
       {
         name: "Koh Bon Ridge/West Ridge (Manta Road)",
-        location: "Ko Bon (Island #10), Similan Islands",
-        types: ["Ridge", "Reef", "Wall"],
-        description: "Famous for manta ray cleaning stations and dramatic underwater topography.",
-        imageUrl: "https://images.unsplash.com/photo-1573725342230-178c824a10f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Bon, Island #10, North, Similan Islands",
+        types: ["Ridge"],
+        description: "Famous for manta ray cleaning stations",
+        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 28
       {
         name: "Koh Bon Bay",
-        location: "Ko Bon (Island #10), Similan Islands",
-        types: ["Bay", "Reef"],
-        description: "Protected bay area with gentle reef slope and abundant marine life for less experienced divers.",
+        location: "Ko Bon, Island #10, North, Similan Islands",
+        types: ["Bay"],
+        description: "Protected bay area with gentle reef slope",
         imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 29
       {
         name: "Koh Tachai Pinnacle/Plateau",
-        location: "Ko Tachai (Island #11), Similan Islands",
-        types: ["Pinnacle", "Reef"],
-        description: "Submerged reef with strong currents and pelagics including whale sharks and manta rays.",
-        imageUrl: "https://images.unsplash.com/photo-1580019542155-247062e19ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Tachai, Island #11, North, Similan Islands",
+        types: ["Pinnacle"],
+        description: "Submerged reef with strong currents and pelagics",
+        imageUrl: "https://images.unsplash.com/photo-1511702771955-42b52e1cd168?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 12,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 30
       {
         name: "Koh Tachai Reef",
-        location: "Ko Tachai (Island #11), Similan Islands",
-        types: ["Reef", "Boulder"],
-        description: "More protected area with boulder formations and rich marine life for intermediate divers.",
-        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Tachai, Island #11, North, Similan Islands",
+        types: ["Reef"],
+        description: "More protected area with boulder formations",
+        imageUrl: "https://images.unsplash.com/photo-1518649575592-94de6230742a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
       },
       
-      // Surin Islands sites (North)
+      // Surin Islands sites
+      // Site 31
       {
         name: "Ao Mai Ngam",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
-        types: ["Bay", "Reef"],
-        description: "Protected bay with gentle slope and coral garden, perfect for beginners and snorkelers.",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
+        types: ["Bay"],
+        description: "Protected bay with gentle slope and coral garden",
         imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 20,
         difficulty: "Beginner"
       },
+      // Site 32
       {
         name: "Ao Chong Kad",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
-        types: ["Channel", "Reef"],
-        description: "Channel with reef and rubble featuring good macro life for underwater photographers.",
-        imageUrl: "https://images.unsplash.com/photo-1576086276648-319822031d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
+        types: ["Channel"],
+        description: "Channel with reef and rubble featuring good macro life",
+        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 33
       {
         name: "Ao Mae Yai",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
-        types: ["Bay", "Reef"],
-        description: "Big Bay with gentle sloping reef and good coral coverage, ideal for beginners.",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
+        types: ["Bay"],
+        description: "Big Bay with gentle sloping reef and good coral coverage",
         imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
       },
+      // Site 34
       {
         name: "Ao Jaak",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
-        types: ["Bay", "Reef"],
-        description: "Beautiful bay of pristine coral reefs with excellent visibility and gentle conditions.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
+        types: ["Bay"],
+        description: "Beautiful bay of pristine coral reefs",
+        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
       },
+      // Site 35
       {
         name: "Ao Sai Daeng",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Reef"],
-        description: "Pristine coral reefs and shallow water with abundant reef fish, perfect for snorkelers too.",
-        imageUrl: "https://images.unsplash.com/photo-1588644525273-f37b60d78512?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Pristine coral reefs and shallow water",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 10,
         difficulty: "Beginner"
       },
+      // Site 36
       {
         name: "Ao Sai Ean",
-        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Reef"],
-        description: "Popular spot for snorkelling with shallow coral gardens and diverse fish life.",
-        imageUrl: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Popular spot for snorkelling",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 10,
         difficulty: "Beginner"
       },
-      
-      // Surin Islands sites (South)
+      // Site 37
       {
         name: "Ao Pakkad",
-        location: "Ko Surin Tai (Island #2), Surin Islands",
+        location: "Ko Surin Tai, Island #2, South, Surin Islands",
         types: ["Reef"],
-        description: "Simple and colorful reef, good for beginners and snorkelers with easy conditions.",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Simple and colorful reef, good for beginners and snorkelers",
+        imageUrl: "https://images.unsplash.com/photo-1562741789-fd05816d507e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
       },
+      // Site 38
       {
         name: "Ao Tao (Turtle Bay)",
-        location: "Ko Surin Tai (Island #2), Surin Islands",
-        types: ["Bay", "Reef"],
-        description: "Turtle Bay with shallow coral formations popular for snorkeling and turtle encounters.",
-        imageUrl: "https://images.unsplash.com/photo-1529928520614-7c76e2d99740?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Surin Tai, Island #2, South, Surin Islands",
+        types: ["Bay"],
+        description: "Turtle Bay with shallow coral formations popular for snorkeling",
+        imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
       },
+      // Site 39
       {
         name: "Ao Suthep",
-        location: "Ko Surin Tai (Island #2), Surin Islands",
+        location: "Ko Surin Tai, Island #2, South, Surin Islands",
         types: ["Reef"],
-        description: "Named after park ranger features small bommies and hard corals with interesting marine life.",
-        imageUrl: "https://images.unsplash.com/photo-1515765317588-ccc88719e62c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Named after park ranger features small bommies and hard corals",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 40
       {
         name: "Torinla Pinnacle",
-        location: "Ko Khai (Torinla Islet), Surin Islands",
-        types: ["Pinnacle", "Reef"],
-        description: "Submerged granite pinnacle with pelagic species and sometimes challenging conditions.",
-        imageUrl: "https://images.unsplash.com/photo-1580019542155-247062e19ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Ko Khai (Torinla Islet), Island #3, South, Surin Islands",
+        types: ["Pinnacle"],
+        description: "Submerged granite pinnacle with pelagic species",
+        imageUrl: "https://images.unsplash.com/photo-1511702771955-42b52e1cd168?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 12,
         depthMax: 40,
         difficulty: "Advanced"
       },
+      // Site 41
       {
         name: "Koh Klang",
-        location: "Ko Klang (Mankom Islet), Surin Islands",
+        location: "Ko Klang (Mankom Islet), Island #4, South, Surin Islands",
         types: ["Reef"],
-        description: "Islet with surrounding reef system featuring diverse marine life and coral formations.",
-        imageUrl: "https://images.unsplash.com/photo-1603279560023-f2771a6a2bcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        description: "Islet with surrounding reef system",
+        imageUrl: "https://images.unsplash.com/photo-1518649575592-94de6230742a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
       },
+      // Site 42
       {
         name: "Koh Chi",
-        location: "Koh Chi (Stock Islet), Surin Islands",
-        types: ["Point", "Reef"],
-        description: "Southern point with currents and pelagic sightings including mantas and reef sharks.",
-        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Koh Chi (Stock Islet), Island #5, North, Surin Islands",
+        types: ["Point"],
+        description: "Southern point with currents and pelagic sightings",
+        imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 8,
         depthMax: 30,
         difficulty: "Intermediate"
       },
+      // Site 43 - Richelieu Rock in Extended Park
       {
         name: "Richelieu Rock",
-        location: "Extended Park, Surin Islands",
-        types: ["Pinnacle", "Reef", "Wall", "Drift", "Channel"],
-        description: "Legendary horseshoe-shaped pinnacle with rich marine life and the best diving in Thailand. Known for whale shark sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        location: "Extended Park",
+        types: ["Pinnacle"],
+        description: "Legendary horseshoe-shaped pinnacle with rich marine life",
+        imageUrl: "https://images.unsplash.com/photo-1510655619096-bded3c463dff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
         depthMin: 5,
-        depthMax: 25,
+        depthMax: 35,
         difficulty: "Intermediate"
       }
     ];
@@ -548,9 +586,9 @@ export class MemStorage implements IStorage {
       rating: 1500,
       wins: 0,
       losses: 0,
-      depthMin: 0,
-      depthMax: 0,
-      difficulty: "Intermediate",
+      depthMin: null,
+      depthMax: null,
+      difficulty: null,
       createdAt: new Date()
     };
     this.diveSites.set(id, diveSite);
@@ -600,66 +638,59 @@ export class MemStorage implements IStorage {
     
     // Sub-region descriptions
     const subRegionDescriptions: Record<string, string> = {
-      "Similan Islands - South": "The southern islands (#1-4) feature pristine beaches, shallow coral gardens, and diverse marine life. Known for their accessibility and excellent diving conditions for beginners to intermediate levels.",
+      "Similan Islands - South": "The southern islands (#1-3) feature more protected reefs and better conditions for beginners, with shallow coral gardens and diverse marine life.",
       
-      "Similan Islands - Central": "The central islands (#5-7) offer an impressive mix of boulder formations, vibrant coral gardens, and deeper dive sites. This area bridges the gap between the more accessible southern sites and the advanced northern dive spots.",
+      "Similan Islands - Central": "The central islands (#4-7) offer a mix of dive conditions suitable for all levels, with boulder formations and rich coral gardens.",
       
-      "Similan Islands - North": "The northern islands (#8-9) feature dramatic underwater topography with massive granite boulders, exciting swim-throughs, and intricate caverns. These sites often have stronger currents suitable for more experienced divers.",
+      "Similan Islands - North": "The northern islands (#8-11) have the archipelago's most dramatic underwater topography, with massive boulders, swim-throughs, and the best chance to see larger pelagic species.",
       
-      "Surin Islands - North": "The northern Surin Islands feature pristine shallow reefs with exceptional coral coverage and visibility. This area offers gentle conditions perfect for beginners and snorkelers with abundant reef fish and occasional turtle sightings.",
+      "Surin Islands - North": "The northern Surin Islands have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
       
-      "Surin Islands - South": "The southern Surin Islands provide varied diving environments from protected bays to exposed reefs. These sites offer diverse underwater topography and marine ecosystems suitable for different experience levels.",
-      
-      "Richelieu Rock": "This legendary horseshoe-shaped pinnacle in the open Andaman Sea is considered Thailand's premier dive site. Famous for its exceptional biodiversity, vibrant soft corals, and frequent whale shark encounters."
+      "Surin Islands - South": "The southern Surin Islands feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life."
     };
     
-    // Determine which section each dive site belongs to
-    diveSites.forEach(site => {
-      const location = site.location;
-      let section: string;
+    // First pass: organize sites by section based on Island_Main classification from CSV
+    for (const site of diveSites) {
+      // Determine which section this site belongs to based on the CSV classification
+      let sectionKey: string;
       
-      // Handle special case for Richelieu Rock
-      if (site.name === "Richelieu Rock" || location.includes("Extended Park")) {
-        section = "Richelieu Rock";
-      }
-      // Determine Similan Islands sections
-      else if (location.includes("Island #1") || location.includes("Island #2") || 
-          location.includes("Island #3") || location.includes("Island #4")) {
-        section = "Similan Islands - South";
-      }
-      else if (location.includes("Island #5") || location.includes("Island #6") || 
-          location.includes("Island #7")) {
-        section = "Similan Islands - Central";
-      }
-      else if (location.includes("Island #8") || location.includes("Island #9")) {
-        section = "Similan Islands - North";
-      }
-      else if (location.includes("Island #10") || location.includes("Island #11") || 
-          location.includes("Ko Bon") || location.includes("Ko Tachai")) {
-        section = "Similan Islands - North"; // Reclassify from Extended North to just North
-      }
-      // Determine Surin Islands sections
-      else if (location.includes("Ko Surin Nuea") || 
-          (location.includes("Surin") && location.includes("Island #1"))) {
-        section = "Surin Islands - North";
-      }
-      else if (location.includes("Ko Surin Tai") || location.includes("Ko Khai") || 
-          location.includes("Ko Klang") || location.includes("Koh Chi")) {
-        section = "Surin Islands - South";
-      }
-      else {
-        // Default catchall (shouldn't be needed with our 43 sites)
-        section = "Other Thailand Locations";
+      if (site.location.includes("Similan Islands")) {
+        if (site.location.includes("South")) {
+          sectionKey = "Similan Islands - South";
+        } else if (site.location.includes("Central")) {
+          sectionKey = "Similan Islands - Central";
+        } else if (site.location.includes("North")) {
+          sectionKey = "Similan Islands - North";
+        } else {
+          // Default if no specific section is mentioned
+          sectionKey = "Similan Islands - Central";
+        }
+      } else if (site.location.includes("Surin Islands")) {
+        if (site.location.includes("North")) {
+          sectionKey = "Surin Islands - North";
+        } else if (site.location.includes("South")) {
+          sectionKey = "Surin Islands - South";
+        } else {
+          // Default if no specific section is mentioned
+          sectionKey = "Surin Islands - North";
+        }
+      } else if (site.location.includes("Extended Park")) {
+        sectionKey = "Richelieu Rock";
+      } else {
+        // Default case for any other sites
+        sectionKey = "Other";
       }
       
-      if (!sitesBySection.has(section)) {
-        sitesBySection.set(section, []);
+      // Ensure the section exists in our map
+      if (!sitesBySection.has(sectionKey)) {
+        sitesBySection.set(sectionKey, []);
       }
       
-      sitesBySection.get(section)!.push(site);
-    });
+      // Add the site to this section
+      sitesBySection.get(sectionKey)!.push(site);
+    }
     
-    // Organize sections into main groups as requested
+    // Second pass: structure the data into the final format with main regions and subregions
     const mainGroups: RegionDiveSites[] = [];
     
     // 1. Similan Islands with subregions
@@ -667,7 +698,7 @@ export class MemStorage implements IStorage {
     
     if (sitesBySection.has("Similan Islands - South")) {
       similarSubregions.push({
-        region: "South (Islands #1-4)",
+        region: "South",
         description: subRegionDescriptions["Similan Islands - South"],
         diveSites: sitesBySection.get("Similan Islands - South")!.sort((a, b) => a.name.localeCompare(b.name))
       });
@@ -675,7 +706,7 @@ export class MemStorage implements IStorage {
     
     if (sitesBySection.has("Similan Islands - Central")) {
       similarSubregions.push({
-        region: "Central (Islands #5-7)",
+        region: "Central",
         description: subRegionDescriptions["Similan Islands - Central"],
         diveSites: sitesBySection.get("Similan Islands - Central")!.sort((a, b) => a.name.localeCompare(b.name))
       });
@@ -683,7 +714,7 @@ export class MemStorage implements IStorage {
     
     if (sitesBySection.has("Similan Islands - North")) {
       similarSubregions.push({
-        region: "North (Islands #8-11)",
+        region: "North",
         description: subRegionDescriptions["Similan Islands - North"],
         diveSites: sitesBySection.get("Similan Islands - North")!.sort((a, b) => a.name.localeCompare(b.name))
       });
@@ -738,58 +769,73 @@ export class MemStorage implements IStorage {
   async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allDiveSites = Array.from(this.diveSites.values());
     
+    // Need at least 2 dive sites to create a matchup
     if (allDiveSites.length < 2) {
       throw new Error("Not enough dive sites to create a matchup");
     }
     
     // Pick two random dive sites
-    const shuffled = [...allDiveSites].sort(() => 0.5 - Math.random());
-    const diveSiteA = shuffled[0];
-    const diveSiteB = shuffled[1];
+    const diveSiteA = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
+    
+    // Pick a different dive site for B
+    let diveSiteB: DiveSite;
+    do {
+      diveSiteB = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
+    } while (diveSiteB.id === diveSiteA.id);
     
     return { diveSiteA, diveSiteB };
   }
 
   // Vote methods
   async createVote(insertVote: InsertVote): Promise<Vote> {
-    // Create the vote
     const id = this.voteCurrentId++;
+    
+    // Create the vote object
     const vote: Vote = {
       ...insertVote,
       id,
-      timestamp: new Date()
+      createdAt: new Date()
     };
+    
+    // Store the vote
     this.votes.set(id, vote);
     
-    // Update dive site stats
-    const winner = this.diveSites.get(insertVote.winnerId);
-    const loser = this.diveSites.get(insertVote.loserId);
+    // Update win/loss records and ratings
+    const winner = await this.getDiveSite(insertVote.winnerId);
+    const loser = await this.getDiveSite(insertVote.loserId);
     
     if (winner && loser) {
-      this.updateDiveSite(winner.id, {
+      // Calculate ELO rating change
+      const ratingChange = calculateEloChange(winner.rating, loser.rating);
+      
+      // Update winner stats
+      await this.updateDiveSite(winner.id, {
         wins: winner.wins + 1,
-        rating: winner.rating + insertVote.pointsChanged
+        rating: winner.rating + ratingChange
       });
       
-      this.updateDiveSite(loser.id, {
+      // Update loser stats
+      await this.updateDiveSite(loser.id, {
         losses: loser.losses + 1,
-        rating: loser.rating - insertVote.pointsChanged
+        rating: loser.rating - ratingChange
       });
       
-      // Update rankings and rank changes
+      // Update ranks after vote
       this.updateRankings();
     }
     
     return vote;
   }
-
+  
   async getVotes(limit = 20): Promise<Vote[]> {
     const allVotes = Array.from(this.votes.values());
+    
+    // Sort votes by creation date (newest first)
     return allVotes
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
   }
-
+  
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
     const recentVotes = await this.getVotes(limit);
     const activities: VoteActivity[] = [];
@@ -803,34 +849,39 @@ export class MemStorage implements IStorage {
           id: vote.id,
           winnerName: winner.name,
           loserName: loser.name,
-          pointsChanged: vote.pointsChanged,
-          timestamp: vote.timestamp.toISOString()
+          pointsChanged: calculateEloChange(winner.rating - vote.ratingChange, loser.rating + vote.ratingChange),
+          timestamp: vote.createdAt.toISOString()
         });
       }
     }
     
     return activities;
   }
-
-  // Helper method to update rankings after votes
+  
   private updateRankings() {
-    const previousRankings = Array.from(this.diveSites.values())
-      .sort((a, b) => b.rating - a.rating)
-      .map(site => site.id);
+    // Get previous rankings
+    const prevRankedSites = Array.from(this.diveSites.values())
+      .sort((a, b) => b.rating - a.rating);
     
-    const currentRankings = Array.from(this.diveSites.values())
-      .sort((a, b) => b.rating - a.rating)
-      .map(site => site.id);
+    // Get current rankings
+    const currRankedSites = Array.from(this.diveSites.values())
+      .sort((a, b) => b.rating - a.rating);
     
-    // Calculate rank changes
-    currentRankings.forEach((id, newIndex) => {
-      const oldIndex = previousRankings.indexOf(id);
-      if (oldIndex !== -1) {
-        // Positive value means the site moved up in rankings
-        this.rankChanges.set(id, oldIndex - newIndex);
-      }
+    // Build maps of previous and current positions
+    const prevPositions = new Map<number, number>();
+    prevRankedSites.forEach((site, index) => {
+      prevPositions.set(site.id, index + 1);
     });
     
+    // Calculate change in positions
+    currRankedSites.forEach((site, index) => {
+      const currentPosition = index + 1;
+      const previousPosition = prevPositions.get(site.id) || currentPosition;
+      const change = previousPosition - currentPosition;
+      this.rankChanges.set(site.id, change);
+    });
+    
+    // Update the lastUpdated timestamp
     this.lastUpdated = new Date().toISOString();
   }
 }
