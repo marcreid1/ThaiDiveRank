@@ -23,7 +23,7 @@ export default function About() {
           <li>Over time, as more votes are collected, the ratings become more accurate</li>
         </ul>
         
-        <h3>Why This Works FOR Dive Sites</h3>
+        <h3>Why This Works For Dive Sites</h3>
         <p>
           This system is perfect for ranking dive sites because:
         </p>
