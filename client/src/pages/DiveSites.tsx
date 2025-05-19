@@ -71,32 +71,77 @@ export default function DiveSites() {
           Thailand Dive Sites
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
-          Explore 148 dive sites across Thailand's stunning coastlines and islands.
+          Explore 43 dive sites across Thailand's stunning Similan and Surin Islands.
         </p>
       </div>
       
-      <Accordion type="multiple" defaultValue={[regionData[0]?.region]} className="mb-12">
-        {regionData.map((region) => (
-          <AccordionItem key={region.region} value={region.region} className="border border-slate-200 rounded-lg mb-4 overflow-hidden">
+      <Accordion type="multiple" defaultValue={regionData.map(r => r.region)} className="mb-12">
+        {regionData.map((mainRegion) => (
+          <AccordionItem 
+            key={mainRegion.region} 
+            value={mainRegion.region} 
+            className="border border-slate-200 rounded-lg mb-4 overflow-hidden bg-white"
+          >
             <AccordionTrigger className="px-6 py-4 hover:bg-slate-50">
               <div className="flex items-center">
                 <h2 className="text-xl font-semibold text-slate-900 text-left">
-                  {region.region}
+                  {mainRegion.region}
                 </h2>
+                {/* Count total dive sites including those in subregions */}
                 <Badge variant="outline" className="ml-3">
-                  {region.diveSites.length} sites
+                  {mainRegion.diveSites.length + (mainRegion.subregions?.reduce((acc, sub) => acc + sub.diveSites.length, 0) || 0)} sites
                 </Badge>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pt-0">
               <div className="p-6 border-b border-slate-200 bg-slate-50">
-                <p className="text-slate-700">{region.description}</p>
+                <p className="text-slate-700">{mainRegion.description}</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                {region.diveSites.map((site) => (
-                  <DiveSiteCard key={site.id} diveSite={site} />
-                ))}
-              </div>
+              
+              {/* If this main region has direct dive sites, show them */}
+              {mainRegion.diveSites.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                  {mainRegion.diveSites.map((site) => (
+                    <DiveSiteCard key={site.id} diveSite={site} />
+                  ))}
+                </div>
+              )}
+              
+              {/* If this main region has subregions, render nested accordions */}
+              {mainRegion.subregions && mainRegion.subregions.length > 0 && (
+                <div className="px-4 py-3">
+                  <Accordion type="multiple" defaultValue={mainRegion.subregions.map(sub => sub.region)}>
+                    {mainRegion.subregions.map((subregion) => (
+                      <AccordionItem 
+                        key={subregion.region} 
+                        value={subregion.region} 
+                        className="border border-slate-100 rounded-md mb-3 overflow-hidden"
+                      >
+                        <AccordionTrigger className="px-4 py-3 hover:bg-slate-50">
+                          <div className="flex items-center">
+                            <h3 className="text-lg font-medium text-slate-800 text-left">
+                              {subregion.region}
+                            </h3>
+                            <Badge variant="outline" className="ml-3">
+                              {subregion.diveSites.length} sites
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-0">
+                          <div className="p-4 border-b border-slate-100 bg-slate-50">
+                            <p className="text-slate-600 text-sm">{subregion.description}</p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                            {subregion.diveSites.map((site) => (
+                              <DiveSiteCard key={site.id} diveSite={site} />
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+              )}
             </AccordionContent>
           </AccordionItem>
         ))}

@@ -4,4 +4,5 @@ export interface RegionDiveSites {
   region: string;
   description: string;
   diveSites: DiveSite[];
+  subregions?: RegionDiveSites[];
 }

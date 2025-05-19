@@ -585,111 +585,152 @@ export class MemStorage implements IStorage {
   async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
     const diveSites = Array.from(this.diveSites.values());
     
-    // Group dive sites by region
-    const regionMap = new Map<string, {
-      diveSites: DiveSite[],
-      description: string
-    }>();
+    // Organize the sites by section first, then we'll restructure them
+    const sitesBySection = new Map<string, DiveSite[]>();
     
-    // Define custom regions based on the Similans and Surins CSV data
-    const regionDescriptions: Record<string, string> = {
-      "Similan Islands (South)": "The southern islands (#1-4) of the Similan archipelago feature pristine beaches, shallow coral gardens, and diverse marine life. Known for their accessibility and excellent diving conditions for beginners to intermediate levels.",
+    // Main descriptions for the parent regions
+    const mainRegionDescriptions: Record<string, string> = {
+      "Similan Islands": "The Similan Islands are an archipelago of nine islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
       
-      "Similan Islands (Central)": "The central islands (#5-7) offer an impressive mix of boulder formations, vibrant coral gardens, and deeper dive sites. This area bridges the gap between the more accessible southern sites and the advanced northern dive spots.",
+      "Surin Islands": "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. These protected waters host an incredible diversity of marine life, with shallow reef systems in the north and more varied dive conditions in the south.",
       
-      "Similan Islands (North)": "The northern islands (#8-9) feature dramatic underwater topography with massive granite boulders, exciting swim-throughs, and intricate caverns. These sites often have stronger currents suitable for more experienced divers.",
+      "Extended Park": "The Extended Park includes the legendary Richelieu Rock, considered Thailand's premier dive site. This horseshoe-shaped pinnacle in the open Andaman Sea is famous for its exceptional biodiversity, vibrant soft corals, and frequent whale shark encounters."
+    };
+    
+    // Sub-region descriptions
+    const subRegionDescriptions: Record<string, string> = {
+      "Similan Islands - South": "The southern islands (#1-4) feature pristine beaches, shallow coral gardens, and diverse marine life. Known for their accessibility and excellent diving conditions for beginners to intermediate levels.",
       
-      "Similan Islands (Extended North)": "Koh Bon and Koh Tachai (#10-11) are part of the Similan National Park but separate from the main island group. Famous for manta ray cleaning stations and pinnacles that attract numerous pelagic species.",
+      "Similan Islands - Central": "The central islands (#5-7) offer an impressive mix of boulder formations, vibrant coral gardens, and deeper dive sites. This area bridges the gap between the more accessible southern sites and the advanced northern dive spots.",
       
-      "Surin Islands (North)": "The northern Surin Islands feature pristine shallow reefs with exceptional coral coverage and visibility. This area offers gentle conditions perfect for beginners and snorkelers with abundant reef fish and occasional turtle sightings.",
+      "Similan Islands - North": "The northern islands (#8-9) feature dramatic underwater topography with massive granite boulders, exciting swim-throughs, and intricate caverns. These sites often have stronger currents suitable for more experienced divers.",
       
-      "Surin Islands (South)": "The southern Surin Islands provide varied diving environments from protected bays to exposed reefs. These sites offer diverse underwater topography and marine ecosystems suitable for different experience levels.",
+      "Surin Islands - North": "The northern Surin Islands feature pristine shallow reefs with exceptional coral coverage and visibility. This area offers gentle conditions perfect for beginners and snorkelers with abundant reef fish and occasional turtle sightings.",
+      
+      "Surin Islands - South": "The southern Surin Islands provide varied diving environments from protected bays to exposed reefs. These sites offer diverse underwater topography and marine ecosystems suitable for different experience levels.",
       
       "Richelieu Rock": "This legendary horseshoe-shaped pinnacle in the open Andaman Sea is considered Thailand's premier dive site. Famous for its exceptional biodiversity, vibrant soft corals, and frequent whale shark encounters."
     };
     
-    // Function to determine sub-region based on location data
-    const determineRegion = (site: DiveSite): string => {
+    // Determine which section each dive site belongs to
+    diveSites.forEach(site => {
       const location = site.location;
+      let section: string;
       
       // Handle special case for Richelieu Rock
       if (site.name === "Richelieu Rock" || location.includes("Extended Park")) {
-        return "Richelieu Rock";
+        section = "Richelieu Rock";
       }
-      
-      // Determine Similan Islands regions
-      if (location.includes("Island #1") || location.includes("Island #2") || 
+      // Determine Similan Islands sections
+      else if (location.includes("Island #1") || location.includes("Island #2") || 
           location.includes("Island #3") || location.includes("Island #4")) {
-        return "Similan Islands (South)";
+        section = "Similan Islands - South";
       }
-      
-      if (location.includes("Island #5") || location.includes("Island #6") || 
+      else if (location.includes("Island #5") || location.includes("Island #6") || 
           location.includes("Island #7")) {
-        return "Similan Islands (Central)";
+        section = "Similan Islands - Central";
       }
-      
-      if (location.includes("Island #8") || location.includes("Island #9")) {
-        return "Similan Islands (North)";
+      else if (location.includes("Island #8") || location.includes("Island #9")) {
+        section = "Similan Islands - North";
       }
-      
-      if (location.includes("Island #10") || location.includes("Island #11") || 
+      else if (location.includes("Island #10") || location.includes("Island #11") || 
           location.includes("Ko Bon") || location.includes("Ko Tachai")) {
-        return "Similan Islands (Extended North)";
+        section = "Similan Islands - North"; // Reclassify from Extended North to just North
       }
-      
-      // Determine Surin Islands regions
-      if (location.includes("Ko Surin Nuea") || 
+      // Determine Surin Islands sections
+      else if (location.includes("Ko Surin Nuea") || 
           (location.includes("Surin") && location.includes("Island #1"))) {
-        return "Surin Islands (North)";
+        section = "Surin Islands - North";
       }
-      
-      if (location.includes("Ko Surin Tai") || location.includes("Ko Khai") || 
+      else if (location.includes("Ko Surin Tai") || location.includes("Ko Khai") || 
           location.includes("Ko Klang") || location.includes("Koh Chi")) {
-        return "Surin Islands (South)";
+        section = "Surin Islands - South";
+      }
+      else {
+        // Default catchall (shouldn't be needed with our 43 sites)
+        section = "Other Thailand Locations";
       }
       
-      // Default catchall (shouldn't be needed with our 43 sites)
-      return "Other Thailand Locations";
-    };
-    
-    // Group sites by their determined region
-    diveSites.forEach(site => {
-      const region = determineRegion(site);
-      
-      if (!regionMap.has(region)) {
-        regionMap.set(region, {
-          diveSites: [],
-          description: regionDescriptions[region] || "Various dive locations in Thailand offering diverse underwater experiences."
-        });
+      if (!sitesBySection.has(section)) {
+        sitesBySection.set(section, []);
       }
       
-      regionMap.get(region)!.diveSites.push(site);
+      sitesBySection.get(section)!.push(site);
     });
     
-    // Convert map to array of RegionDiveSites
-    const regionDiveSites: RegionDiveSites[] = Array.from(regionMap.entries()).map(([region, data]) => ({
-      region,
-      description: data.description,
-      diveSites: data.diveSites.sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically within each region
-    }));
+    // Organize sections into main groups as requested
+    const mainGroups: RegionDiveSites[] = [];
     
-    // Define custom sort order for our regions
-    const regionOrder = [
-      "Similan Islands (South)",
-      "Similan Islands (Central)",
-      "Similan Islands (North)",
-      "Similan Islands (Extended North)",
-      "Surin Islands (North)",
-      "Surin Islands (South)",
-      "Richelieu Rock"
-    ];
+    // 1. Similan Islands with subregions
+    const similarSubregions: RegionDiveSites[] = [];
     
-    // Sort regions based on our predefined order
-    return regionDiveSites.sort((a, b) => {
-      const indexA = regionOrder.indexOf(a.region);
-      const indexB = regionOrder.indexOf(b.region);
-      return indexA - indexB;
+    if (sitesBySection.has("Similan Islands - South")) {
+      similarSubregions.push({
+        region: "South (Islands #1-4)",
+        description: subRegionDescriptions["Similan Islands - South"],
+        diveSites: sitesBySection.get("Similan Islands - South")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    if (sitesBySection.has("Similan Islands - Central")) {
+      similarSubregions.push({
+        region: "Central (Islands #5-7)",
+        description: subRegionDescriptions["Similan Islands - Central"],
+        diveSites: sitesBySection.get("Similan Islands - Central")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    if (sitesBySection.has("Similan Islands - North")) {
+      similarSubregions.push({
+        region: "North (Islands #8-11)",
+        description: subRegionDescriptions["Similan Islands - North"],
+        diveSites: sitesBySection.get("Similan Islands - North")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    mainGroups.push({
+      region: "Similan Islands",
+      description: mainRegionDescriptions["Similan Islands"],
+      diveSites: [],
+      subregions: similarSubregions
     });
+    
+    // 2. Surin Islands with subregions
+    const surinSubregions: RegionDiveSites[] = [];
+    
+    if (sitesBySection.has("Surin Islands - North")) {
+      surinSubregions.push({
+        region: "North",
+        description: subRegionDescriptions["Surin Islands - North"],
+        diveSites: sitesBySection.get("Surin Islands - North")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    if (sitesBySection.has("Surin Islands - South")) {
+      surinSubregions.push({
+        region: "South",
+        description: subRegionDescriptions["Surin Islands - South"],
+        diveSites: sitesBySection.get("Surin Islands - South")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    mainGroups.push({
+      region: "Surin Islands",
+      description: mainRegionDescriptions["Surin Islands"],
+      diveSites: [],
+      subregions: surinSubregions
+    });
+    
+    // 3. Extended Park (Richelieu Rock)
+    if (sitesBySection.has("Richelieu Rock")) {
+      mainGroups.push({
+        region: "Extended Park",
+        description: mainRegionDescriptions["Extended Park"],
+        diveSites: sitesBySection.get("Richelieu Rock")!.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+    
+    return mainGroups;
   }
 
   // Matchup methods
