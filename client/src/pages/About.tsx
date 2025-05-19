@@ -4,11 +4,11 @@ export default function About() {
       <div className="prose prose-ocean lg:prose-lg mx-auto">
         <h1 className="text-center text-3xl font-bold text-slate-900 sm:text-4xl mb-12">About DiveRank</h1>
         
-        <h2>How We Rank Thailand's Dive Sites</h2>
+        <h2>How We Rank Dive Sites</h2>
         <p>
           DiveRank uses the <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer">
             Elo rating system
-          </a> (originally developed for chess rankings) to create a fair and dynamic ranking of Thailand's best dive sites.
+          </a> (originally developed for chess rankings) to create a fair and dynamic ranking of the best dive sites.
         </p>
         
         <h3>How the Elo System Works</h3>
@@ -34,28 +34,11 @@ export default function About() {
           <li>It provides a statistically sound approach to subjective preferences</li>
         </ul>
         
-        <h2>About Thailand's Diving</h2>
-        <p>
-          Thailand is world-renowned for its stunning dive sites, featuring vibrant coral reefs, 
-          fascinating shipwrecks, and diverse marine life. From the Andaman Sea to the Gulf of Thailand, 
-          the country offers diving experiences for all skill levels.
-        </p>
-        
-        <p>
-          Notable diving regions include:
-        </p>
-        <ul>
-          <li>The Similan Islands</li>
-          <li>Koh Tao</li>
-          <li>Phi Phi Islands</li>
-          <li>Richelieu Rock</li>
-          <li>Koh Lanta</li>
-          <li>Phuket</li>
-        </ul>
+
         
         <h2>About This Project</h2>
         <p>
-          DiveRank was created to help divers discover the best diving experiences Thailand has to offer. 
+          DiveRank was created to help divers discover the best diving experiences in the Similan Islands & Surin Islands.
           By leveraging the collective wisdom of the diving community, we aim to create the most accurate 
           and helpful ranking of dive sites.
         </p>
