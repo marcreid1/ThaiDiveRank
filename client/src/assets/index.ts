@@ -87,8 +87,10 @@ export const diveSiteImages = {
   "Ao Sai Ean": aoSaiEan,
   "Ao Pakkad": aoPakkad,
   "Ao Tao": aoTao,
+  "Ao Tao (Turtle Bay)": aoTao,
   "Ao Suthep": aoSuthep,
   "Torinla Pinnacle": torinlaPinnacle,
+  "Torinla Pinnacle (Twin Peaks)": torinlaPinnacle,
   "Koh Klang": kohKlang,
   "Koh Chi": kohChi,
   "Richelieu Rock": richelieuRock
