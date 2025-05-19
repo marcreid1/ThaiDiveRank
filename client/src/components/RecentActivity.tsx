@@ -84,9 +84,9 @@ export default function RecentActivity() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-slate-800">
-                      <a href="#" className="font-medium text-ocean-600 hover:underline">{activity.winnerName}</a> 
-                      won against 
-                      <a href="#" className="font-medium text-ocean-600 hover:underline"> {activity.loserName}</a>
+                      <a href="#" className="font-medium text-ocean-600 hover:underline">{activity.winnerName}</a>
+                      {" "}won against{" "}
+                      <a href="#" className="font-medium text-ocean-600 hover:underline">{activity.loserName}</a>
                     </p>
                     <div className="mt-1 flex items-center">
                       <span className="text-xs text-slate-500">{formatDistanceToNow(new Date(activity.timestamp))} ago</span>
