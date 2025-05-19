@@ -9,7 +9,7 @@ interface DiveSiteCardProps {
 
 export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardProps) {
   return (
-    <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
+    <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg border-t-4 border-t-ocean-400">
       <div className="absolute top-3 left-3 z-10">
         <div className="bg-white/90 backdrop-blur-sm rounded-md px-2 py-1 flex items-center shadow-sm">
           {diveSite.types[0] === "Reef" ? (
