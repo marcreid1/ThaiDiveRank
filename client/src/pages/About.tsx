@@ -7,13 +7,13 @@ export default function About() {
         <h2>How We Rank Dive Sites</h2>
         <p>
           DiveRank uses the <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer">
-            Elo rating system
+            ELO rating system
           </a> (originally developed for chess rankings) to create a fair and dynamic ranking of the best dive sites.
         </p>
         
-        <h3>How the Elo System Works</h3>
+        <h3>How the ELO Rating System Works</h3>
         <p>
-          The Elo system ranks players (or in our case, dive sites) based on their relative performance against each other:
+          The ELO rating system ranks players (or in our case, dive sites) based on their relative performance against each other:
         </p>
         <ul>
           <li>Every dive site starts with an initial rating (typically 1500 points)</li>
