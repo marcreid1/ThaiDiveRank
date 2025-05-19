@@ -67,7 +67,7 @@ export class MemStorage implements IStorage {
         location: "Ko Huyong, Island #1, South, Similan Islands",
         types: ["Coral Garden"],
         description: "Shallow reef area featuring vibrant hard corals",
-        imageUrl: "/src/assets/images/1. Coral Gardens.png",
+        imageUrl: "/src/assets/images/dive-sites/1. Coral Gardens.png",
         depthMin: 0,
         depthMax: 10,
         difficulty: "Beginner"
@@ -78,7 +78,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payan, Island #3, South, Similan Islands",
         types: ["Reef"],
         description: "Distinctive rock formation resembling a shark fin",
-        imageUrl: "/src/assets/images/2. Shark Fin Reef.png",
+        imageUrl: "/src/assets/images/dive-sites/2. Shark Fin Reef.png",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
@@ -144,7 +144,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ha, Island #5, Central, Similan Islands",
         types: ["Bay"],
         description: "Gentle sloping reef with scattered boulders",
-        imageUrl: "/src/assets/images/8. Hideaway Bay.png",
+        imageUrl: "/src/assets/images/dive-sites/8. Hideaway Bay.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -155,7 +155,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payu, Island #6, Central, Similan Islands",
         types: ["Coral Garden"],
         description: "Hard coral garden with gentle currents",
-        imageUrl: "/src/assets/images/9. Anita's Reef.png",
+        imageUrl: "/src/assets/images/dive-sites/9. Anita's Reef.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -166,7 +166,7 @@ export class MemStorage implements IStorage {
         location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
         types: ["Boulder"],
         description: "Deep dive with boulder formations",
-        imageUrl: "/src/assets/images/10. Deep Six.png",
+        imageUrl: "/src/assets/images/dive-sites/10. Deep Six.png",
         depthMin: 18,
         depthMax: 40,
         difficulty: "Advanced"
