@@ -19,6 +19,16 @@ import fantasyReef from './images/dive-sites/17. Fantasy Reef.png';
 import beaconReef from './images/dive-sites/18. Beacon Reef.png';
 import donaldDuckBay from './images/dive-sites/19. Donald Duck Bay.png';
 import snapperAlley from './images/dive-sites/20. Snapper Alley.png';
+import threeTrees from './images/dive-sites/21. Three Trees.png';
+import northPoint from './images/dive-sites/22. North Point.png';
+import breakfastBend from './images/dive-sites/23. Breakfast Bend.png';
+import christmasPoint from './images/dive-sites/24. Christmas Point.png';
+import batfishBend from './images/dive-sites/25. Batfish Bend.png';
+import kohBonPinnacle from './images/dive-sites/26. Koh Bon Pinnacle.png';
+import kohBonRidge from './images/dive-sites/27. Koh Bon Ridge.png';
+import kohBonBay from './images/dive-sites/28. Koh Bon Bay.png';
+import kohTachaiPinnacle from './images/dive-sites/29. Koh Tachai Pinnacle.png';
+import kohTachaiReef from './images/dive-sites/30. Koh Tachai Reef.png';
 
 export const diveSiteImages = {
   "Coral Gardens": coralGardens,
@@ -40,7 +50,17 @@ export const diveSiteImages = {
   "Fantasy Reef": fantasyReef,
   "Beacon Reef": beaconReef,
   "Donald Duck Bay": donaldDuckBay,
-  "Snapper Alley": snapperAlley
+  "Snapper Alley": snapperAlley,
+  "Three Trees": threeTrees,
+  "North Point": northPoint,
+  "Breakfast Bend": breakfastBend,
+  "Christmas Point": christmasPoint,
+  "Batfish Bend": batfishBend,
+  "Koh Bon Pinnacle": kohBonPinnacle,
+  "Koh Bon Ridge": kohBonRidge,
+  "Koh Bon Bay": kohBonBay,
+  "Koh Tachai Pinnacle": kohTachaiPinnacle,
+  "Koh Tachai Reef": kohTachaiReef
 };
 
 // Default placeholder image for sites that don't have a custom image
