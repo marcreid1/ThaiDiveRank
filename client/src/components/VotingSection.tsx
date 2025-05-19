@@ -50,14 +50,14 @@ export default function VotingSection() {
             <h2 className="text-xl font-semibold text-slate-900 mb-6">
               Which dive site would you rather visit?
             </h2>
-            
+
             <div className="relative">
               <div className="vs-badge">
                 <div className="bg-slate-800 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
                   VS
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden card-shadow">
                   <div className="relative h-48 sm:h-64 bg-ocean-100">
@@ -69,7 +69,7 @@ export default function VotingSection() {
                     <Skeleton className="h-10 w-full mt-6" />
                   </div>
                 </div>
-                
+
                 <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden card-shadow">
                   <div className="relative h-48 sm:h-64 bg-ocean-100">
                     <Skeleton className="w-full h-full" />
@@ -82,7 +82,7 @@ export default function VotingSection() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 flex justify-center">
               <Skeleton className="h-10 w-40" />
             </div>
@@ -117,12 +117,12 @@ export default function VotingSection() {
 
   return (
     <div className="mb-12">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 mb-6">
             Which Dive Site is Better?
           </h2>
-          
+
           <div className="relative">
             {/* VS Badge */}
             <div className="vs-badge absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
@@ -130,20 +130,20 @@ export default function VotingSection() {
                 VS
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
                 onVote={() => handleVote(diveSiteA.id, diveSiteB.id)} 
               />
-              
+
               <DiveSiteCard 
                 diveSite={diveSiteB} 
                 onVote={() => handleVote(diveSiteB.id, diveSiteA.id)} 
               />
             </div>
           </div>
-          
+
           <div className="mt-6 flex justify-center">
             <button 
               type="button" 
