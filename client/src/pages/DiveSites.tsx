@@ -197,9 +197,9 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
         <div className="flex justify-between items-center mb-1">
           <h3 className="text-lg font-semibold text-slate-900">{diveSite.name}</h3>
           {diveSite.types.map((type) => (
-            <Badge key={type} variant="secondary" className="bg-slate-100 text-slate-700">
+            <span key={type} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
               {type}
-            </Badge>
+            </span>
           ))}
         </div>
         <p className="text-sm text-slate-500 mb-3">{diveSite.location}</p>
