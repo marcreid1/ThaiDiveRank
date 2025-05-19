@@ -54,14 +54,11 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
       
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex-1">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-ocean-900 text-lg truncate">{diveSite.name}</h3>
-              <span className="text-xs font-medium text-slate-500 ml-2">{diveSite.types[0]}</span>
-            </div>
+          <div className="w-full">
+            <h3 className="font-semibold text-ocean-900 text-lg truncate">{diveSite.name}</h3>
           </div>
           {rank && (
-            <div className="flex items-center ml-2">
+            <div className="flex items-center">
               <Badge variant="ocean">
                 #{rank}
               </Badge>
