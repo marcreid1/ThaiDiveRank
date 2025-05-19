@@ -54,13 +54,15 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
       
       <div className="p-4">
         <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center space-x-2 overflow-hidden">
+          <div className="w-full flex justify-between items-center">
             <h3 className="font-semibold text-ocean-900 text-lg truncate">{diveSite.name}</h3>
-            {diveSite.types.map((type, index) => (
-              <span key={index} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
-                {type}
-              </span>
-            ))}
+            <div className="flex flex-shrink-0 ml-2">
+              {diveSite.types.map((type, index) => (
+                <span key={index} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
+                  {type}
+                </span>
+              ))}
+            </div>
           </div>
           {rank && (
             <div className="flex-shrink-0 ml-2">
