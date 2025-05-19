@@ -104,7 +104,7 @@ export default function RankingsTable() {
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
           <h2 className="text-lg font-medium text-slate-900">
-            Rankings
+            Top 10 Dive Sites
           </h2>
           <Badge variant="ocean">
             Updated {formatDistanceToNow(new Date(lastUpdated))} ago
@@ -129,7 +129,7 @@ export default function RankingsTable() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
-              {rankings.map((site, index) => (
+              {rankings.slice(0, 10).map((site, index) => (
                 <tr key={site.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                     {index + 1}
