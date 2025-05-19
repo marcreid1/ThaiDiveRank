@@ -10,6 +10,7 @@ export default function VotingSection() {
   // State to track the currently winning dive site and which side it was on
   const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(null);
   const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(null);
+  const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(new Set());
   
   // Regular query to get matchups
   const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
@@ -83,6 +84,11 @@ export default function VotingSection() {
     setPreviousWinner(winner);
     setWinnerSide('left');
     
+    // Track that we've matched this winner against this loser
+    const updatedMatchedSites = new Set(matchedDiveSites);
+    updatedMatchedSites.add(loser.id);
+    setMatchedDiveSites(updatedMatchedSites);
+    
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
@@ -94,6 +100,11 @@ export default function VotingSection() {
     setPreviousWinner(winner);
     setWinnerSide('right');
     
+    // Track that we've matched this winner against this loser
+    const updatedMatchedSites = new Set(matchedDiveSites);
+    updatedMatchedSites.add(loser.id);
+    setMatchedDiveSites(updatedMatchedSites);
+    
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
@@ -101,9 +112,10 @@ export default function VotingSection() {
   };
 
   const handleSkip = () => {
-    // Reset winner tracking when skipping
+    // Reset all tracking when skipping
     setPreviousWinner(null);
     setWinnerSide(null);
+    setMatchedDiveSites(new Set());
     skipMutation.mutate();
   };
 

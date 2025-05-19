@@ -39,6 +39,9 @@ export class MemStorage implements IStorage {
   private rankChanges: Map<number, number>; // Tracks rank changes for dive sites
   private lastUpdated: string;
   
+  // Track which dive sites have been matched against each winner
+  private matchupHistory: Map<number, Set<number>>; 
+  
   private userCurrentId: number;
   private diveSiteCurrentId: number;
   private voteCurrentId: number;
@@ -48,6 +51,7 @@ export class MemStorage implements IStorage {
     this.diveSites = new Map();
     this.votes = new Map();
     this.rankChanges = new Map();
+    this.matchupHistory = new Map();
     this.lastUpdated = new Date().toISOString();
     
     this.userCurrentId = 1;
@@ -785,14 +789,32 @@ export class MemStorage implements IStorage {
       throw new Error("Not enough dive sites to create a matchup");
     }
     
-    // Pick two random dive sites
+    // Check if we have a request for a specific dive site (from query params)
+    // For new matchups, we'll still pick randomly
     const diveSiteA = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
     
-    // Pick a different dive site for B
-    let diveSiteB: DiveSite;
-    do {
-      diveSiteB = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
-    } while (diveSiteB.id === diveSiteA.id);
+    // Get list of IDs this site has already been matched against
+    let previouslyMatchedIds = this.matchupHistory.get(diveSiteA.id) || new Set<number>();
+    
+    // Create a filtered list of potential opponents
+    // If we've matched against all other dive sites, reset the history
+    let potentialOpponents = allDiveSites.filter(site => 
+      site.id !== diveSiteA.id && 
+      !previouslyMatchedIds.has(site.id)
+    );
+    
+    // If we've matched against all other dive sites already or this is a first matchup,
+    // reset the history and allow all opponents
+    if (potentialOpponents.length === 0) {
+      previouslyMatchedIds = new Set<number>();
+      this.matchupHistory.set(diveSiteA.id, previouslyMatchedIds);
+      
+      // All sites except this one are potential opponents
+      potentialOpponents = allDiveSites.filter(site => site.id !== diveSiteA.id);
+    }
+    
+    // Pick a random opponent from the filtered list
+    const diveSiteB = potentialOpponents[Math.floor(Math.random() * potentialOpponents.length)];
     
     return { diveSiteA, diveSiteB };
   }
@@ -830,6 +852,11 @@ export class MemStorage implements IStorage {
         losses: loser.losses + 1,
         rating: loser.rating - ratingChange
       });
+      
+      // Track this matchup in history - record that the winner has faced this loser
+      let winnerMatchHistory = this.matchupHistory.get(winner.id) || new Set<number>();
+      winnerMatchHistory.add(loser.id);
+      this.matchupHistory.set(winner.id, winnerMatchHistory);
       
       // Update ranks after vote
       this.updateRankings();
