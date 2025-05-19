@@ -4,6 +4,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
 import { Link } from "wouter";
+import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
+
+// Helper function to get the correct image for a dive site
+const getDiveSiteImage = (name: string): string => {
+  // Direct match
+  if (name in diveSiteImages) {
+    return diveSiteImages[name as keyof typeof diveSiteImages];
+  }
+  
+  // Check for specific problematic cases
+  if (name.includes("North Point") || name.includes("Rocky Point")) {
+    return diveSiteImages["North Point"];
+  }
+  
+  if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
+    return diveSiteImages["Beacon Reef"];
+  }
+  
+  if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
+    return diveSiteImages["Koh Bon Ridge"];
+  }
+  
+  if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
+    return diveSiteImages["Koh Tachai Pinnacle"];
+  }
+  
+  if (name.includes("Ao Tao") || name.includes("Turtle Bay")) {
+    return diveSiteImages["Ao Tao"];
+  }
+  
+  // Fallback to default image
+  return defaultDiveSiteImage;
+};
 
 export default function RankingsTable() {
   const { data: rankingsData, isLoading, isError } = useQuery<{ 
@@ -137,7 +170,7 @@ export default function RankingsTable() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
-                        <img src={site.imageUrl} alt={site.name} className="h-10 w-10 object-cover" />
+                        <img src={getDiveSiteImage(site.name)} alt={site.name} className="h-10 w-10 object-cover" />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-slate-900">{site.name}</div>
