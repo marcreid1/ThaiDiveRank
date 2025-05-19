@@ -82,16 +82,16 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
           {/* Dive details section with depth and difficulty */}
           <div className="mb-4 py-2 border-t border-b border-slate-100">
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-slate-500 block">Depth:</span>
+              <div className="flex items-center">
+                <span className="text-slate-500 mr-1">Depth:</span>
                 <span className="font-medium text-ocean-900">
                   {diveSite.depthMin && diveSite.depthMax 
                     ? `${diveSite.depthMin}-${diveSite.depthMax}m` 
                     : 'Not specified'}
                 </span>
               </div>
-              <div>
-                <span className="text-slate-500 block">Difficulty:</span>
+              <div className="flex items-center">
+                <span className="text-slate-500 mr-1">Difficulty:</span>
                 <span className={`font-medium ${
                   diveSite.difficulty === "Advanced" 
                     ? "text-red-600" 
