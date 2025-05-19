@@ -16,41 +16,41 @@ export default function Navbar() {
               <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link href="/">
-                <a className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+              <Link 
+                href="/"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 }`}>
-                  Vote
-                </a>
+                Vote
               </Link>
-              <Link href="/rankings">
-                <a className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
+              <Link 
+                href="/rankings"
+                className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
                   location === "/rankings" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 }`}>
-                  Rankings
-                </a>
+                Rankings
               </Link>
-              <Link href="/dive-sites">
-                <a className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
+              <Link 
+                href="/dive-sites"
+                className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
                   location === "/dive-sites" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 }`}>
-                  Directory
-                </a>
+                Directory
               </Link>
-              <Link href="/about">
-                <a className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+              <Link 
+                href="/about"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/about" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 }`}>
-                  About
-                </a>
+                About
               </Link>
             </div>
           </div>
