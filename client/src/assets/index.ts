@@ -29,6 +29,19 @@ import kohBonRidge from './images/dive-sites/27. Koh Bon Ridge.png';
 import kohBonBay from './images/dive-sites/28. Koh Bon Bay.png';
 import kohTachaiPinnacle from './images/dive-sites/29. Koh Tachai Pinnacle.png';
 import kohTachaiReef from './images/dive-sites/30. Koh Tachai Reef.png';
+import aoMaiNgam from './images/dive-sites/31. Ao Mai Ngam.png';
+import aoChongKad from './images/dive-sites/32. Ao Chong Kad.png';
+import aoMaeYai from './images/dive-sites/33. Ao Mae Yai.png';
+import aoJaak from './images/dive-sites/34. Ao Jaak.png';
+import aoSaiDaeng from './images/dive-sites/35. Ao Sai Daeng.png';
+import aoSaiEan from './images/dive-sites/36. Ao Sai Ean.png';
+import aoPakkad from './images/dive-sites/37. Ao Pakkad.png';
+import aoTao from './images/dive-sites/38. Ao Tao.png';
+import aoSuthep from './images/dive-sites/39. Ao Suthep.png';
+import torinlaPinnacle from './images/dive-sites/40. Torinla Pinnacle.png';
+import kohKlang from './images/dive-sites/41. Koh Klang.png';
+import kohChi from './images/dive-sites/42. Koh Chi.png';
+import richelieuRock from './images/dive-sites/43. Richelieu Rock.png';
 
 export const diveSiteImages = {
   "Coral Gardens": coralGardens,
@@ -65,7 +78,20 @@ export const diveSiteImages = {
   "Koh Bon Bay": kohBonBay,
   "Koh Tachai Pinnacle": kohTachaiPinnacle,
   "Koh Tachai Pinnacle/Plateau": kohTachaiPinnacle,
-  "Koh Tachai Reef": kohTachaiReef
+  "Koh Tachai Reef": kohTachaiReef,
+  "Ao Mai Ngam": aoMaiNgam,
+  "Ao Chong Kad": aoChongKad,
+  "Ao Mae Yai": aoMaeYai,
+  "Ao Jaak": aoJaak,
+  "Ao Sai Daeng": aoSaiDaeng,
+  "Ao Sai Ean": aoSaiEan,
+  "Ao Pakkad": aoPakkad,
+  "Ao Tao": aoTao,
+  "Ao Suthep": aoSuthep,
+  "Torinla Pinnacle": torinlaPinnacle,
+  "Koh Klang": kohKlang,
+  "Koh Chi": kohChi,
+  "Richelieu Rock": richelieuRock
 };
 
 // Default placeholder image for sites that don't have a custom image
