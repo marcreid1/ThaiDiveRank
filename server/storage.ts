@@ -287,7 +287,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
         description: "Named for three large trees visible from the sea",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"

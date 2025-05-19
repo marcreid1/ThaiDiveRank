@@ -44,4 +44,4 @@ export const diveSiteImages = {
 };
 
 // Default placeholder image for sites that don't have a custom image
-export const defaultDiveSiteImage = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
+export const defaultDiveSiteImage = "/src/assets/images/dive-sites/placeholder.png";

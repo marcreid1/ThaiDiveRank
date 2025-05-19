@@ -1,0 +1,8 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#0a3d62"/>
+  <path d="M400 150 C 500 250, 500 350, 400 450 C 300 350, 300 250, 400 150 Z" fill="#3498db" />
+  <circle cx="350" cy="300" r="15" fill="#f1c40f"/>
+  <circle cx="450" cy="320" r="8" fill="#f1c40f"/>
+  <path d="M250 400 C 300 380, 350 380, 400 400 C 450 420, 500 420, 550 400" stroke="#f39c12" stroke-width="5" fill="none"/>
+  <text x="400" y="550" font-family="Arial" font-size="24" fill="#ecf0f1" text-anchor="middle">Dive Site</text>
+</svg>
