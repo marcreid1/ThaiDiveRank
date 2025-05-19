@@ -11,7 +11,7 @@ export default function About() {
           </a> (originally developed for chess rankings) to create a fair and dynamic ranking of the best dive sites.
         </p>
         
-        <h3>How the ELO Rating System Works</h3>
+        <h3>How THE ELO Rating System Works</h3>
         <p>
           The ELO rating system ranks players (or in our case, dive sites) based on their relative performance against each other:
         </p>
@@ -23,7 +23,7 @@ export default function About() {
           <li>Over time, as more votes are collected, the ratings become more accurate</li>
         </ul>
         
-        <h3>Why This Works for Dive Sites</h3>
+        <h3>Why This Works FOR Dive Sites</h3>
         <p>
           This system is perfect for ranking dive sites because:
         </p>
