@@ -15,12 +15,19 @@ import turtleRock from './images/dive-sites/13. Turtle Rock.png';
 import waterfallBay from './images/dive-sites/14. Waterfall Bay.png';
 import elephantHeadRock from './images/dive-sites/15. Elephant Head Rock.png';
 import beaconPoint from './images/dive-sites/16. Beacon Point.png';
-import fantasyReef from './images/dive-sites/17. Fantasy Reef.png';
-import beaconReef from './images/dive-sites/18. Beacon Reef.png';
-import donaldDuckBay from './images/dive-sites/19. Donald Duck Bay.png';
-import snapperAlley from './images/dive-sites/20. Snapper Alley.png';
-import threeTrees from './images/dive-sites/21. Three Trees.png';
-import northPoint from './images/dive-sites/22. North Point.png';
+import aoMaiNgam from './images/dive-sites/31. Ao Mai Ngam.png';
+import aoChongKad from './images/dive-sites/32. Ao Chong Kad.png';
+import aoMaeYai from './images/dive-sites/33. Ao Mae Yai.png';
+import aoJaak from './images/dive-sites/34. Ao Jaak.png';
+import aoSaiDaeng from './images/dive-sites/35. Ao Sai Daeng.png';
+import aoSaiEan from './images/dive-sites/36. Ao Sai Ean.png';
+import aoPakkad from './images/dive-sites/37. Ao Pakkad.png';
+import aoTao from './images/dive-sites/38. Ao Tao.png';
+import aoSuthep from './images/dive-sites/39. Ao Suthep.png';
+import torinlaPinnacle from './images/dive-sites/40. Torinla Pinnacle.png';
+import kohKlang from './images/dive-sites/41. Koh Klang.png';
+import kohChi from './images/dive-sites/42. Koh Chi.png';
+import richelieuRock from './images/dive-sites/43. Richelieu Rock.png';
 import breakfastBend from './images/dive-sites/23. Breakfast Bend.png';
 import christmasPoint from './images/dive-sites/24. Christmas Point.png';
 import batfishBend from './images/dive-sites/25. Batfish Bend.png';
@@ -47,15 +54,19 @@ export const diveSiteImages = {
   "Waterfall Bay": waterfallBay,
   "Elephant Head Rock": elephantHeadRock,
   "Beacon Point": beaconPoint,
-  "Fantasy Reef": fantasyReef,
-  "Beacon Reef": beaconReef,
-  "Beacon Reef (Beacon Beach)": beaconReef,
-  "Donald Duck Bay": donaldDuckBay,
-  "Snapper Alley": snapperAlley,
-  "Three Trees": threeTrees,
-  "North Point": northPoint,
-  "North Point (Rocky Point)": northPoint,
-  "Rocky Point": northPoint,
+  "Ao Mai Ngam": aoMaiNgam,
+  "Ao Chong Kad": aoChongKad,
+  "Ao Mae Yai": aoMaeYai,
+  "Ao Jaak": aoJaak,
+  "Ao Sai Daeng": aoSaiDaeng,
+  "Ao Sai Ean": aoSaiEan,
+  "Ao Pakkad": aoPakkad,
+  "Ao Tao": aoTao,
+  "Ao Suthep": aoSuthep,
+  "Torinla Pinnacle": torinlaPinnacle,
+  "Koh Klang": kohKlang,
+  "Koh Chi": kohChi,
+  "Richelieu Rock": richelieuRock,
   "Breakfast Bend": breakfastBend,
   "Christmas Point": christmasPoint,
   "Batfish Bend": batfishBend,
