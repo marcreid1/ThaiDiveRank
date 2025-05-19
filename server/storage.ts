@@ -78,7 +78,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payan, Island #3, South, Similan Islands",
         types: ["Reef"],
         description: "Distinctive rock formation resembling a shark fin",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/2. Shark Fin Reef.png",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
@@ -89,7 +89,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payan, Island #3, South, Similan Islands",
         types: ["Boulder"],
         description: "Massive underwater boulders",
-        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/3. Boulder City.png",
         depthMin: 15,
         depthMax: 40,
         difficulty: "Advanced"
@@ -100,7 +100,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Bay"],
         description: "Shallow bay with coral gardens",
-        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/4. Princess Bay.png",
         depthMin: 5,
         depthMax: 18,
         difficulty: "Beginner"
@@ -111,7 +111,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Bay"],
         description: "Popular for night dives",
-        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/5. Honeymoon Bay.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -122,7 +122,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Wall"],
         description: "Large granite boulders which form a wall-like structure",
-        imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/6. Bird Rock.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -133,7 +133,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Boulder"],
         description: "Named for the towering rocks that rise from the depths",
-        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/7. Stonehenge.png",
         depthMin: 0,
         depthMax: 40,
         difficulty: "Advanced"
