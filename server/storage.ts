@@ -243,7 +243,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Coral Garden"],
         description: "Colorful coral formations",
-        imageUrl: "https://images.unsplash.com/photo-1562741789-fd05816d507e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/17. Fantasy Reef.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -254,7 +254,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Reef"],
         description: "Extension of Beacon Point, also features the Atlantis Wreck",
-        imageUrl: "https://images.unsplash.com/photo-1517627043994-d54cc14d8a26?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/18. Beacon Reef.png",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
@@ -265,7 +265,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Bay"],
         description: "Named for a rock formation resembling Donald Duck",
-        imageUrl: "https://images.unsplash.com/photo-1571468219372-3e13c87572bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/19. Donald Duck Bay.png",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
@@ -276,7 +276,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
         description: "Known for large schools of snappers",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-35245d18edad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/20. Snapper Alley.png",
         depthMin: 6,
         depthMax: 20,
         difficulty: "Beginner"
