@@ -96,7 +96,13 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
               </div>
               <div>
                 <span className="text-slate-500 block">Difficulty:</span>
-                <span className="font-medium text-ocean-900">
+                <span className={`font-medium ${
+                  diveSite.difficulty === "Advanced" 
+                    ? "text-red-600" 
+                    : diveSite.difficulty === "Intermediate" 
+                      ? "text-amber-600" 
+                      : "text-green-600"
+                }`}>
                   {diveSite.difficulty || 'Not specified'}
                 </span>
               </div>
