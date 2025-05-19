@@ -12,7 +12,9 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Logo />
+              <Link href="/" className="flex items-center">
+                <Logo />
+              </Link>
               <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
