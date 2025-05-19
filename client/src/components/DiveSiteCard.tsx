@@ -43,19 +43,6 @@ interface DiveSiteCardProps {
 export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardProps) {
   return (
     <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
-      <div className="absolute top-3 left-3 z-10">
-        <div className="bg-white/90 backdrop-blur-sm rounded-md px-2 py-1 flex items-center shadow-sm">
-          {diveSite.types[0] === "Reef" ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-ocean-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            </svg>
-          )}
-        </div>
-      </div>
       
       <div className="relative h-48 sm:h-64 bg-ocean-100">
         <img 
