@@ -781,7 +781,7 @@ export class MemStorage implements IStorage {
   }
 
   // Matchup methods
-  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+  async getRandomMatchup(specificWinnerId?: number): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allDiveSites = Array.from(this.diveSites.values());
     
     // Need at least 2 dive sites to create a matchup
@@ -789,9 +789,21 @@ export class MemStorage implements IStorage {
       throw new Error("Not enough dive sites to create a matchup");
     }
     
-    // Check if we have a request for a specific dive site (from query params)
-    // For new matchups, we'll still pick randomly
-    const diveSiteA = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
+    let diveSiteA: DiveSite;
+    
+    // Use specific winner if provided and exists
+    if (specificWinnerId !== undefined) {
+      const specificDiveSite = this.diveSites.get(specificWinnerId);
+      if (specificDiveSite) {
+        diveSiteA = specificDiveSite;
+      } else {
+        // Fallback to random if specified site doesn't exist
+        diveSiteA = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
+      }
+    } else {
+      // Otherwise pick randomly
+      diveSiteA = allDiveSites[Math.floor(Math.random() * allDiveSites.length)];
+    }
     
     // Get list of IDs this site has already been matched against
     let previouslyMatchedIds = this.matchupHistory.get(diveSiteA.id) || new Set<number>();

@@ -12,12 +12,23 @@ export default function VotingSection() {
   const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(null);
   const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(new Set());
   
-  // Regular query to get matchups
+  // Query to get matchups, including the previous winner when available
   const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
-    queryKey: ["/api/matchup"]
+    queryKey: ["/api/matchup", previousWinner?.id],
+    queryFn: async ({ queryKey }) => {
+      const winnerId = queryKey[1];
+      const url = winnerId
+        ? `/api/matchup?winnerId=${winnerId}`
+        : '/api/matchup';
+      
+      return await fetch(url).then(res => {
+        if (!res.ok) throw new Error('Failed to fetch matchup');
+        return res.json();
+      });
+    }
   });
   
   // Create the final matchup to display
