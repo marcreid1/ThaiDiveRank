@@ -1,13 +1,23 @@
 import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // useEffect only runs on the client, so we can safely access the window object
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <nav className="bg-white border-b border-slate-200 fixed w-full z-20 top-0">
+    <nav className="bg-background border-b border-border fixed w-full z-20 top-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -23,7 +33,7 @@ export default function Navbar() {
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/" 
                     ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
                 }`}>
                 Vote
               </Link>
@@ -32,7 +42,7 @@ export default function Navbar() {
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/rankings" 
                     ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
                 }`}>
                 Rankings
               </Link>
@@ -41,7 +51,7 @@ export default function Navbar() {
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/dive-sites" 
                     ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
                 }`}>
                 Directory
               </Link>
@@ -50,25 +60,31 @@ export default function Navbar() {
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/about" 
                     ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
                 }`}>
                 About
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            {/* Theme toggle button */}
+            {mounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="rounded-full"
+                aria-label="Toggle dark mode"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
+              </Button>
+            )}
             <button 
-              type="button" 
-              className="bg-ocean-500 p-1 rounded-full text-white hover:bg-ocean-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
-              onClick={() => {}}
-            >
-              <span className="sr-only">View notifications</span>
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
-            <button 
-              className="ml-2 sm:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ocean-500"
+              className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ocean-500 dark:hover:bg-slate-800 dark:text-slate-300"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <span className="sr-only">Open main menu</span>
@@ -88,13 +104,13 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
-          <div className="pt-2 pb-3 space-y-1">
+          <div className="pt-2 pb-3 space-y-1 bg-background">
             <Link 
               href="/"
               className={`${
                 location === "/" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
+                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
+                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
               Vote
             </Link>
@@ -102,8 +118,8 @@ export default function Navbar() {
               href="/rankings"
               className={`${
                 location === "/rankings" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
+                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
+                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
               Rankings
             </Link>
@@ -111,8 +127,8 @@ export default function Navbar() {
               href="/dive-sites"
               className={`${
                 location === "/dive-sites" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
+                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
+                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
               Directory
             </Link>
@@ -120,8 +136,8 @@ export default function Navbar() {
               href="/about"
               className={`${
                 location === "/about" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
+                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
+                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" 
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
               About
             </Link>

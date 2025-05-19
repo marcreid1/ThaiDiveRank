@@ -7,6 +7,68 @@
     @apply border-border;
   }
 
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --ocean-50: 196 100% 97%;
+    --ocean-100: 196 94% 94%;
+    --ocean-200: 195 94% 84%;
+    --ocean-300: 195 85% 68%;
+    --ocean-400: 196 84% 55%;
+    --ocean-500: 196 85% 48%;
+    --ocean-600: 196 90% 40%;
+    --ocean-700: 197 92% 32%;
+    --ocean-800: 198 94% 27%;
+    --ocean-900: 199 89% 23%;
+    --ocean-950: 200 100% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 196 85% 48%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --ocean-50: 200 100% 6%;
+    --ocean-100: 199 89% 10%;
+    --ocean-200: 198 94% 15%;
+    --ocean-300: 197 92% 20%;
+    --ocean-400: 196 90% 25%;
+    --ocean-500: 196 85% 30%;
+    --ocean-600: 196 84% 35%;
+    --ocean-700: 195 85% 40%;
+    --ocean-800: 195 94% 45%;
+    --ocean-900: 196 94% 50%;
+    --ocean-950: 196 100% 70%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 196 85% 30%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }

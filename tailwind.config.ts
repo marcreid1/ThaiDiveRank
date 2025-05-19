@@ -13,6 +13,19 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        ocean: {
+          50: "hsl(var(--ocean-50))",
+          100: "hsl(var(--ocean-100))",
+          200: "hsl(var(--ocean-200))",
+          300: "hsl(var(--ocean-300))",
+          400: "hsl(var(--ocean-400))",
+          500: "hsl(var(--ocean-500))",
+          600: "hsl(var(--ocean-600))",
+          700: "hsl(var(--ocean-700))",
+          800: "hsl(var(--ocean-800))",
+          900: "hsl(var(--ocean-900))",
+          950: "hsl(var(--ocean-950))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
