@@ -7,8 +7,9 @@ import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VotingSection() {
-  // State to track the currently winning dive site
+  // State to track the currently winning dive site and which side it was on
   const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(null);
+  const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(null);
   
   // Regular query to get matchups
   const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
@@ -22,25 +23,38 @@ export default function VotingSection() {
   let matchup = fetchedMatchup;
   
   // If we have a previous winner and the fetched matchup data
-  if (previousWinner && fetchedMatchup) {
+  if (previousWinner && fetchedMatchup && winnerSide) {
     // Check if our previous winner is in the current matchup
     const winnerIsInMatchup = 
       fetchedMatchup.diveSiteA.id === previousWinner.id || 
       fetchedMatchup.diveSiteB.id === previousWinner.id;
       
-    // If the winner isn't already in the matchup, replace diveSiteA with our winner
     if (!winnerIsInMatchup) {
-      matchup = {
-        diveSiteA: previousWinner,
-        diveSiteB: fetchedMatchup.diveSiteB
-      };
-    } else if (fetchedMatchup.diveSiteB.id === previousWinner.id) {
-      // If the winner is in the matchup but on the right side, swap positions
-      // This ensures the winning dive site is always on the left
-      matchup = {
-        diveSiteA: fetchedMatchup.diveSiteB, // The winner (previously on the right)
-        diveSiteB: fetchedMatchup.diveSiteA  // The new challenger (move to right)
-      };
+      // If the winner isn't in the matchup, place it on the appropriate side
+      if (winnerSide === 'left') {
+        matchup = {
+          diveSiteA: previousWinner,
+          diveSiteB: fetchedMatchup.diveSiteB
+        };
+      } else {
+        matchup = {
+          diveSiteA: fetchedMatchup.diveSiteA,
+          diveSiteB: previousWinner
+        };
+      }
+    } else {
+      // The winner is in the matchup, but might be on the wrong side
+      const isOnCorrectSide = 
+        (winnerSide === 'left' && fetchedMatchup.diveSiteA.id === previousWinner.id) ||
+        (winnerSide === 'right' && fetchedMatchup.diveSiteB.id === previousWinner.id);
+        
+      // If the winner is on the wrong side, swap the positions
+      if (!isOnCorrectSide) {
+        matchup = {
+          diveSiteA: fetchedMatchup.diveSiteB,
+          diveSiteB: fetchedMatchup.diveSiteA
+        };
+      }
     }
   }
 
@@ -64,9 +78,21 @@ export default function VotingSection() {
     }
   });
 
-  const handleVote = (winner: DiveSite, loser: DiveSite) => {
-    // Store the winner for the next matchup
+  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => {
+    // Store the winner from the left side
     setPreviousWinner(winner);
+    setWinnerSide('left');
+    
+    voteMutation.mutate({ 
+      winnerId: winner.id, 
+      loserId: loser.id 
+    });
+  };
+  
+  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => {
+    // Store the winner from the right side
+    setPreviousWinner(winner);
+    setWinnerSide('right');
     
     voteMutation.mutate({ 
       winnerId: winner.id, 
@@ -77,6 +103,7 @@ export default function VotingSection() {
   const handleSkip = () => {
     // Reset winner tracking when skipping
     setPreviousWinner(null);
+    setWinnerSide(null);
     skipMutation.mutate();
   };
 
@@ -172,12 +199,12 @@ export default function VotingSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
-                onVote={() => handleVote(diveSiteA, diveSiteB)} 
+                onVote={() => handleVoteLeft(diveSiteA, diveSiteB)} 
               />
 
               <DiveSiteCard 
                 diveSite={diveSiteB} 
-                onVote={() => handleVote(diveSiteB, diveSiteA)} 
+                onVote={() => handleVoteRight(diveSiteB, diveSiteA)} 
               />
             </div>
           </div>
