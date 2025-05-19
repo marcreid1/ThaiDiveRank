@@ -120,7 +120,7 @@ export default function VotingSection() {
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 mb-6">
-            Which dive site would you rather visit?
+            Which Dive Site is Better?
           </h2>
           
           <div className="relative">
