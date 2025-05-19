@@ -298,7 +298,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Point"],
         description: "Boulders and coral formations",
-        imageUrl: "https://images.unsplash.com/photo-1618760439476-74b01344cd8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
@@ -309,7 +309,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
         description: "Morning dive with gentle current",
-        imageUrl: "https://images.unsplash.com/photo-1622644101256-8206c4842a7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -320,7 +320,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Point"],
         description: "Rock formations resembling a Christmas tree",
-        imageUrl: "https://images.unsplash.com/photo-1514125669375-59ee3985d08b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
@@ -331,7 +331,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ba-ngu, Island #9, North, Similan Islands",
         types: ["Reef"],
         description: "Large schools of longfin batfish",
-        imageUrl: "https://images.unsplash.com/photo-1618854979324-af6c7dbece8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 8,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -342,7 +342,7 @@ export class MemStorage implements IStorage {
         location: "Ko Bon, Island #10, North, Similan Islands",
         types: ["Pinnacle"],
         description: "Deep pinnacle with vertical wall",
-        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 20,
         depthMax: 45,
         difficulty: "Advanced"
@@ -353,7 +353,7 @@ export class MemStorage implements IStorage {
         location: "Ko Bon, Island #10, North, Similan Islands",
         types: ["Ridge"],
         description: "Famous for manta ray cleaning stations",
-        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
@@ -364,7 +364,7 @@ export class MemStorage implements IStorage {
         location: "Ko Bon, Island #10, North, Similan Islands",
         types: ["Bay"],
         description: "Protected bay area with gentle reef slope",
-        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
