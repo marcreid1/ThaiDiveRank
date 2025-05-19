@@ -8,28 +8,28 @@ const getDiveSiteImage = (name: string): string => {
   if (name in diveSiteImages) {
     return diveSiteImages[name as keyof typeof diveSiteImages];
   }
-  
+
   // Check for specific problematic cases
   if (name.includes("North Point") || name.includes("Rocky Point")) {
     return diveSiteImages["North Point"];
   }
-  
+
   if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
     return diveSiteImages["Beacon Reef"];
   }
-  
+
   if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
     return diveSiteImages["Koh Bon Ridge"];
   }
-  
+
   if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
     return diveSiteImages["Koh Tachai Pinnacle"];
   }
-  
+
   if (name.includes("Ao Tao") || name.includes("Turtle Bay")) {
     return diveSiteImages["Ao Tao"];
   }
-  
+
   // Fallback to default image
   return defaultDiveSiteImage;
 };
@@ -43,7 +43,7 @@ interface DiveSiteCardProps {
 export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardProps) {
   return (
     <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
-      
+
       <div className="relative h-48 sm:h-64 bg-ocean-100">
         <img 
           src={getDiveSiteImage(diveSite.name)} 
@@ -51,11 +51,12 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
           className="w-full h-full object-cover"
         />
       </div>
-      
+
       <div className="p-4">
         <div className="flex justify-between items-center mb-3">
           <div className="w-full flex justify-between items-center">
             <h3 className="font-semibold text-ocean-900 text-lg truncate">{diveSite.name}</h3>
+            <p className="text-sm text-slate-500 truncate">{diveSite.location}</p>
             <div className="flex flex-shrink-0 ml-2">
               {diveSite.types.map((type, index) => (
                 <span key={index} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
@@ -72,11 +73,11 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
             </div>
           )}
         </div>
-        
+
         <p className="text-sm text-slate-500 mb-4 line-clamp-2">
           {diveSite.description}
         </p>
-        
+
         <div className="mt-auto">
           <button 
             type="button" 
