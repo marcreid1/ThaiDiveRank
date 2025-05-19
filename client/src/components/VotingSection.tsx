@@ -58,7 +58,7 @@ export default function VotingSection() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16">
                 <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden card-shadow">
                   <div className="relative h-48 sm:h-64 bg-ocean-100">
                     <Skeleton className="w-full h-full" />
@@ -131,7 +131,7 @@ export default function VotingSection() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
                 onVote={() => handleVote(diveSiteA.id, diveSiteB.id)} 
