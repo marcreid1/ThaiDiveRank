@@ -67,7 +67,7 @@ export class MemStorage implements IStorage {
         location: "Ko Huyong, Island #1, South, Similan Islands",
         types: ["Coral Garden"],
         description: "Shallow reef area featuring vibrant hard corals",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/1. Coral Gardens.png",
         depthMin: 0,
         depthMax: 10,
         difficulty: "Beginner"

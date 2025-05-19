@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RegionDiveSites } from "@/types/region-dive-sites";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 
 export default function DiveSites() {
   const { data: regionData, isLoading, isError } = useQuery<RegionDiveSites[]>({
@@ -159,7 +160,7 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
     <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
-          src={diveSite.imageUrl}
+          src={diveSiteImages[diveSite.name as keyof typeof diveSiteImages] || defaultDiveSiteImage}
           alt={diveSite.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
