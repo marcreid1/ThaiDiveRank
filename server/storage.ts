@@ -547,6 +547,9 @@ export class MemStorage implements IStorage {
       rating: 1500,
       wins: 0,
       losses: 0,
+      depthMin: 0,
+      depthMax: 0,
+      difficulty: "Intermediate",
       createdAt: new Date()
     };
     this.diveSites.set(id, diveSite);
