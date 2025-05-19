@@ -375,7 +375,7 @@ export class MemStorage implements IStorage {
         location: "Ko Tachai, Island #11, North, Similan Islands",
         types: ["Pinnacle"],
         description: "Submerged reef with strong currents and pelagics",
-        imageUrl: "https://images.unsplash.com/photo-1511702771955-42b52e1cd168?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 12,
         depthMax: 40,
         difficulty: "Advanced"
@@ -386,7 +386,7 @@ export class MemStorage implements IStorage {
         location: "Ko Tachai, Island #11, North, Similan Islands",
         types: ["Reef"],
         description: "More protected area with boulder formations",
-        imageUrl: "https://images.unsplash.com/photo-1518649575592-94de6230742a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -399,7 +399,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Bay"],
         description: "Protected bay with gentle slope and coral garden",
-        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 20,
         difficulty: "Beginner"
@@ -410,7 +410,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Channel"],
         description: "Channel with reef and rubble featuring good macro life",
-        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -421,7 +421,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Bay"],
         description: "Big Bay with gentle sloping reef and good coral coverage",
-        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
@@ -432,7 +432,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Bay"],
         description: "Beautiful bay of pristine coral reefs",
-        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
@@ -443,7 +443,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Reef"],
         description: "Pristine coral reefs and shallow water",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 10,
         difficulty: "Beginner"
@@ -454,7 +454,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Nuea, Island #1, North, Surin Islands",
         types: ["Reef"],
         description: "Popular spot for snorkelling",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 10,
         difficulty: "Beginner"
@@ -465,7 +465,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Tai, Island #2, South, Surin Islands",
         types: ["Reef"],
         description: "Simple and colorful reef, good for beginners and snorkelers",
-        imageUrl: "https://images.unsplash.com/photo-1562741789-fd05816d507e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
@@ -476,7 +476,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Tai, Island #2, South, Surin Islands",
         types: ["Bay"],
         description: "Turtle Bay with shallow coral formations popular for snorkeling",
-        imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 3,
         depthMax: 15,
         difficulty: "Beginner"
@@ -487,7 +487,7 @@ export class MemStorage implements IStorage {
         location: "Ko Surin Tai, Island #2, South, Surin Islands",
         types: ["Reef"],
         description: "Named after park ranger features small bommies and hard corals",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -498,7 +498,7 @@ export class MemStorage implements IStorage {
         location: "Ko Khai (Torinla Islet), Island #3, South, Surin Islands",
         types: ["Pinnacle"],
         description: "Submerged granite pinnacle with pelagic species",
-        imageUrl: "https://images.unsplash.com/photo-1511702771955-42b52e1cd168?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 12,
         depthMax: 40,
         difficulty: "Advanced"
@@ -509,7 +509,7 @@ export class MemStorage implements IStorage {
         location: "Ko Klang (Mankom Islet), Island #4, South, Surin Islands",
         types: ["Reef"],
         description: "Islet with surrounding reef system",
-        imageUrl: "https://images.unsplash.com/photo-1518649575592-94de6230742a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -520,7 +520,7 @@ export class MemStorage implements IStorage {
         location: "Koh Chi (Stock Islet), Island #5, North, Surin Islands",
         types: ["Point"],
         description: "Southern point with currents and pelagic sightings",
-        imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 8,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -531,7 +531,7 @@ export class MemStorage implements IStorage {
         location: "Extended Park",
         types: ["Pinnacle"],
         description: "Legendary horseshoe-shaped pinnacle with rich marine life",
-        imageUrl: "https://images.unsplash.com/photo-1510655619096-bded3c463dff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/placeholder.png",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
