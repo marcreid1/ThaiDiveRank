@@ -11,7 +11,7 @@ export default function RecentActivity() {
   if (isLoading) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-800">
+        <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
           <div className="px-6 py-5 border-b border-slate-200">
             <h2 className="text-lg font-medium text-slate-900">
               Recent Activity
@@ -42,7 +42,7 @@ export default function RecentActivity() {
   if (isError || !activities) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-800">
+        <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
           <div className="px-6 py-5 border-b border-slate-200">
             <h2 className="text-lg font-medium text-slate-900">
               Recent Activity
@@ -64,7 +64,7 @@ export default function RecentActivity() {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-800">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
         <div className="px-6 py-5 border-b border-slate-200">
           <h2 className="text-lg font-medium text-slate-900">
             Recent Activity

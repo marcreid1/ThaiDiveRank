@@ -101,7 +101,7 @@ export default function RankingsTable() {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-800">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
         <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
           <h2 className="text-lg font-medium text-slate-900">
             Top 10 Dive Sites

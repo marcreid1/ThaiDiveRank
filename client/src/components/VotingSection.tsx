@@ -117,7 +117,7 @@ export default function VotingSection() {
 
   return (
     <div className="mb-12">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-800">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-ocean-200">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 mb-6">
             Which Dive Site is Better?
