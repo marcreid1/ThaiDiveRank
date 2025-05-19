@@ -539,15 +539,26 @@ export class MemStorage implements IStorage {
     ];
 
     for (const site of initialDiveSites) {
-      const { depthMin, depthMax, difficulty, ...insertSite } = site;
-      const diveSite = this.createDiveSite(insertSite);
+      // Create the full dive site directly instead of creating then updating
+      const diveSite: DiveSite = {
+        id: this.diveSiteCurrentId++,
+        name: site.name,
+        location: site.location,
+        types: site.types,
+        description: site.description,
+        imageUrl: site.imageUrl,
+        rating: 1500,
+        wins: 0,
+        losses: 0,
+        depthMin: site.depthMin,
+        depthMax: site.depthMax,
+        difficulty: site.difficulty,
+        createdAt: new Date()
+      };
       
-      // Update with the additional fields
-      this.updateDiveSite(diveSite.id, { 
-        depthMin, 
-        depthMax, 
-        difficulty 
-      });
+      // Add to the collection
+      this.diveSites.set(diveSite.id, diveSite);
+      this.rankChanges.set(diveSite.id, 0); // Initialize rank change
     }
   }
 
@@ -586,9 +597,9 @@ export class MemStorage implements IStorage {
       rating: 1500,
       wins: 0,
       losses: 0,
-      depthMin: null,
-      depthMax: null,
-      difficulty: null,
+      depthMin: 0,
+      depthMax: 0,
+      difficulty: "Intermediate",
       createdAt: new Date()
     };
     this.diveSites.set(id, diveSite);
