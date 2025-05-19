@@ -95,11 +95,11 @@ export default function DiveSites() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center my-8">
+      <div className="my-8">
         <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
           Dive Site Directory
         </h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
+        <p className="mt-3 max-w-2xl text-xl text-slate-500 sm:mt-4">
           Explore 43 dive sites across the Similan Islands & Surin Islands in Thailand.
         </p>
       </div>
