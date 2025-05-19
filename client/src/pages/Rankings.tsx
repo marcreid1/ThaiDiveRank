@@ -25,6 +25,10 @@ const getDiveSiteImage = (name: string): string => {
     return diveSiteImages["Koh Bon Ridge"];
   }
   
+  if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
+    return diveSiteImages["Koh Tachai Pinnacle"];
+  }
+  
   // Fallback to default image
   return defaultDiveSiteImage;
 };

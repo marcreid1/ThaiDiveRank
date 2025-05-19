@@ -64,6 +64,7 @@ export const diveSiteImages = {
   "Koh Bon Ridge / West Ridge (Manta Road)": kohBonRidge,
   "Koh Bon Bay": kohBonBay,
   "Koh Tachai Pinnacle": kohTachaiPinnacle,
+  "Koh Tachai Pinnacle/Plateau": kohTachaiPinnacle,
   "Koh Tachai Reef": kohTachaiReef
 };
 
