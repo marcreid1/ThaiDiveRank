@@ -642,7 +642,7 @@ export class MemStorage implements IStorage {
     const mainRegionDescriptions: Record<string, string> = {
       "Similan Islands": "The Similan Islands are an archipelago of nine islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
       
-      "Surin Islands": "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. These protected waters host an incredible diversity of marine life, with shallow reef systems in the north and more varied dive conditions in the south.",
+      "Surin Islands": "The Surin Islands are an archipelago of five islands in the Andaman Sea, renowned for their turquoise waters, vibrant coral reefs, and pristine beaches. Protected as a national park, they offer exceptional snorkeling and diving directly off the islands, with rich marine biodiversity and thriving ecosystems.",
       
       "Extended Park": "The Extended Park includes the legendary Richelieu Rock, considered Thailand's premier dive site. This horseshoe-shaped pinnacle in the open Andaman Sea is famous for its exceptional biodiversity, vibrant soft corals, and frequent whale shark encounters."
     };
