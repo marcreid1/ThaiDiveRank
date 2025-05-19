@@ -144,7 +144,7 @@ export class MemStorage implements IStorage {
         location: "Ko Ha, Island #5, Central, Similan Islands",
         types: ["Bay"],
         description: "Gentle sloping reef with scattered boulders",
-        imageUrl: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/8. Hideaway Bay.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -155,7 +155,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payu, Island #6, Central, Similan Islands",
         types: ["Coral Garden"],
         description: "Hard coral garden with gentle currents",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/9. Anita's Reef.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -166,7 +166,7 @@ export class MemStorage implements IStorage {
         location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
         types: ["Boulder"],
         description: "Deep dive with boulder formations",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/10. Deep Six.png",
         depthMin: 18,
         depthMax: 40,
         difficulty: "Advanced"
