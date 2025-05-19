@@ -89,7 +89,7 @@ export class MemStorage implements IStorage {
         location: "Ko Payan, Island #3, South, Similan Islands",
         types: ["Boulder"],
         description: "Massive underwater boulders",
-        imageUrl: "/src/assets/images/3. Boulder City.png",
+        imageUrl: "/src/assets/images/dive-sites/3. Boulder City.png",
         depthMin: 15,
         depthMax: 40,
         difficulty: "Advanced"
@@ -100,7 +100,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Bay"],
         description: "Shallow bay with coral gardens",
-        imageUrl: "/src/assets/images/4. Princess Bay.png",
+        imageUrl: "/src/assets/images/dive-sites/4. Princess Bay.png",
         depthMin: 5,
         depthMax: 18,
         difficulty: "Beginner"
@@ -111,7 +111,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Bay"],
         description: "Popular for night dives",
-        imageUrl: "/src/assets/images/5. Honeymoon Bay.png",
+        imageUrl: "/src/assets/images/dive-sites/5. Honeymoon Bay.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -122,7 +122,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Wall"],
         description: "Large granite boulders which form a wall-like structure",
-        imageUrl: "/src/assets/images/6. Bird Rock.png",
+        imageUrl: "/src/assets/images/dive-sites/6. Bird Rock.png",
         depthMin: 5,
         depthMax: 30,
         difficulty: "Intermediate"
@@ -133,7 +133,7 @@ export class MemStorage implements IStorage {
         location: "Ko Miang, Island #4, Central, Similan Islands",
         types: ["Boulder"],
         description: "Named for the towering rocks that rise from the depths",
-        imageUrl: "/src/assets/images/7. Stonehenge.png",
+        imageUrl: "/src/assets/images/dive-sites/7. Stonehenge.png",
         depthMin: 0,
         depthMax: 40,
         difficulty: "Advanced"
