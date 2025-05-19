@@ -18,7 +18,7 @@ export default function Rankings() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-slate-900">
-              Thailand Dive Site Rankings
+              Dive Site Rankings
             </h2>
             <Skeleton className="h-6 w-36" />
           </div>
@@ -103,7 +103,7 @@ export default function Rankings() {
       {/* PageHeader */}
       <div className="text-center my-8">
         <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
-          Thailand Dive Site Rankings
+          Dive Site Rankings
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
           See how Thailand's 148 dive sites rank based on community voting.

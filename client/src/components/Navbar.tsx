@@ -31,7 +31,7 @@ export default function Navbar() {
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 }`}>
-                  Rankings
+                  Dive Site Rankings
                 </a>
               </Link>
               <Link href="/dive-sites">
@@ -102,7 +102,7 @@ export default function Navbar() {
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-                Rankings
+                Dive Site Rankings
               </a>
             </Link>
             <Link href="/dive-sites">
