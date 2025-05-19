@@ -640,7 +640,7 @@ export class MemStorage implements IStorage {
     
     // Main descriptions for the parent regions
     const mainRegionDescriptions: Record<string, string> = {
-      "Similan Islands": "The Similan Islands are an archipelago of nine islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
+      "Similan Islands": "The Similan Islands are an archipelago of eleven islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
       
       "Surin Islands": "The Surin Islands are an archipelago of five islands in the Andaman Sea, renowned for their turquoise waters, vibrant coral reefs, and pristine beaches. Protected as a national park, they offer exceptional snorkeling and diving directly off the islands, with rich marine biodiversity and thriving ecosystems.",
       
