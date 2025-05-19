@@ -6,39 +6,25 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
         <nav className="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
           <div className="px-5 py-2">
-            <Link href="/about">
-              <a className="text-base text-slate-500 hover:text-slate-900">About</a>
-            </Link>
+            <Link href="/about" className="text-base text-slate-500 hover:text-slate-900">About</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/blog">
-              <a className="text-base text-slate-500 hover:text-slate-900">Blog</a>
-            </Link>
+            <Link href="/blog" className="text-base text-slate-500 hover:text-slate-900">Blog</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/dive-sites">
-              <a className="text-base text-slate-500 hover:text-slate-900">Dive Sites</a>
-            </Link>
+            <Link href="/dive-sites" className="text-base text-slate-500 hover:text-slate-900">Dive Sites</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/api">
-              <a className="text-base text-slate-500 hover:text-slate-900">API</a>
-            </Link>
+            <Link href="/api" className="text-base text-slate-500 hover:text-slate-900">API</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/contact">
-              <a className="text-base text-slate-500 hover:text-slate-900">Contact</a>
-            </Link>
+            <Link href="/contact" className="text-base text-slate-500 hover:text-slate-900">Contact</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/privacy">
-              <a className="text-base text-slate-500 hover:text-slate-900">Privacy</a>
-            </Link>
+            <Link href="/privacy" className="text-base text-slate-500 hover:text-slate-900">Privacy</Link>
           </div>
           <div className="px-5 py-2">
-            <Link href="/terms">
-              <a className="text-base text-slate-500 hover:text-slate-900">Terms</a>
-            </Link>
+            <Link href="/terms" className="text-base text-slate-500 hover:text-slate-900">Terms</Link>
           </div>
         </nav>
         <div className="mt-8 flex justify-center space-x-6">
