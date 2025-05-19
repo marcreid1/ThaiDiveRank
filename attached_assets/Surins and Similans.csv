@@ -1,0 +1,44 @@
+﻿Site_Number,Site_Name,Coast_Main,Island_Main,Island_Class_1,Island_Class_2,Island_Class_3,Site_Type_1,Notable_Features,Min_Depth_Range_Meters,Max_Depth_Range_Meters,Difficulty_Level
+1,Coral Gardens,Andaman Sea (West Coast),Similan Islands,Ko Huyong,Island #1,South,Coral Garden,Shallow reef area featuring vibrant hard corals,0,10,Beginner
+2,Shark Fin Reef,Andaman Sea (West Coast),Similan Islands,Ko Payan,Island #3,South,Reef,Distinctive rock formation resembling a shark fin,5,35,Intermediate
+3,Boulder City,Andaman Sea (West Coast),Similan Islands,Ko Payan,Island #3,South,Boulder,Massive underwater boulders,15,40,Advanced
+4,Princess Bay,Andaman Sea (West Coast),Similan Islands,Ko Miang,Island #4,Central,Bay,Shallow bay with coral gardens,5,18,Beginner
+5,Honeymoon Bay,Andaman Sea (West Coast),Similan Islands,Ko Miang,Island #4,Central,Bay,Popular for night dives,5,25,Intermediate
+6,Bird Rock (Chinese Wall),Andaman Sea (West Coast),Similan Islands,Ko Miang,Island #4,Central,Wall,Large granite boulders which form a wall-like structure,5,30,Intermediate
+7,Stonehenge,Andaman Sea (West Coast),Similan Islands,Ko Miang,Island #4,Central,Boulder,Named for the towering rocks that rise from the depths,0,40,Advanced
+8,Hideaway Bay (Barracuda Point),Andaman Sea (West Coast),Similan Islands,Ko Ha,Island #5,Central,Bay,Gentle sloping reef with scattered boulders,5,25,Intermediate
+9,Anita's Reef,Andaman Sea (West Coast),Similan Islands,Ko Payu,Island #6,Central,Coral Garden,Hard coral garden with gentle currents,5,30,Intermediate
+10,Deep Six,Andaman Sea (West Coast),Similan Islands,Ko Hin Pousar,Island #7,Central,Boulder,Deep dive with boulder formations,18,40,Advanced
+11,East of Eden,Andaman Sea (West Coast),Similan Islands,Ko Hin Pousar,Island #7,Central,Coral Garden,Rich coral garden with abundant sea life,5,35,Intermediate
+12,West of Eden,Andaman Sea (West Coast),Similan Islands,Ko Hin Pousar,Island #7,Central,Wall,Dramatic drop-offs and abundant soft corals,5,40,Advanced
+13,Turtle Rock,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Reef,Popular for turtle sightings,5,25,Intermediate
+14,Waterfall Bay,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Bay,Named for a seasonal waterfall,5,20,Beginner
+15,Elephant Head Rock,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Boulder,Famous for swim-throughs and caverns,10,40,Advanced
+16,Beacon Point,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Point,Named for a navigation beacon,10,35,Intermediate
+17,Fantasy Reef,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Coral Garden,Colorful coral formations,5,30,Intermediate
+18,Beacon Reef (Beacon Beach),Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Reef,"Extension of Beacon Point, also features the Atlantis Wreck",10,35,Intermediate
+19,Donald Duck Bay,Andaman Sea (West Coast),Similan Islands,Ko Similan,Island #8,North,Bay,Named for a rock formation resembling Donald Duck,5,20,Beginner
+20,Snapper Alley,Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Reef,Known for large schools of snappers,6,20,Beginner
+21,Three Trees,Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Reef,Named for three large trees visible from the sea,5,30,Intermediate
+22,North Point (Rocky Point),Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Point,Boulders and coral formations,10,35,Intermediate
+23,Breakfast Bend,Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Reef,Morning dive with gentle current,5,30,Intermediate
+24,Christmas Point,Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Point,Rock formations resembling a Christmas tree,10,40,Advanced
+25,Batfish Bend,Andaman Sea (West Coast),Similan Islands,Ko Ba-ngu,Island #9,North,Reef,Large schools of longfin batfish,8,30,Intermediate
+26,Koh Bon Pinnacle,Andaman Sea (West Coast),Similan Islands,Ko Bon,Island #10,North,Pinnacle,Deep pinnacle with vertical wall,20,45,Advanced
+27,Koh Bon Ridge/West Ridge (Manta Road),Andaman Sea (West Coast),Similan Islands,Ko Bon,Island #10,North,Ridge,Famous for manta ray cleaning stations,10,40,Advanced
+28,Koh Bon Bay,Andaman Sea (West Coast),Similan Islands,Ko Bon,Island #10,North,Bay,Protected bay area with gentle reef slope,5,25,Intermediate
+29,Koh Tachai Pinnacle/Plateau,Andaman Sea (West Coast),Similan Islands,Ko Tachai,Island #11,North,Pinnacle,Submerged reef with strong currents and pelagics,12,40,Advanced
+30,Koh Tachai Reef,Andaman Sea (West Coast),Similan Islands,Ko Tachai,Island #11,North,Reef,More protected area with boulder formations,5,30,Intermediate
+31,Ao Mai Ngam,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Bay,Protected bay with gentle slope and coral garden,3,20,Beginner
+32,Ao Chong Kad,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Channel,Channel with reef and rubble featuring good macro life,5,25,Intermediate
+33,Ao Mae Yai,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Bay,Big Bay with gentle sloping reef and good coral coverage,3,15,Beginner
+34,Ao Jaak,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Bay,Beautiful bay of pristine coral reefs,3,15,Beginner
+35,Ao Sai Daeng,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Reef,Pristine coral reefs and shallow water,3,10,Beginner
+36,Ao Sai Ean,Andaman Sea (West Coast),Surin Islands,Ko Surin Nuea,Island #1,North,Reef,Popular spot for snorkelling,3,10,Beginner
+37,Ao Pakkad,Andaman Sea (West Coast),Surin Islands,Ko Surin Tai,Island #2,South,Reef,"Simple and colorful reef, good for beginners and snorkelers",5,20,Beginner
+38,Ao Tao (Turtle Bay),Andaman Sea (West Coast),Surin Islands,Ko Surin Tai,Island #2,South,Bay,Turtle Bay with shallow coral formations popular for snorkeling,3,15,Beginner
+39,Ao Suthep,Andaman Sea (West Coast),Surin Islands,Ko Surin Tai,Island #2,South,Reef,Named after park ranger features small bommies and hard corals,5,25,Intermediate
+40,Torinla Pinnacle,Andaman Sea (West Coast),Surin Islands,Ko Khai (Torinla Islet),Island #3,South,Pinnacle,Submerged granite pinnacle with pelagic species,12,40,Advanced
+41,Koh Klang,Andaman Sea (West Coast),Surin Islands,Ko Klang (Mankom Islet),Island #4,South,Reef,Islet with surrounding reef system,5,25,Intermediate
+42,Koh Chi,Andaman Sea (West Coast),Surin Islands,Koh Chi (Stock Islet),Island #5,North,Point,Southern point with currents and pelagic sightings,8,30,Intermediate
+43,Richelieu Rock,Andaman Sea (West Coast),Extended Park,Extended Park,,,Pinnacle,Legendary horseshoe-shaped pinnacle with rich marine life,5,25,Intermediate

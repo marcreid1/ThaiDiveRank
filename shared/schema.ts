@@ -28,6 +28,9 @@ export const diveSites = pgTable("dive_sites", {
   rating: real("rating").notNull().default(1500),
   wins: integer("wins").notNull().default(0),
   losses: integer("losses").notNull().default(0),
+  depthMin: integer("depth_min").default(0),
+  depthMax: integer("depth_max").default(0),
+  difficulty: text("difficulty").default("Intermediate"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -36,6 +39,9 @@ export const insertDiveSiteSchema = createInsertSchema(diveSites).omit({
   rating: true,
   wins: true,
   losses: true,
+  depthMin: true,
+  depthMax: true,
+  difficulty: true,
   createdAt: true,
 });
 
