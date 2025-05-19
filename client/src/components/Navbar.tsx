@@ -26,7 +26,7 @@ export default function Navbar() {
                 </a>
               </Link>
               <Link href="/rankings">
-                <a className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                <a className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
                   location === "/rankings" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
@@ -35,7 +35,7 @@ export default function Navbar() {
                 </a>
               </Link>
               <Link href="/dive-sites">
-                <a className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                <a className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
                   location === "/dive-sites" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
@@ -101,7 +101,7 @@ export default function Navbar() {
                 location === "/rankings" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
+              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-center`}>
                 Dive Site Rankings
               </a>
             </Link>
@@ -110,7 +110,7 @@ export default function Navbar() {
                 location === "/dive-sites" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700" 
                   : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
+              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-center`}>
                 Dive Site Directory
               </a>
             </Link>
