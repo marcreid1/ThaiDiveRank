@@ -106,7 +106,7 @@ export default function Rankings() {
           Dive Site Rankings
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
-          See how Thailand's 148 dive sites rank based on community voting.
+          A community ranked list of 43 dive sites in the Similan Islands & Surin Islands in Thailand.
         </p>
       </div>
       
