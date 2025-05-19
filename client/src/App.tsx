@@ -11,7 +11,7 @@ import DiveSites from "@/pages/DiveSites";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-function Router() {
+function AppRouter() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -34,7 +34,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <AppRouter />
       </TooltipProvider>
     </QueryClientProvider>
   );
