@@ -34,6 +34,13 @@ export default function VotingSection() {
         diveSiteA: previousWinner,
         diveSiteB: fetchedMatchup.diveSiteB
       };
+    } else if (fetchedMatchup.diveSiteB.id === previousWinner.id) {
+      // If the winner is in the matchup but on the right side, swap positions
+      // This ensures the winning dive site is always on the left
+      matchup = {
+        diveSiteA: fetchedMatchup.diveSiteB, // The winner (previously on the right)
+        diveSiteB: fetchedMatchup.diveSiteA  // The new challenger (move to right)
+      };
     }
   }
 
