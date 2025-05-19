@@ -2,7 +2,7 @@ export default function About() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
       <div className="prose prose-ocean lg:prose-lg mx-auto">
-        <h1 className="mb-12 text-center text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">About DiveRank</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">About DiveRank</h1>
         
         <h2>How We Rank Dive Sites</h2>
         <p>
