@@ -8,10 +8,10 @@ export default function Home() {
       {/* PageHeader */}
       <div className="text-center my-8">
         <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
-          Rank Thailand's Best Dive Sites
+          Rank Your Favorite Dive Sites
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
-          Vote for your favorite dive spots and help create the ultimate Thailand diving guide.
+          Vote for your favorite dive sites and help create the ultimate dive guide for the Similan Islands & Surin Islands in Thailand.
         </p>
       </div>
       
