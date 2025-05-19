@@ -29,7 +29,7 @@ export default function Navbar() {
               </Link>
               <Link 
                 href="/rankings"
-                className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/rankings" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
@@ -38,7 +38,7 @@ export default function Navbar() {
               </Link>
               <Link 
                 href="/dive-sites"
-                className={`inline-flex items-center justify-center px-1 pt-1 border-b-2 text-sm font-medium text-center ${
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   location === "/dive-sites" 
                     ? "border-ocean-500 text-ocean-600" 
                     : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
