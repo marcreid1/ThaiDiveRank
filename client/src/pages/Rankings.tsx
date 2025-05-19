@@ -5,6 +5,30 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
 import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 
+// Helper function to get the correct image for a dive site
+const getDiveSiteImage = (name: string): string => {
+  // Direct match
+  if (name in diveSiteImages) {
+    return diveSiteImages[name as keyof typeof diveSiteImages];
+  }
+  
+  // Check for specific problematic cases
+  if (name.includes("North Point") || name.includes("Rocky Point")) {
+    return diveSiteImages["North Point"];
+  }
+  
+  if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
+    return diveSiteImages["Beacon Reef"];
+  }
+  
+  if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
+    return diveSiteImages["Koh Bon Ridge"];
+  }
+  
+  // Fallback to default image
+  return defaultDiveSiteImage;
+};
+
 export default function Rankings() {
   const { data: rankingsData, isLoading, isError } = useQuery<{ 
     rankings: DiveSiteRanking[],
@@ -148,7 +172,7 @@ export default function Rankings() {
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
                         <img 
-                          src={diveSiteImages[site.name] || defaultDiveSiteImage} 
+                          src={getDiveSiteImage(site.name)} 
                           alt={site.name} 
                           className="h-10 w-10 object-cover" 
                         />

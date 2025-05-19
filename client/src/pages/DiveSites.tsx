@@ -6,6 +6,30 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 
+// Helper function to get the correct image for a dive site
+const getDiveSiteImage = (name: string): string => {
+  // Direct match
+  if (diveSiteImages[name as keyof typeof diveSiteImages]) {
+    return diveSiteImages[name as keyof typeof diveSiteImages];
+  }
+  
+  // Check for specific problematic cases
+  if (name.includes("North Point") || name.includes("Rocky Point")) {
+    return diveSiteImages["North Point"];
+  }
+  
+  if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
+    return diveSiteImages["Beacon Reef"];
+  }
+  
+  if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
+    return diveSiteImages["Koh Bon Ridge"];
+  }
+  
+  // Fallback to default image
+  return defaultDiveSiteImage;
+};
+
 export default function DiveSites() {
   const { data: regionData, isLoading, isError } = useQuery<RegionDiveSites[]>({
     queryKey: ["/api/dive-sites-by-region"]
@@ -160,7 +184,7 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
     <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
-          src={diveSiteImages[diveSite.name as keyof typeof diveSiteImages] || defaultDiveSiteImage}
+          src={getDiveSiteImage(diveSite.name)}
           alt={diveSite.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
