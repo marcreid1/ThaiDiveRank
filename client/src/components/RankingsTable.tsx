@@ -85,12 +85,12 @@ export default function RankingsTable() {
           </div>
           <div className="p-6 text-center">
             <p className="text-red-500">Failed to load rankings</p>
-            <button 
+            <span 
               onClick={() => window.location.reload()}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 cursor-pointer"
             >
               Try Again
-            </button>
+            </span>
           </div>
         </div>
       </div>
