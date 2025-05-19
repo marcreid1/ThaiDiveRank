@@ -175,11 +175,9 @@ export default function RankingsTable() {
           </table>
         </div>
         <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
-          <Link href="/rankings">
-            <a className="text-sm font-medium text-ocean-600 hover:text-ocean-500">
-              View all rankings
-              <span aria-hidden="true"> &rarr;</span>
-            </a>
+          <Link href="/rankings" className="text-sm font-medium text-ocean-600 hover:text-ocean-500">
+            View all rankings
+            <span aria-hidden="true"> &rarr;</span>
           </Link>
         </div>
       </div>
