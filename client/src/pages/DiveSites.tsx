@@ -122,6 +122,8 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
       <div className="p-6 flex-grow flex flex-col">
         <h3 className="text-lg font-semibold text-slate-900 mb-1">{diveSite.name}</h3>
         <p className="text-sm text-slate-500 mb-3">{diveSite.location}</p>
+        
+        {/* Dive site type badges */}
         <div className="flex flex-wrap gap-2 mb-3">
           {diveSite.types.map((type) => (
             <Badge key={type} variant="secondary" className="bg-slate-100 text-slate-700">
@@ -129,11 +131,43 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
             </Badge>
           ))}
         </div>
+        
+        {/* Dive site description */}
         <p className="text-sm text-slate-600 flex-grow">{diveSite.description}</p>
-        <div className="mt-4 flex justify-between items-center">
-          <span className="text-xs text-slate-500">ELO Rating: {Math.round(diveSite.rating)}</span>
-          <div className="flex items-center text-sm text-ocean-600">
-            <span>{diveSite.wins} wins / {diveSite.losses} losses</span>
+        
+        {/* Dive site stats */}
+        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+          {/* Depth info */}
+          <div className="flex flex-col">
+            <span className="text-xs text-slate-400">Depth Range</span>
+            <span className="text-sm font-medium">
+              {diveSite.depthMin != null && diveSite.depthMax != null
+                ? `${diveSite.depthMin}-${diveSite.depthMax}m`
+                : "Not specified"}
+            </span>
+          </div>
+          
+          {/* Difficulty level */}
+          <div className="flex flex-col">
+            <span className="text-xs text-slate-400">Difficulty</span>
+            <span className={`text-sm font-medium ${
+              diveSite.difficulty === "Advanced" 
+                ? "text-red-600" 
+                : diveSite.difficulty === "Intermediate" 
+                  ? "text-amber-600" 
+                  : "text-green-600"
+            }`}>
+              {diveSite.difficulty || "Intermediate"}
+            </span>
+          </div>
+          
+          {/* Rating info */}
+          <div className="flex flex-col col-span-2 mt-2">
+            <span className="text-xs text-slate-400">Ranking Stats</span>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-slate-500">ELO: {Math.round(diveSite.rating)}</span>
+              <span className="text-xs text-slate-500">{diveSite.wins} wins / {diveSite.losses} losses</span>
+            </div>
           </div>
         </div>
       </div>

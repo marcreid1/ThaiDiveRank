@@ -58,223 +58,458 @@ export class MemStorage implements IStorage {
   }
 
   private initializeDiveSites() {
-    const initialDiveSites: InsertDiveSite[] = [
+    // Initialize with the 43 dive sites from Similan and Surin Islands
+    const initialDiveSites: (InsertDiveSite & { depthMin: number, depthMax: number, difficulty: string })[] = [
+      // Similan Islands sites (Island #1-9)
       {
-        name: "Richelieu Rock",
-        location: "Surin Islands, Andaman Sea",
-        types: ["Reef", "Wall", "Pinnacle", "Drift", "Channel"],
-        description: "Famous for whale sharks and rich marine biodiversity. One of Thailand's premier dive sites with exceptional visibility.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Coral Gardens",
+        location: "Ko Huyong (Island #1), Similan Islands",
+        types: ["Coral Garden", "Reef"],
+        description: "Shallow reef area featuring vibrant hard corals. Perfect for beginners.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 0,
+        depthMax: 10,
+        difficulty: "Beginner"
       },
       {
-        name: "Koh Tachai Pinnacle",
-        location: "Similan Islands, Andaman Sea",
-        types: ["Reef", "Pinnacle"],
-        description: "A submerged granite pinnacle with large schools of barracuda, trevally and occasional manta rays.",
-        imageUrl: "https://images.unsplash.com/photo-1580019542155-247062e19ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Shark Fin Reef",
+        location: "Ko Payan (Island #3), Similan Islands",
+        types: ["Reef"],
+        description: "Distinctive rock formation resembling a shark fin. Suitable for intermediate divers.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 35,
+        difficulty: "Intermediate"
       },
       {
-        name: "HTMS Chang Wreck",
-        location: "Koh Chang, Eastern Gulf",
-        types: ["Wreck", "Ocean"],
-        description: "An artificial reef created from a decommissioned Thai Navy vessel, now home to abundant marine life.",
-        imageUrl: "https://images.unsplash.com/photo-1557111513-7a0abb62ae83?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Boulder City",
+        location: "Ko Payan (Island #3), Similan Islands",
+        types: ["Boulder", "Reef"],
+        description: "Massive underwater boulders create an impressive underwater landscape. For advanced divers.",
+        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 15,
+        depthMax: 40,
+        difficulty: "Advanced"
       },
       {
-        name: "Shark Point",
-        location: "Phuket, Andaman Sea",
-        types: ["Reef", "Wall"],
-        description: "Named for the leopard sharks often seen resting on the sandy bottom. Rich soft corals and anemones.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Princess Bay",
+        location: "Ko Miang (Island #4), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Shallow bay with coral gardens, ideal for beginners and photographers.",
+        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 18,
+        difficulty: "Beginner"
       },
       {
-        name: "Koh Bon",
-        location: "Similan National Park",
-        types: ["Reef", "Wall", "Drift"],
-        description: "Known for manta ray sightings and a dramatic wall covered in hard and soft corals.",
-        imageUrl: "https://images.unsplash.com/photo-1544572571-ab94fd872ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Honeymoon Bay",
+        location: "Ko Miang (Island #4), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Popular for night dives with diverse marine life. Good for intermediate divers.",
+        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
       },
       {
-        name: "Hin Muang",
-        location: "Krabi, Andaman Sea",
-        types: ["Reef", "Drift", "Pinnacle"],
-        description: "The 'Purple Rock' gets its name from the purple soft corals covering the pinnacle. Big pelagics frequent these waters.",
-        imageUrl: "https://images.unsplash.com/photo-1682687980961-78fa83781450?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Boonsung Wreck",
-        location: "Khao Lak, Andaman Sea",
-        types: ["Wreck", "Reef"],
-        description: "A shallow wreck teeming with marine life, perfect for both beginner divers and photographers.",
-        imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Koh Haa",
-        location: "Krabi, Andaman Sea",
-        types: ["Cave", "Reef", "Beach"],
-        description: "Five limestone islands with swim-throughs, caverns, and vertical walls. Crystal clear waters with high visibility.",
-        imageUrl: "https://images.unsplash.com/photo-1520302719023-bc01804e7e5a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "White Rock",
-        location: "Koh Tao, Gulf of Thailand",
-        types: ["Reef", "Pinnacle"],
-        description: "A series of submerged granite boulders with diverse coral formations and reliable turtle sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Twins",
-        location: "Koh Tao, Gulf of Thailand",
-        types: ["Reef", "Pinnacle", "Ocean"],
-        description: "Two close pinnacles with swim-throughs and a sandy channel. Perfect for training dives and spotting reef fish.",
-        imageUrl: "https://images.unsplash.com/photo-1559983435-fe247b58ccbb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Bird Rock (Chinese Wall)",
+        location: "Ko Miang (Island #4), Similan Islands",
+        types: ["Wall", "Reef"],
+        description: "Large granite boulders which form a wall-like structure with abundant marine life.",
+        imageUrl: "https://images.unsplash.com/photo-1534766438357-2b6e1e72e7b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
       },
       {
         name: "Stonehenge",
-        location: "Koh Lipe, Andaman Sea",
-        types: ["Reef", "Pinnacle", "Drift", "Wall", "Sandy bottom"],
-        description: "Named for the rock formations resembling the famous monument. Great spot for macro photography.",
-        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        location: "Ko Miang (Island #4), Similan Islands",
+        types: ["Boulder", "Reef"],
+        description: "Named for the towering rocks that rise from the depths, featuring swim-throughs and rich marine biodiversity.",
+        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 0,
+        depthMax: 40,
+        difficulty: "Advanced"
       },
       {
-        name: "HTMS Mataporn Shipwreck",
-        location: "Chumphon, Gulf of Thailand",
-        types: ["Wreck", "Ocean"],
-        description: "A purposely sunk vessel that's become an artificial reef, attracting schools of snappers and jacks.",
-        imageUrl: "https://images.unsplash.com/photo-1579189880841-43ddba8d2746?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Hideaway Bay (Barracuda Point)",
+        location: "Ko Ha (Island #5), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Gentle sloping reef with scattered boulders and frequent barracuda sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
       },
-      // Adding more dive sites from PADI Thailand list
+      {
+        name: "Anita's Reef",
+        location: "Ko Payu (Island #6), Similan Islands",
+        types: ["Coral Garden", "Reef"],
+        description: "Hard coral garden with gentle currents, making it perfect for intermediate divers.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-8dd44dcb960d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Deep Six",
+        location: "Ko Hin Pousar (Island #7), Similan Islands",
+        types: ["Boulder", "Reef"],
+        description: "Deep dive with boulder formations and challenging conditions. For advanced divers only.",
+        imageUrl: "https://images.unsplash.com/photo-1560275619-4cc5fa59d3ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 18,
+        depthMax: 40,
+        difficulty: "Advanced"
+      },
+      {
+        name: "East of Eden",
+        location: "Ko Hin Pousar (Island #7), Similan Islands",
+        types: ["Coral Garden", "Reef"],
+        description: "Rich coral garden with abundant sea life and excellent visibility.",
+        imageUrl: "https://images.unsplash.com/photo-1515765317588-ccc88719e62c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 35,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "West of Eden",
+        location: "Ko Hin Pousar (Island #7), Similan Islands",
+        types: ["Wall", "Reef"],
+        description: "Dramatic drop-offs and abundant soft corals with occasional strong currents.",
+        imageUrl: "https://images.unsplash.com/photo-1621394241361-ebfbfdff9f4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 40,
+        difficulty: "Advanced"
+      },
+      {
+        name: "Turtle Rock",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Reef"],
+        description: "Popular for turtle sightings and colorful reef fish. Great for underwater photography.",
+        imageUrl: "https://images.unsplash.com/photo-1529928520614-7c76e2d99740?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Waterfall Bay",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Named for a seasonal waterfall, offers easy diving conditions and rich coral life.",
+        imageUrl: "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 20,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Elephant Head Rock",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Boulder", "Reef"],
+        description: "Famous for swim-throughs and caverns that test advanced diving skills.",
+        imageUrl: "https://images.unsplash.com/photo-1622476054629-7d57a5435317?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 40,
+        difficulty: "Advanced"
+      },
+      {
+        name: "Beacon Point",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Point", "Reef"],
+        description: "Named for a navigation beacon, features a mix of hard and soft corals with pelagic species.",
+        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 35,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Fantasy Reef",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Coral Garden", "Reef"],
+        description: "Colorful coral formations with abundant reef fish and occasional turtle sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1588644525273-f37b60d78512?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Beacon Reef (Beacon Beach)",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Reef", "Wreck"],
+        description: "Extension of Beacon Point, also features the Atlantis Wreck which adds interest for wreck enthusiasts.",
+        imageUrl: "https://images.unsplash.com/photo-1557111513-7a0abb62ae83?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 35,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Donald Duck Bay",
+        location: "Ko Similan (Island #8), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Named for a rock formation resembling Donald Duck, offers gentle conditions for beginners.",
+        imageUrl: "https://images.unsplash.com/photo-1559983001-d088c8213eb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 20,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Snapper Alley",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        types: ["Reef"],
+        description: "Known for large schools of snappers that create mesmerizing underwater scenery.",
+        imageUrl: "https://images.unsplash.com/photo-1478029305454-2835ba7d6e76?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 6,
+        depthMax: 20,
+        difficulty: "Beginner"
+      },
       {
         name: "Three Trees",
-        location: "Koh Tao, Gulf of Thailand",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
         types: ["Reef"],
-        description: "Named for the three distinct coral pinnacles that rise from the sea floor. Popular for both beginner and advanced divers.",
-        imageUrl: "https://images.unsplash.com/photo-1559983001-d088c8213eb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        description: "Named for three large trees visible from the sea, offering varied marine life and coral formations.",
+        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
       },
       {
-        name: "Kata Beach South",
-        location: "Phuket, Andaman Sea",
-        types: ["Beach", "Reef"],
-        description: "Easily accessible shore dive with gentle slopes and vibrant coral formations close to the beach.",
-        imageUrl: "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "North Point (Rocky Point)",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        types: ["Point", "Reef"],
+        description: "Boulders and coral formations with occasional strong currents bringing pelagic visitors.",
+        imageUrl: "https://images.unsplash.com/photo-1562059392-096320bccc7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 35,
+        difficulty: "Intermediate"
       },
       {
-        name: "Koh Tachai Similan National Park",
-        location: "Similan Islands, Andaman Sea",
-        types: ["Drift", "Reef"],
-        description: "Stunning formations with swift currents offering exciting drift dives and encounters with pelagic species.",
-        imageUrl: "https://images.unsplash.com/photo-1519279158122-15152b9d463a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Samaesan",
-        location: "Eastern Gulf of Thailand",
-        types: ["Reef", "Ocean"],
-        description: "Collection of dive sites managed by the Thai Navy with diverse marine life and varied underwater landscapes.",
-        imageUrl: "https://images.unsplash.com/photo-1564381564020-272ede5a512e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Hin Bida",
-        location: "Koh Phi Phi, Andaman Sea",
-        types: ["Reef", "Pinnacle"],
-        description: "Impressive underwater pinnacle known for leopard sharks, vibrant anemones, and diverse marine life.",
-        imageUrl: "https://images.unsplash.com/photo-1520302638242-5280d93d07a8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Koh Bon Similan National Park",
-        location: "Similan National Park",
-        types: ["Drift", "Reef", "Wall"],
-        description: "Famous for manta ray encounters with dramatic drop-offs and vibrant hard and soft corals.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Koh Doc Mai",
-        location: "Phuket, Andaman Sea",
-        types: ["Cave", "Wall"],
-        description: "Small limestone island with vertical walls, caves, and crevices rich in macro life and nudibranchs.",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-a05f4c7c71f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Koh Sii",
-        location: "Koh Lanta, Andaman Sea",
+        name: "Breakfast Bend",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
         types: ["Reef"],
-        description: "Small colorful reef with incredible biodiversity and ideal conditions for underwater photography.",
-        imageUrl: "https://images.unsplash.com/photo-1654861082361-0ac142c7acad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        description: "Morning dive with gentle current that's perfect for enjoying the vibrant coral gardens.",
+        imageUrl: "https://images.unsplash.com/photo-1576086276648-319822031d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
       },
       {
-        name: "Sail Rock",
-        location: "Koh Phangan, Gulf of Thailand",
+        name: "Christmas Point",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        types: ["Point", "Reef"],
+        description: "Rock formations resembling a Christmas tree with challenging swim-throughs and depths.",
+        imageUrl: "https://images.unsplash.com/photo-1545592097-adc686a2da1c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 40,
+        difficulty: "Advanced"
+      },
+      {
+        name: "Batfish Bend",
+        location: "Ko Ba-ngu (Island #9), Similan Islands",
+        types: ["Reef"],
+        description: "Large schools of longfin batfish create spectacular underwater scenery against coral backgrounds.",
+        imageUrl: "https://images.unsplash.com/photo-1571813092106-e1e434774891?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 8,
+        depthMax: 30,
+        difficulty: "Intermediate"
+      },
+      
+      // Similan Islands extended sites (Island #10-11)
+      {
+        name: "Koh Bon Pinnacle",
+        location: "Ko Bon (Island #10), Similan Islands",
+        types: ["Pinnacle", "Wall"],
+        description: "Deep pinnacle with vertical wall that attracts manta rays and other large pelagics.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 20,
+        depthMax: 45,
+        difficulty: "Advanced"
+      },
+      {
+        name: "Koh Bon Ridge/West Ridge (Manta Road)",
+        location: "Ko Bon (Island #10), Similan Islands",
+        types: ["Ridge", "Reef", "Wall"],
+        description: "Famous for manta ray cleaning stations and dramatic underwater topography.",
+        imageUrl: "https://images.unsplash.com/photo-1573725342230-178c824a10f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 10,
+        depthMax: 40,
+        difficulty: "Advanced"
+      },
+      {
+        name: "Koh Bon Bay",
+        location: "Ko Bon (Island #10), Similan Islands",
+        types: ["Bay", "Reef"],
+        description: "Protected bay area with gentle reef slope and abundant marine life for less experienced divers.",
+        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Koh Tachai Pinnacle/Plateau",
+        location: "Ko Tachai (Island #11), Similan Islands",
         types: ["Pinnacle", "Reef"],
-        description: "Massive underwater pinnacle with swim-throughs and abundant marine life, including whale sharks during certain seasons.",
-        imageUrl: "https://images.unsplash.com/photo-1562059392-096320bccc7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        description: "Submerged reef with strong currents and pelagics including whale sharks and manta rays.",
+        imageUrl: "https://images.unsplash.com/photo-1580019542155-247062e19ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 12,
+        depthMax: 40,
+        difficulty: "Advanced"
       },
       {
-        name: "Koh Tao Pinnacle",
-        location: "Koh Tao, Gulf of Thailand",
+        name: "Koh Tachai Reef",
+        location: "Ko Tachai (Island #11), Similan Islands",
+        types: ["Reef", "Boulder"],
+        description: "More protected area with boulder formations and rich marine life for intermediate divers.",
+        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 30,
+        difficulty: "Intermediate"
+      },
+      
+      // Surin Islands sites (North)
+      {
+        name: "Ao Mai Ngam",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Bay", "Reef"],
+        description: "Protected bay with gentle slope and coral garden, perfect for beginners and snorkelers.",
+        imageUrl: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 20,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Chong Kad",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Channel", "Reef"],
+        description: "Channel with reef and rubble featuring good macro life for underwater photographers.",
+        imageUrl: "https://images.unsplash.com/photo-1576086276648-319822031d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Ao Mae Yai",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Bay", "Reef"],
+        description: "Big Bay with gentle sloping reef and good coral coverage, ideal for beginners.",
+        imageUrl: "https://images.unsplash.com/photo-1570739154793-6d4b04e27876?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 15,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Jaak",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Bay", "Reef"],
+        description: "Beautiful bay of pristine coral reefs with excellent visibility and gentle conditions.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 15,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Sai Daeng",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Reef"],
+        description: "Pristine coral reefs and shallow water with abundant reef fish, perfect for snorkelers too.",
+        imageUrl: "https://images.unsplash.com/photo-1588644525273-f37b60d78512?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 10,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Sai Ean",
+        location: "Ko Surin Nuea (Island #1), Surin Islands",
+        types: ["Reef"],
+        description: "Popular spot for snorkelling with shallow coral gardens and diverse fish life.",
+        imageUrl: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 10,
+        difficulty: "Beginner"
+      },
+      
+      // Surin Islands sites (South)
+      {
+        name: "Ao Pakkad",
+        location: "Ko Surin Tai (Island #2), Surin Islands",
+        types: ["Reef"],
+        description: "Simple and colorful reef, good for beginners and snorkelers with easy conditions.",
+        imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 20,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Tao (Turtle Bay)",
+        location: "Ko Surin Tai (Island #2), Surin Islands",
+        types: ["Bay", "Reef"],
+        description: "Turtle Bay with shallow coral formations popular for snorkeling and turtle encounters.",
+        imageUrl: "https://images.unsplash.com/photo-1529928520614-7c76e2d99740?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 3,
+        depthMax: 15,
+        difficulty: "Beginner"
+      },
+      {
+        name: "Ao Suthep",
+        location: "Ko Surin Tai (Island #2), Surin Islands",
+        types: ["Reef"],
+        description: "Named after park ranger features small bommies and hard corals with interesting marine life.",
+        imageUrl: "https://images.unsplash.com/photo-1515765317588-ccc88719e62c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
+      },
+      {
+        name: "Torinla Pinnacle",
+        location: "Ko Khai (Torinla Islet), Surin Islands",
         types: ["Pinnacle", "Reef"],
-        description: "Submerged granite pinnacle descending to 30m with diverse marine life and occasional whale shark sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1559599746-8823b38544c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        description: "Submerged granite pinnacle with pelagic species and sometimes challenging conditions.",
+        imageUrl: "https://images.unsplash.com/photo-1580019542155-247062e19ce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 12,
+        depthMax: 40,
+        difficulty: "Advanced"
       },
       {
-        name: "Anemone Reef",
-        location: "Phuket, Andaman Sea",
-        types: ["Reef", "Pinnacle"],
-        description: "Completely covered in colorful anemones and home to diverse marine life including leopard sharks.",
-        imageUrl: "https://images.unsplash.com/photo-1570741066052-817c6de995c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Koh Klang",
+        location: "Ko Klang (Mankom Islet), Surin Islands",
+        types: ["Reef"],
+        description: "Islet with surrounding reef system featuring diverse marine life and coral formations.",
+        imageUrl: "https://images.unsplash.com/photo-1603279560023-f2771a6a2bcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
       },
       {
-        name: "King Cruiser Wreck",
-        location: "Phuket, Andaman Sea",
-        types: ["Wreck", "Ocean"],
-        description: "A large passenger ferry that sank in 1997, now an artificial reef teeming with marine life.",
-        imageUrl: "https://images.unsplash.com/photo-1536776823777-622b158c2594?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Koh Chi",
+        location: "Koh Chi (Stock Islet), Surin Islands",
+        types: ["Point", "Reef"],
+        description: "Southern point with currents and pelagic sightings including mantas and reef sharks.",
+        imageUrl: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 8,
+        depthMax: 30,
+        difficulty: "Intermediate"
       },
       {
-        name: "Chumphon Pinnacle",
-        location: "Koh Tao, Gulf of Thailand",
-        types: ["Pinnacle", "Reef"],
-        description: "Massive granite pinnacle with schools of barracuda, batfish, and occasional whale shark sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1539579352611-59cbae6a4d9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Southwest Pinnacle",
-        location: "Koh Tao, Gulf of Thailand",
-        types: ["Pinnacle", "Reef"],
-        description: "A series of underwater peaks covered in anemones and home to diverse tropical fish species.",
-        imageUrl: "https://images.unsplash.com/photo-1503954588319-0a6df7534770?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Racha Noi",
-        location: "Phuket, Andaman Sea",
-        types: ["Reef", "Wall"],
-        description: "Varied dive sites around the island featuring dramatic drop-offs, vibrant reefs, and manta ray sightings.",
-        imageUrl: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Racha Yai",
-        location: "Phuket, Andaman Sea",
-        types: ["Reef", "Ocean"],
-        description: "Popular dive destination with good visibility, gentle currents, and abundant marine life ideal for all levels.",
-        imageUrl: "https://images.unsplash.com/photo-1534765703734-b24973712383?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Similan Islands",
-        location: "Andaman Sea",
-        types: ["Reef", "Wall", "Boulder", "Pinnacle"],
-        description: "World-renowned destination with incredible boulder formations, white sandy beaches, and diverse marine ecosystems.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-92ab472cad5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Surin Islands",
-        location: "Andaman Sea",
-        types: ["Reef", "Wall", "Beach"],
-        description: "National park with pristine reefs, healthy corals, and amazing biodiversity including manta rays and whale sharks.",
-        imageUrl: "https://images.unsplash.com/photo-1544551763-a3d5975fae4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        name: "Richelieu Rock",
+        location: "Extended Park, Surin Islands",
+        types: ["Pinnacle", "Reef", "Wall", "Drift", "Channel"],
+        description: "Legendary horseshoe-shaped pinnacle with rich marine life and the best diving in Thailand. Known for whale shark sightings.",
+        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        depthMin: 5,
+        depthMax: 25,
+        difficulty: "Intermediate"
       }
     ];
 
-    initialDiveSites.forEach(site => {
-      this.createDiveSite(site);
-    });
+    for (const site of initialDiveSites) {
+      const { depthMin, depthMax, difficulty, ...insertSite } = site;
+      const diveSite = this.createDiveSite(insertSite);
+      
+      // Update with the additional fields
+      this.updateDiveSite(diveSite.id, { 
+        depthMin, 
+        depthMax, 
+        difficulty 
+      });
+    }
   }
 
   // User methods (from original)
@@ -347,72 +582,111 @@ export class MemStorage implements IStorage {
   async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
     const diveSites = Array.from(this.diveSites.values());
     
-    // Extract regions from locations
+    // Group dive sites by region
     const regionMap = new Map<string, {
       diveSites: DiveSite[],
       description: string
     }>();
     
-    // Define descriptions for each region
+    // Define custom regions based on the Similans and Surins CSV data
     const regionDescriptions: Record<string, string> = {
-      "Similan Islands": "The Similan Islands are an archipelago in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences.",
-      "Surin Islands": "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. Famous for Richelieu Rock, these protected waters host an incredible diversity of marine life including manta rays and whale sharks.",
-      "Koh Tao": "Known as 'Turtle Island,' Koh Tao in the Gulf of Thailand is a premier diving destination for beginners and experienced divers alike, offering vibrant reefs, numerous dive schools, and warm, clear waters year-round.",
-      "Phuket": "Thailand's largest island offers diverse diving experiences from shallow reefs to deep drop-offs. The waters surrounding Phuket host a multitude of marine ecosystems, making it a popular destination for divers of all levels.",
-      "Koh Phi Phi": "The Phi Phi Islands feature dramatic limestone cliffs both above and below the water. The crystal-clear waters reveal vibrant coral gardens and diverse marine life, making it a favorite for underwater photographers.",
-      "Krabi": "The coastline of Krabi province offers spectacular diving with limestone formations extending underwater. Its varied dive sites include caves, caverns, and walls with diverse soft and hard coral ecosystems.",
-      "Koh Lanta": "This relaxed island in the Andaman Sea provides access to over 50 dive sites. Koh Lanta is particularly known for its healthy reefs, macro life, and as a gateway to the famous Hin Daeng and Hin Muang dive sites.",
-      "Koh Chang": "Located in the eastern Gulf of Thailand, Koh Chang offers a variety of dive sites including shallow reefs and shipwrecks. Less crowded than many Thai diving destinations, it provides a more relaxed diving experience.",
-      "Khao Lak": "This coastal area north of Phuket serves as a gateway to the Similan and Surin Islands. Khao Lak itself offers accessible shore diving and wreck sites, making it popular for both day trips and liveaboard departures.",
-      "Koh Phangan": "Famous for its Full Moon parties, Koh Phangan also offers excellent diving opportunities. The highlight is Sail Rock, a pinnacle rising from the depths that attracts large pelagic species and schools of fish.",
-      "Koh Lipe": "Located in the southern Andaman Sea near Malaysia, Koh Lipe offers easy access to pristine and less-visited dive sites. It features healthy coral reefs with high biodiversity and excellent visibility.",
-      "Chumphon": "Situated in the western Gulf of Thailand, Chumphon is the gateway to Koh Tao. Its waters feature interesting pinnacles and artificial reefs created from purposely sunk vessels, offering diverse diving experiences.",
-      "Eastern Gulf of Thailand": "This region encompasses several dive destinations including Pattaya and the islands of Koh Samet and Koh Chang. The area offers accessible dive sites with artificial reefs, wrecks, and diverse marine ecosystems."
+      "Similan Islands (South)": "The southern islands (#1-4) of the Similan archipelago feature pristine beaches, shallow coral gardens, and diverse marine life. Known for their accessibility and excellent diving conditions for beginners to intermediate levels.",
+      
+      "Similan Islands (Central)": "The central islands (#5-7) offer an impressive mix of boulder formations, vibrant coral gardens, and deeper dive sites. This area bridges the gap between the more accessible southern sites and the advanced northern dive spots.",
+      
+      "Similan Islands (North)": "The northern islands (#8-9) feature dramatic underwater topography with massive granite boulders, exciting swim-throughs, and intricate caverns. These sites often have stronger currents suitable for more experienced divers.",
+      
+      "Similan Islands (Extended North)": "Koh Bon and Koh Tachai (#10-11) are part of the Similan National Park but separate from the main island group. Famous for manta ray cleaning stations and pinnacles that attract numerous pelagic species.",
+      
+      "Surin Islands (North)": "The northern Surin Islands feature pristine shallow reefs with exceptional coral coverage and visibility. This area offers gentle conditions perfect for beginners and snorkelers with abundant reef fish and occasional turtle sightings.",
+      
+      "Surin Islands (South)": "The southern Surin Islands provide varied diving environments from protected bays to exposed reefs. These sites offer diverse underwater topography and marine ecosystems suitable for different experience levels.",
+      
+      "Richelieu Rock": "This legendary horseshoe-shaped pinnacle in the open Andaman Sea is considered Thailand's premier dive site. Famous for its exceptional biodiversity, vibrant soft corals, and frequent whale shark encounters."
     };
     
-    // Function to extract region from location string
-    const extractRegion = (location: string): string => {
-      for (const region of Object.keys(regionDescriptions)) {
-        if (location.includes(region)) {
-          return region;
-        }
+    // Function to determine sub-region based on location data
+    const determineRegion = (site: DiveSite): string => {
+      const location = site.location;
+      
+      // Handle special case for Richelieu Rock
+      if (site.name === "Richelieu Rock" || location.includes("Extended Park")) {
+        return "Richelieu Rock";
       }
       
-      // For locations that don't directly mention a region, use these mappings
-      if (location.includes("Andaman Sea")) return "Other Andaman Sea Sites";
-      if (location.includes("Gulf of Thailand")) return "Other Gulf of Thailand Sites";
+      // Determine Similan Islands regions
+      if (location.includes("Island #1") || location.includes("Island #2") || 
+          location.includes("Island #3") || location.includes("Island #4")) {
+        return "Similan Islands (South)";
+      }
       
-      return "Other Sites";
+      if (location.includes("Island #5") || location.includes("Island #6") || 
+          location.includes("Island #7")) {
+        return "Similan Islands (Central)";
+      }
+      
+      if (location.includes("Island #8") || location.includes("Island #9")) {
+        return "Similan Islands (North)";
+      }
+      
+      if (location.includes("Island #10") || location.includes("Island #11") || 
+          location.includes("Ko Bon") || location.includes("Ko Tachai")) {
+        return "Similan Islands (Extended North)";
+      }
+      
+      // Determine Surin Islands regions
+      if (location.includes("Ko Surin Nuea") || 
+          (location.includes("Surin") && location.includes("Island #1"))) {
+        return "Surin Islands (North)";
+      }
+      
+      if (location.includes("Ko Surin Tai") || location.includes("Ko Khai") || 
+          location.includes("Ko Klang") || location.includes("Koh Chi")) {
+        return "Surin Islands (South)";
+      }
+      
+      // Default catchall (shouldn't be needed with our 43 sites)
+      return "Other Thailand Locations";
     };
     
-    // Add default descriptions for the catch-all categories
-    regionDescriptions["Other Andaman Sea Sites"] = "The Andaman Sea along Thailand's west coast features hundreds of dive sites with incredible biodiversity. From shallow reefs to deep drop-offs, these waters offer diving experiences for all levels.";
-    regionDescriptions["Other Gulf of Thailand Sites"] = "The Gulf of Thailand features warmer waters with good visibility year-round. Its varied dive sites include shallow reefs, pinnacles, and wrecks that host a diverse array of tropical marine life.";
-    regionDescriptions["Other Sites"] = "Thailand boasts over 100 dive sites across its diverse coastal regions, each offering unique underwater experiences with rich marine biodiversity.";
-    
-    // Group dive sites by region
+    // Group sites by their determined region
     diveSites.forEach(site => {
-      const region = extractRegion(site.location);
+      const region = determineRegion(site);
       
       if (!regionMap.has(region)) {
         regionMap.set(region, {
           diveSites: [],
-          description: regionDescriptions[region] || `A collection of dive sites in the ${region} area of Thailand.`
+          description: regionDescriptions[region] || "Various dive locations in Thailand offering diverse underwater experiences."
         });
       }
       
-      regionMap.get(region)?.diveSites.push(site);
+      regionMap.get(region)!.diveSites.push(site);
     });
     
     // Convert map to array of RegionDiveSites
     const regionDiveSites: RegionDiveSites[] = Array.from(regionMap.entries()).map(([region, data]) => ({
       region,
       description: data.description,
-      diveSites: data.diveSites.sort((a, b) => a.name.localeCompare(b.name))
+      diveSites: data.diveSites.sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically within each region
     }));
     
-    // Sort regions alphabetically
-    return regionDiveSites.sort((a, b) => a.region.localeCompare(b.region));
+    // Define custom sort order for our regions
+    const regionOrder = [
+      "Similan Islands (South)",
+      "Similan Islands (Central)",
+      "Similan Islands (North)",
+      "Similan Islands (Extended North)",
+      "Surin Islands (North)",
+      "Surin Islands (South)",
+      "Richelieu Rock"
+    ];
+    
+    // Sort regions based on our predefined order
+    return regionDiveSites.sort((a, b) => {
+      const indexA = regionOrder.indexOf(a.region);
+      const indexB = regionOrder.indexOf(b.region);
+      return indexA - indexB;
+    });
   }
 
   // Matchup methods
