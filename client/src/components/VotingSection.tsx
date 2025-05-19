@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DiveSite } from "@shared/schema";
 import DiveSiteCard from "./DiveSiteCard";
@@ -7,12 +7,28 @@ import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VotingSection() {
+  // State to track the currently winning dive site
+  const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(null);
+  const [keepWinner, setKeepWinner] = useState(false);
+  
   const { data: matchup, isLoading, isError, error } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
     queryKey: ["/api/matchup"]
   });
+
+  // When new matchup data arrives, manage the previous winner
+  useEffect(() => {
+    if (!matchup || !previousWinner) return;
+    
+    // If neither of the dive sites in the new matchup is our previous winner, reset state
+    if (matchup.diveSiteA.id !== previousWinner.id && 
+        matchup.diveSiteB.id !== previousWinner.id) {
+      setPreviousWinner(null);
+      setKeepWinner(false);
+    }
+  }, [matchup, previousWinner]);
 
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
@@ -34,11 +50,21 @@ export default function VotingSection() {
     }
   });
 
-  const handleVote = (winnerId: number, loserId: number) => {
-    voteMutation.mutate({ winnerId, loserId });
+  const handleVote = (winner: DiveSite, loser: DiveSite) => {
+    // Store the winner for the next matchup
+    setPreviousWinner(winner);
+    setKeepWinner(true);
+    
+    voteMutation.mutate({ 
+      winnerId: winner.id, 
+      loserId: loser.id 
+    });
   };
 
   const handleSkip = () => {
+    // Reset winner tracking when skipping
+    setPreviousWinner(null);
+    setKeepWinner(false);
     skipMutation.mutate();
   };
 
@@ -134,12 +160,12 @@ export default function VotingSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
-                onVote={() => handleVote(diveSiteA.id, diveSiteB.id)} 
+                onVote={() => handleVote(diveSiteA, diveSiteB)} 
               />
 
               <DiveSiteCard 
                 diveSite={diveSiteB} 
-                onVote={() => handleVote(diveSiteB.id, diveSiteA.id)} 
+                onVote={() => handleVote(diveSiteB, diveSiteA)} 
               />
             </div>
           </div>

@@ -805,7 +805,7 @@ export class MemStorage implements IStorage {
     const vote: Vote = {
       ...insertVote,
       id,
-      createdAt: new Date()
+      timestamp: new Date()
     };
     
     // Store the vote
@@ -841,9 +841,9 @@ export class MemStorage implements IStorage {
   async getVotes(limit = 20): Promise<Vote[]> {
     const allVotes = Array.from(this.votes.values());
     
-    // Sort votes by creation date (newest first)
+    // Sort votes by timestamp (newest first)
     return allVotes
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit);
   }
   
@@ -860,8 +860,8 @@ export class MemStorage implements IStorage {
           id: vote.id,
           winnerName: winner.name,
           loserName: loser.name,
-          pointsChanged: calculateEloChange(winner.rating - vote.ratingChange, loser.rating + vote.ratingChange),
-          timestamp: vote.createdAt.toISOString()
+          pointsChanged: vote.pointsChanged,
+          timestamp: vote.timestamp.toISOString()
         });
       }
     }
