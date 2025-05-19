@@ -100,12 +100,6 @@ export default function RecentActivity() {
             ))}
           </ul>
         </div>
-        <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
-          <a href="#activities" className="text-sm font-medium text-ocean-600 hover:text-ocean-500">
-            View all activity
-            <span aria-hidden="true"> &rarr;</span>
-          </a>
-        </div>
       </div>
     </div>
   );
