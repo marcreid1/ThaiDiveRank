@@ -8,9 +8,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VotingSection() {
   // State to track the currently winning dive site and which side it was on
-  const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(null);
-  const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(null);
-  const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(new Set());
+  // Use localStorage to persist between tab navigation
+  const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(() => {
+    const saved = localStorage.getItem('previousWinner');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(() => {
+    return localStorage.getItem('winnerSide') as 'left' | 'right' | null;
+  });
+  
+  const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(() => {
+    const saved = localStorage.getItem('matchedDiveSites');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
   
   // Query to get matchups, including the previous winner when available
   const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
@@ -93,12 +104,16 @@ export default function VotingSection() {
   const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => {
     // Store the winner from the left side
     setPreviousWinner(winner);
+    localStorage.setItem('previousWinner', JSON.stringify(winner));
+    
     setWinnerSide('left');
+    localStorage.setItem('winnerSide', 'left');
     
     // Track that we've matched this winner against this loser
     const updatedMatchedSites = new Set(matchedDiveSites);
     updatedMatchedSites.add(loser.id);
     setMatchedDiveSites(updatedMatchedSites);
+    localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
     voteMutation.mutate({ 
       winnerId: winner.id, 
@@ -109,12 +124,16 @@ export default function VotingSection() {
   const handleVoteRight = (winner: DiveSite, loser: DiveSite) => {
     // Store the winner from the right side
     setPreviousWinner(winner);
+    localStorage.setItem('previousWinner', JSON.stringify(winner));
+    
     setWinnerSide('right');
+    localStorage.setItem('winnerSide', 'right');
     
     // Track that we've matched this winner against this loser
     const updatedMatchedSites = new Set(matchedDiveSites);
     updatedMatchedSites.add(loser.id);
     setMatchedDiveSites(updatedMatchedSites);
+    localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
     voteMutation.mutate({ 
       winnerId: winner.id, 
@@ -127,6 +146,12 @@ export default function VotingSection() {
     setPreviousWinner(null);
     setWinnerSide(null);
     setMatchedDiveSites(new Set());
+    
+    // Clear localStorage items
+    localStorage.removeItem('previousWinner');
+    localStorage.removeItem('winnerSide');
+    localStorage.removeItem('matchedDiveSites');
+    
     skipMutation.mutate();
   };
 
