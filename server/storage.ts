@@ -177,7 +177,7 @@ export class MemStorage implements IStorage {
         location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
         types: ["Coral Garden"],
         description: "Rich coral garden with abundant sea life",
-        imageUrl: "https://images.unsplash.com/photo-1546500840-ae38a0817ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/11. East of Eden.png",
         depthMin: 5,
         depthMax: 35,
         difficulty: "Intermediate"
@@ -188,7 +188,7 @@ export class MemStorage implements IStorage {
         location: "Ko Hin Pousar, Island #7, Central, Similan Islands",
         types: ["Wall"],
         description: "Dramatic drop-offs and abundant soft corals",
-        imageUrl: "https://images.unsplash.com/photo-1534766066-ffe2a5e5dbdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/12. West of Eden.png",
         depthMin: 5,
         depthMax: 40,
         difficulty: "Advanced"
@@ -199,7 +199,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Reef"],
         description: "Popular for turtle sightings",
-        imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/13. Turtle Rock.png",
         depthMin: 5,
         depthMax: 25,
         difficulty: "Intermediate"
@@ -210,7 +210,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Bay"],
         description: "Named for a seasonal waterfall",
-        imageUrl: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/14. Waterfall Bay.png",
         depthMin: 5,
         depthMax: 20,
         difficulty: "Beginner"
@@ -221,7 +221,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Boulder"],
         description: "Famous for swim-throughs and caverns",
-        imageUrl: "https://images.unsplash.com/photo-1510655619096-bded3c463dff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/15. Elephant Head Rock.png",
         depthMin: 10,
         depthMax: 40,
         difficulty: "Advanced"
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
         location: "Ko Similan, Island #8, North, Similan Islands",
         types: ["Point"],
         description: "Named for a navigation beacon",
-        imageUrl: "https://images.unsplash.com/photo-1551244072-ac97de61a25e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/src/assets/images/dive-sites/16. Beacon Point.png",
         depthMin: 10,
         depthMax: 35,
         difficulty: "Intermediate"
