@@ -158,22 +158,22 @@ export default function VotingSection() {
   if (isLoading) {
     return (
       <div className="mb-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-6">
-            <h2 className="text-xl font-semibold text-slate-900 mb-6">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
               Which dive site would you rather visit?
             </h2>
 
             <div className="relative">
               <div className="vs-badge">
-                <div className="bg-slate-800 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
+                <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
                   VS
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative">
-                <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden card-shadow">
-                  <div className="relative h-48 sm:h-64 bg-ocean-100">
+                <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
+                  <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
                     <Skeleton className="w-full h-full" />
                   </div>
                   <div className="p-4">
@@ -183,8 +183,8 @@ export default function VotingSection() {
                   </div>
                 </div>
 
-                <div className="dive-card relative bg-white border-2 border-ocean-200 rounded-xl overflow-hidden card-shadow">
-                  <div className="relative h-48 sm:h-64 bg-ocean-100">
+                <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
+                  <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
                     <Skeleton className="w-full h-full" />
                   </div>
                   <div className="p-4">
@@ -208,15 +208,15 @@ export default function VotingSection() {
   if (isError) {
     return (
       <div className="mb-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-6 text-center">
-            <h2 className="text-xl font-semibold text-slate-900 mb-6">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
               Error loading matchup
             </h2>
-            <p className="text-red-500 mb-4">{(error as Error)?.message || "Failed to load dive sites"}</p>
+            <p className="text-red-500 dark:text-red-400 mb-4">{(error as Error)?.message || "Failed to load dive sites"}</p>
             <button 
               onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/matchup"] })}
-              className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700"
+              className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
             >
               Try Again
             </button>
@@ -230,16 +230,16 @@ export default function VotingSection() {
 
   return (
     <div className="mb-12">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
         <div className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-6">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
             Which Dive Site is Better?
           </h2>
 
           <div className="relative">
             {/* VS Badge */}
             <div className="vs-badge absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              <div className="bg-slate-800 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
+              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
                 VS
               </div>
             </div>
