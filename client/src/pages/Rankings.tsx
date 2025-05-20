@@ -44,7 +44,7 @@ export default function Rankings() {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               Dive Site Rankings
@@ -105,7 +105,7 @@ export default function Rankings() {
   if (isError || !rankingsData) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               Thailand Dive Site Rankings
@@ -139,7 +139,7 @@ export default function Rankings() {
         </p>
       </div>
       
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
           <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
             Complete Rankings
