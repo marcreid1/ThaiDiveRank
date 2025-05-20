@@ -1,6 +1,5 @@
 import { DiveSite, InsertDiveSite, Vote, InsertVote, User, InsertUser, VoteActivity, DiveSiteRanking } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
-import { ImprovedDatabaseStorage } from "./database-storage-improved";
 
 // Define the interface for region-based organization
 export interface RegionDiveSites {
@@ -937,7 +936,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Export database storage for persistent scores across users
-// Using in-memory storage for now since database implementation needs more work
 export const storage = new MemStorage();
-// export const storage = new ImprovedDatabaseStorage();
