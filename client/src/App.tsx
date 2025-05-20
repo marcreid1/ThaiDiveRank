@@ -26,6 +26,7 @@ function AppRouter() {
           <Route path="/dive-sites" component={DiveSites} />
           <Route path="/privacy" component={Privacy} />
           <Route path="/terms" component={Terms} />
+          <Route path="/contact" component={Contact} />
           <Route component={NotFound} />
         </Switch>
       </div>
