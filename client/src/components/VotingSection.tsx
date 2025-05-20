@@ -233,7 +233,7 @@ export default function VotingSection() {
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
-            Vote for your favorite dive sites and help create the ultimate dive guide
+            Which Dive Site is Better?
           </h2>
 
           <div className="relative">
