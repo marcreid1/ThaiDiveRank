@@ -12,28 +12,28 @@ const getDiveSiteImage = (name: string): string => {
   if (name in diveSiteImages) {
     return diveSiteImages[name as keyof typeof diveSiteImages];
   }
-  
+
   // Check for specific problematic cases
   if (name.includes("North Point") || name.includes("Rocky Point")) {
     return diveSiteImages["North Point"];
   }
-  
+
   if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
     return diveSiteImages["Beacon Reef"];
   }
-  
+
   if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
     return diveSiteImages["Koh Bon Ridge"];
   }
-  
+
   if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
     return diveSiteImages["Koh Tachai Pinnacle"];
   }
-  
+
   if (name.includes("Ao Tao") || name.includes("Turtle Bay")) {
     return diveSiteImages["Ao Tao"];
   }
-  
+
   // Fallback to default image
   return defaultDiveSiteImage;
 };
@@ -52,7 +52,7 @@ export default function RankingsTable() {
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
             <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-              Rankings
+              Rank
             </h2>
             <Skeleton className="h-6 w-36" />
           </div>
@@ -61,7 +61,7 @@ export default function RankingsTable() {
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Rankings
+                    Rank
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Dive Site
@@ -113,7 +113,7 @@ export default function RankingsTable() {
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-              Rankings
+              Rank
             </h2>
           </div>
           <div className="p-6 text-center">
@@ -148,7 +148,7 @@ export default function RankingsTable() {
             <thead className="bg-slate-50 dark:bg-slate-800/50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Rankings
+                  Rank
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Dive Site
