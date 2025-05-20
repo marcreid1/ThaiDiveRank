@@ -938,4 +938,5 @@ export class MemStorage implements IStorage {
 }
 
 // Export database storage for persistent scores across users
-export const storage = new DatabaseStorage();
+// Temporarily use MemStorage until database issues are fixed
+export const storage = new MemStorage();
