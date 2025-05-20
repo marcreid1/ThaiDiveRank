@@ -2,7 +2,7 @@ export default function About() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-5xl mb-4">About DiveRank</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl mb-4">About DiveRank</h1>
         <p className="text-xl text-slate-500 dark:text-slate-400 max-w-3xl mx-auto">
           Discover how we use mathematical ratings to help divers find the best underwater locations in the Similan Islands & the Surin Islands in Thailand
         </p>
