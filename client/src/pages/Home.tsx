@@ -11,7 +11,7 @@ export default function Home() {
           Rank Your Favorite Dive Sites
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4">
-          Vote for your favorite dive sites and help create the ultimate dive guide for the Similan Islands & Surin Islands in Thailand.
+          Vote for your favorite dive sites and help create the ultimate dive guide
         </p>
       </div>
       
