@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { diveSites, InsertDiveSite } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 async function seedDatabase() {
   console.log("Starting database seeding...");
