@@ -15,6 +15,12 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // Function to handle theme toggle more reliably
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+  };
 
   return (
     <nav className="bg-background border-b border-border fixed w-full z-20 top-0">
@@ -72,7 +78,7 @@ export default function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={toggleTheme}
                 className="rounded-full"
                 aria-label="Toggle dark mode"
               >
