@@ -53,7 +53,7 @@ export default function About() {
             We do not accept payment for rankings, and our system is designed to be resistant to manipulation.
           </p>
 
-          <div className="mt-12 text-center">
+          <div className="mt-12 flex justify-center">
             <a
               href="/"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600 md:py-4 md:text-lg md:px-8"
