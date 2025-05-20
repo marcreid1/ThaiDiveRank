@@ -141,12 +141,12 @@ export default function Rankings() {
       </div>
 
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex flex-wrap justify-between items-center">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <div className="flex items-center space-x-3 min-w-0">
             <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
               Complete Rankings
             </h2>
-            <Badge variant="ocean" className="px-3 text-xs">
+            <Badge variant="ocean" className="px-3 text-xs shrink-0">
               Updated {formatDistanceToNow(new Date(lastUpdated))} ago
             </Badge>
           </div>
