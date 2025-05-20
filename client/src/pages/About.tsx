@@ -8,8 +8,8 @@ export default function About() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8">
-        <div className="prose prose-ocean dark:prose-invert lg:prose-lg mx-auto">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8 max-w-3xl mx-auto">
+        <div className="prose prose-ocean dark:prose-invert lg:prose-lg">
 
           <h2 className="text-slate-900 dark:text-slate-100">How We Rank Dive Sites</h2>
           <p className="text-slate-700 dark:text-slate-300">
