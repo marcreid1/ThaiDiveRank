@@ -248,13 +248,13 @@ export default function VotingSection() {
               <DiveSiteCard 
                 diveSite={diveSiteA} 
                 onVote={() => handleVoteLeft(diveSiteA, diveSiteB)}
-                showViewButton={true}
+                showViewButton={false}
               />
 
               <DiveSiteCard 
                 diveSite={diveSiteB} 
                 onVote={() => handleVoteRight(diveSiteB, diveSiteA)}
-                showViewButton={true}
+                showViewButton={false}
               />
             </div>
           </div>
