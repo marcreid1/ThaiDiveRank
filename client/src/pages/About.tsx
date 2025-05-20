@@ -1,14 +1,14 @@
 export default function About() {
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-      <div className="text-center mb-10">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 flex flex-col items-center">
+      <div className="text-center mb-10 max-w-3xl w-full">
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl mb-4">About DiveRank</h1>
-        <p className="text-xl text-slate-500 dark:text-slate-400 max-w-3xl mx-auto">
+        <p className="text-xl text-slate-500 dark:text-slate-400">
           Discover how we use mathematical ratings to help divers find the best underwater locations
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8 max-w-3xl mx-auto">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8 max-w-3xl w-full">
         <div className="prose prose-ocean dark:prose-invert lg:prose-lg">
 
           <h2 className="text-slate-900 dark:text-slate-100">How We Rank Dive Sites</h2>
