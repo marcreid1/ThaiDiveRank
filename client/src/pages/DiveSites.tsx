@@ -46,71 +46,69 @@ export default function DiveSites() {
   const urlParams = new URLSearchParams(window.location.search);
   const selectedSiteId = urlParams.get('site') ? Number(urlParams.get('site')) : null;
   
-  // State to track which accordions should be open by default
-  const [openRegions, setOpenRegions] = useState<string[]>([]);
-  const [openSubregions, setOpenSubregions] = useState<string[]>([]);
+  // Using useState for tracking all states
+  const [targetSite, setTargetSite] = useState<number | null>(null);
+  const [highlight, setHighlight] = useState<boolean>(false);
   
-  // Effect to determine which accordions should be open based on selected site
+  // Keep track of all dive site IDs and their locations for quick lookup
+  const diveSiteMap = useRef<Map<number, { mainRegion: string, subRegion?: string }>>(new Map());
+  
+  // Build a map of dive site IDs when data loads
   useEffect(() => {
-    if (regionData && selectedSiteId) {
-      console.log("Looking for dive site ID:", selectedSiteId);
+    if (regionData) {
+      const map = new Map<number, { mainRegion: string, subRegion?: string }>();
       
-      // Find the region and subregion containing the selected dive site
-      const regionsToOpen: string[] = [];
-      const subregionsToOpen: string[] = [];
-      
-      // Search through all regions and subregions for the dive site
       regionData.forEach(region => {
-        // Check main region's dive sites
-        const foundInMainRegion = region.diveSites.some(site => site.id === selectedSiteId);
-        if (foundInMainRegion) {
-          console.log("Found in main region:", region.region);
-          regionsToOpen.push(region.region);
-        }
+        // Map main region dive sites
+        region.diveSites.forEach(site => {
+          map.set(site.id, { mainRegion: region.region });
+        });
         
-        // Check subregions if they exist
+        // Map subregion dive sites if they exist
         if (region.subregions) {
           region.subregions.forEach(subregion => {
-            const foundInSubregion = subregion.diveSites.some(site => site.id === selectedSiteId);
-            if (foundInSubregion) {
-              console.log("Found in subregion:", subregion.region, "of region", region.region);
-              regionsToOpen.push(region.region);
-              subregionsToOpen.push(subregion.region);
-            }
+            subregion.diveSites.forEach(site => {
+              map.set(site.id, { 
+                mainRegion: region.region,
+                subRegion: subregion.region 
+              });
+            });
           });
         }
       });
       
-      // Set the open accordions
-      if (regionsToOpen.length > 0) {
-        console.log("Setting open regions:", regionsToOpen);
-        setOpenRegions(regionsToOpen);
-      }
-      if (subregionsToOpen.length > 0) {
-        console.log("Setting open subregions:", subregionsToOpen);
-        setOpenSubregions(subregionsToOpen);
+      diveSiteMap.current = map;
+      
+      // Once we have the map, if there's a selected site ID, set it as target
+      if (selectedSiteId && !targetSite) {
+        setTargetSite(selectedSiteId);
       }
     }
-  }, [regionData, selectedSiteId]);
+  }, [regionData, selectedSiteId, targetSite]);
   
-  // Effect to scroll to the selected dive site after accordions are open
+  // When we have a target site, scroll to it and highlight it
   useEffect(() => {
-    if (selectedSiteId && (openRegions.length > 0 || openSubregions.length > 0)) {
-      // Delay to ensure accordions have expanded
+    if (targetSite && regionData) {
+      // Small delay to ensure DOM is updated
       setTimeout(() => {
-        const diveSiteElement = document.getElementById(`dive-site-${selectedSiteId}`);
-        if (diveSiteElement) {
-          diveSiteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const element = document.getElementById(`dive-site-${targetSite}`);
+        if (element) {
+          // Scroll element into view
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
           // Add highlight effect
-          diveSiteElement.classList.add('ring-2', 'ring-ocean-500', 'ring-offset-2');
+          element.classList.add('ring-4', 'ring-ocean-500', 'ring-opacity-70');
+          setHighlight(true);
+          
+          // Remove highlight after 3 seconds
           setTimeout(() => {
-            diveSiteElement.classList.remove('ring-2', 'ring-ocean-500', 'ring-offset-2');
+            element.classList.remove('ring-4', 'ring-ocean-500', 'ring-opacity-70');
+            setHighlight(false);
           }, 3000);
         }
       }, 500);
     }
-  }, [selectedSiteId, openRegions, openSubregions]);
+  }, [targetSite, regionData]);
 
   if (isLoading) {
     return (
@@ -177,7 +175,7 @@ export default function DiveSites() {
         </p>
       </div>
       
-      <Accordion type="multiple" defaultValue={selectedSiteId ? openRegions : regionData.map(r => r.region)} className="mb-12">
+      <Accordion type="multiple" defaultValue={regionData.map(r => r.region)} className="mb-12">
         {regionData.map((mainRegion) => (
           <AccordionItem 
             key={mainRegion.region} 
@@ -212,7 +210,7 @@ export default function DiveSites() {
               {/* If this main region has subregions, render nested accordions */}
               {mainRegion.subregions && mainRegion.subregions.length > 0 && (
                 <div className="px-4 py-3">
-                  <Accordion type="multiple" defaultValue={selectedSiteId ? openSubregions : mainRegion.subregions.map(sub => sub.region)}>
+                  <Accordion type="multiple" defaultValue={mainRegion.subregions.map(sub => sub.region)}>
                     {mainRegion.subregions.map((subregion) => (
                       <AccordionItem 
                         key={subregion.region} 
