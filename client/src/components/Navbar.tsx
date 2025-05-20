@@ -27,7 +27,7 @@ export default function Navbar() {
               </Link>
               <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8 sm:justify-center">
               <Link 
                 href="/"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
@@ -107,6 +107,7 @@ export default function Navbar() {
           <div className="pt-2 pb-3 space-y-1 bg-background">
             <Link 
               href="/"
+              onClick={() => setMobileMenuOpen(false)}
               className={`${
                 location === "/" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
@@ -116,6 +117,7 @@ export default function Navbar() {
             </Link>
             <Link 
               href="/rankings"
+              onClick={() => setMobileMenuOpen(false)}
               className={`${
                 location === "/rankings" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
@@ -125,6 +127,7 @@ export default function Navbar() {
             </Link>
             <Link 
               href="/dive-sites"
+              onClick={() => setMobileMenuOpen(false)}
               className={`${
                 location === "/dive-sites" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
@@ -134,6 +137,7 @@ export default function Navbar() {
             </Link>
             <Link 
               href="/about"
+              onClick={() => setMobileMenuOpen(false)}
               className={`${
                 location === "/about" 
                   ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
