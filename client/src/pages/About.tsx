@@ -3,21 +3,21 @@ export default function About() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
       <div className="text-center mb-10">
         <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-5xl mb-4">About DiveRank</h1>
-        <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+        <p className="text-xl text-slate-500 dark:text-slate-400 max-w-3xl mx-auto">
           Discover how we use mathematical ratings to help divers find the best underwater locations in the Similan Islands & the Surin Islands in Thailand
         </p>
       </div>
-      
+
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8">
         <div className="prose prose-ocean dark:prose-invert lg:prose-lg mx-auto">
-          
+
           <h2 className="text-slate-900 dark:text-slate-100">How We Rank Dive Sites</h2>
           <p className="text-slate-700 dark:text-slate-300">
             DiveRank uses the <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer">
               ELO rating system
             </a> (originally developed for chess rankings) to create a fair and dynamic ranking of the best dive sites.
           </p>
-          
+
           <h3 className="text-slate-900 dark:text-slate-100">How The ELO Rating System Works</h3>
           <p className="text-slate-700 dark:text-slate-300">
             The ELO rating system ranks players (or in our case, dive sites) based on their relative performance against each other:
@@ -29,7 +29,7 @@ export default function About() {
             <li>The number of points exchanged depends on the expected outcome - beating a higher-rated site earns more points</li>
             <li>Over time, as more votes are collected, the ratings become more accurate</li>
           </ul>
-          
+
           <h3 className="text-slate-900 dark:text-slate-100">Why This Works For Dive Sites</h3>
           <p className="text-slate-700 dark:text-slate-300">
             This system is perfect for ranking dive sites because:
@@ -40,19 +40,19 @@ export default function About() {
             <li>The rankings dynamically adjust as new votes come in</li>
             <li>It provides a statistically sound approach to subjective preferences</li>
           </ul>
-          
+
           <h2 className="text-slate-900 dark:text-slate-100">About This Project</h2>
           <p className="text-slate-700 dark:text-slate-300">
             DiveRank was created to help divers discover the best diving experiences in the Similan Islands & Surin Islands.
             By leveraging the collective wisdom of the diving community, we aim to create the most accurate 
             and helpful ranking of dive sites.
           </p>
-          
+
           <p className="text-slate-700 dark:text-slate-300">
             Our data comes from thousands of diver votes and is continuously updated as new votes are cast.
             We do not accept payment for rankings, and our system is designed to be resistant to manipulation.
           </p>
-          
+
           <div className="mt-12 text-center">
             <a
               href="/"
