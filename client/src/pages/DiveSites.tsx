@@ -185,7 +185,7 @@ interface DiveSiteCardProps {
 
 function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
           src={getDiveSiteImage(diveSite.name)}
