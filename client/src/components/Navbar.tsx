@@ -11,15 +11,36 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // useEffect only runs on the client, so we can safely access the window object
   useEffect(() => {
     setMounted(true);
   }, []);
   
-  // Function to handle theme toggle more reliably
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  // Navigation links
+  const navLinks = [
+    { href: "/", label: "Vote" },
+    { href: "/rankings", label: "Rankings" },
+    { href: "/dive-sites", label: "Directory" },
+    { href: "/about", label: "About" }
+  ];
+
+  const getDesktopLinkClass = (path: string) => {
+    return `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+      location === path 
+        ? "border-ocean-500 text-ocean-600" 
+        : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
+    }`;
+  };
+
+  const getMobileLinkClass = (path: string) => {
+    return `${
+      location === path 
+        ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
+        : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+    } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`;
   };
 
   return (
@@ -34,46 +55,17 @@ export default function Navbar() {
               <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8 sm:justify-center">
-              <Link 
-                href="/"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location === "/" 
-                    ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
-                }`}>
-                Vote
-              </Link>
-              <Link 
-                href="/rankings"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location === "/rankings" 
-                    ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
-                }`}>
-                Rankings
-              </Link>
-              <Link 
-                href="/dive-sites"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location === "/dive-sites" 
-                    ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
-                }`}>
-                Directory
-              </Link>
-              <Link 
-                href="/about"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location === "/about" 
-                    ? "border-ocean-500 text-ocean-600" 
-                    : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
-                }`}>
-                About
-              </Link>
+              {navLinks.map(link => (
+                <Link 
+                  key={link.href}
+                  href={link.href}
+                  className={getDesktopLinkClass(link.href)}>
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {/* Theme toggle button */}
             {mounted && (
               <Button
                 variant="ghost"
@@ -111,46 +103,15 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
           <div className="pt-2 pb-3 space-y-1 bg-background">
-            <Link 
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`${
-                location === "/" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-              Vote
-            </Link>
-            <Link 
-              href="/rankings"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`${
-                location === "/rankings" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-              Rankings
-            </Link>
-            <Link 
-              href="/dive-sites"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`${
-                location === "/dive-sites" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-              Directory
-            </Link>
-            <Link 
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`${
-                location === "/about" 
-                  ? "bg-ocean-50 border-ocean-500 text-ocean-700 dark:bg-slate-900" 
-                  : "border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" 
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}>
-              About
-            </Link>
+            {navLinks.map(link => (
+              <Link 
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={getMobileLinkClass(link.href)}>
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       )}

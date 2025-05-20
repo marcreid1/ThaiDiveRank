@@ -1,40 +1,8 @@
 
 import { DiveSite } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
-import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 import { Link } from "wouter";
-
-// Helper function to get the correct image for a dive site
-const getDiveSiteImage = (name: string): string => {
-  // Direct match
-  if (name in diveSiteImages) {
-    return diveSiteImages[name as keyof typeof diveSiteImages];
-  }
-
-  // Check for specific problematic cases
-  if (name.includes("North Point") || name.includes("Rocky Point")) {
-    return diveSiteImages["North Point"];
-  }
-
-  if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
-    return diveSiteImages["Beacon Reef"];
-  }
-
-  if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
-    return diveSiteImages["Koh Bon Ridge"];
-  }
-
-  if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
-    return diveSiteImages["Koh Tachai Pinnacle"];
-  }
-
-  if (name.includes("Ao Tao") || name.includes("Turtle Bay")) {
-    return diveSiteImages["Ao Tao"];
-  }
-
-  // Fallback to default image
-  return defaultDiveSiteImage;
-};
+import { getDiveSiteImage } from "@/lib/utils/getImage";
 
 interface DiveSiteCardProps {
   diveSite: DiveSite;

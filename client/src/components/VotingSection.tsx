@@ -101,13 +101,13 @@ export default function VotingSection() {
     }
   });
 
-  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => {
-    // Store the winner from the left side
+  const handleVote = (winner: DiveSite, loser: DiveSite, side: 'left' | 'right') => {
+    // Store the winner
     setPreviousWinner(winner);
     localStorage.setItem('previousWinner', JSON.stringify(winner));
     
-    setWinnerSide('left');
-    localStorage.setItem('winnerSide', 'left');
+    setWinnerSide(side);
+    localStorage.setItem('winnerSide', side);
     
     // Track that we've matched this winner against this loser
     const updatedMatchedSites = new Set(matchedDiveSites);
@@ -121,25 +121,8 @@ export default function VotingSection() {
     });
   };
   
-  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => {
-    // Store the winner from the right side
-    setPreviousWinner(winner);
-    localStorage.setItem('previousWinner', JSON.stringify(winner));
-    
-    setWinnerSide('right');
-    localStorage.setItem('winnerSide', 'right');
-    
-    // Track that we've matched this winner against this loser
-    const updatedMatchedSites = new Set(matchedDiveSites);
-    updatedMatchedSites.add(loser.id);
-    setMatchedDiveSites(updatedMatchedSites);
-    localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
-    
-    voteMutation.mutate({ 
-      winnerId: winner.id, 
-      loserId: loser.id 
-    });
-  };
+  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'left');
+  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'right');
 
   const handleSkip = () => {
     // Reset all tracking when skipping
