@@ -2,6 +2,7 @@
 import { DiveSite } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
+import { Link } from "wouter";
 
 // Helper function to get the correct image for a dive site
 const getDiveSiteImage = (name: string): string => {
@@ -39,9 +40,10 @@ interface DiveSiteCardProps {
   diveSite: DiveSite;
   rank?: number;
   onVote: () => void;
+  showViewButton?: boolean;
 }
 
-export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardProps) {
+export default function DiveSiteCard({ diveSite, rank, onVote, showViewButton = false }: DiveSiteCardProps) {
   return (
     <div className="dive-card relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
       <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
@@ -105,16 +107,27 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
             </div>
           </div>
 
-          <div className="mt-auto">
+          <div className="mt-auto flex flex-col space-y-2">
             <button 
               type="button" 
               className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-green-800 bg-green-100 hover:bg-green-200 dark:bg-green-200/90 dark:hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-offset-slate-900 shadow-md hover:shadow-lg transition-all"
               onClick={onVote}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
+              Vote
             </button>
+            
+            {showViewButton && (
+              <Link href={`/dive-sites?site=${diveSite.id}`} className="w-full inline-flex justify-center items-center px-4 py-2 border border-ocean-300 text-sm font-medium rounded-lg text-ocean-700 bg-white hover:bg-ocean-50 dark:bg-slate-700 dark:text-ocean-300 dark:border-ocean-700 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500 dark:focus:ring-offset-slate-900 shadow-sm hover:shadow-md transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                View Details
+              </Link>
+            )}
           </div>
         </div>
       </div>

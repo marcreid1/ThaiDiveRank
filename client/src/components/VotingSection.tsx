@@ -247,12 +247,14 @@ export default function VotingSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-28 md:gap-24 relative">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
-                onVote={() => handleVoteLeft(diveSiteA, diveSiteB)} 
+                onVote={() => handleVoteLeft(diveSiteA, diveSiteB)}
+                showViewButton={true}
               />
 
               <DiveSiteCard 
                 diveSite={diveSiteB} 
-                onVote={() => handleVoteRight(diveSiteB, diveSiteA)} 
+                onVote={() => handleVoteRight(diveSiteB, diveSiteA)}
+                showViewButton={true}
               />
             </div>
           </div>

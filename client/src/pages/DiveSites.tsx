@@ -53,6 +53,8 @@ export default function DiveSites() {
   // Effect to determine which accordions should be open based on selected site
   useEffect(() => {
     if (regionData && selectedSiteId) {
+      console.log("Looking for dive site ID:", selectedSiteId);
+      
       // Find the region and subregion containing the selected dive site
       const regionsToOpen: string[] = [];
       const subregionsToOpen: string[] = [];
@@ -62,6 +64,7 @@ export default function DiveSites() {
         // Check main region's dive sites
         const foundInMainRegion = region.diveSites.some(site => site.id === selectedSiteId);
         if (foundInMainRegion) {
+          console.log("Found in main region:", region.region);
           regionsToOpen.push(region.region);
         }
         
@@ -70,6 +73,7 @@ export default function DiveSites() {
           region.subregions.forEach(subregion => {
             const foundInSubregion = subregion.diveSites.some(site => site.id === selectedSiteId);
             if (foundInSubregion) {
+              console.log("Found in subregion:", subregion.region, "of region", region.region);
               regionsToOpen.push(region.region);
               subregionsToOpen.push(subregion.region);
             }
@@ -79,9 +83,11 @@ export default function DiveSites() {
       
       // Set the open accordions
       if (regionsToOpen.length > 0) {
+        console.log("Setting open regions:", regionsToOpen);
         setOpenRegions(regionsToOpen);
       }
       if (subregionsToOpen.length > 0) {
+        console.log("Setting open subregions:", subregionsToOpen);
         setOpenSubregions(subregionsToOpen);
       }
     }
