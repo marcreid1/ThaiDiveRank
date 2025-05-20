@@ -158,7 +158,7 @@ export default function VotingSection() {
   if (isLoading) {
     return (
       <div className="mb-12">
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
           <div className="p-6">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
               Which dive site would you rather visit?
@@ -230,7 +230,7 @@ export default function VotingSection() {
 
   return (
     <div className="mb-12">
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
             Which Dive Site is Better?
