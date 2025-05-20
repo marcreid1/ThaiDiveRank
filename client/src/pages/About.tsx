@@ -43,7 +43,7 @@ export default function About() {
 
           <h2 className="text-slate-900 dark:text-slate-100">About This Project</h2>
           <p className="text-slate-700 dark:text-slate-300">
-            DiveRank was created to help divers discover the best diving experiences in the Similan Islands & Surin Islands.
+            DiveRank was created to help divers discover the best diving experiences.
             By leveraging the collective wisdom of the diving community, we aim to create the most accurate 
             and helpful ranking of dive sites.
           </p>
