@@ -171,7 +171,7 @@ export default function VotingSection() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-28 md:gap-24 relative">
                 <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
                   <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
                     <Skeleton className="w-full h-full" />
@@ -244,7 +244,7 @@ export default function VotingSection() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-20 md:gap-24 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-28 md:gap-24 relative">
               <DiveSiteCard 
                 diveSite={diveSiteA} 
                 onVote={() => handleVoteLeft(diveSiteA, diveSiteB)} 
