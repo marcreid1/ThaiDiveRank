@@ -1,9 +1,15 @@
 export default function About() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-5xl mb-4">About DiveRank</h1>
+        <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+          Discover how we use mathematical ratings to help divers find the best underwater locations in Thailand's Similan & Surin Islands
+        </p>
+      </div>
+      
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8">
         <div className="prose prose-ocean dark:prose-invert lg:prose-lg mx-auto">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl text-center mb-12">About DiveRank</h1>
           
           <h2 className="text-slate-900 dark:text-slate-100">How We Rank Dive Sites</h2>
           <p className="text-slate-700 dark:text-slate-300">
