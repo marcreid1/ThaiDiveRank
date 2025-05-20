@@ -108,7 +108,7 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
           <div className="mt-auto">
             <button 
               type="button" 
-              className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-green-800 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-offset-slate-900 shadow-md hover:shadow-lg transition-all"
+              className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-green-800 bg-green-100 hover:bg-green-200 dark:bg-green-200/90 dark:hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-offset-slate-900 shadow-md hover:shadow-lg transition-all"
               onClick={onVote}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
