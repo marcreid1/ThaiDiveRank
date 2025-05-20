@@ -11,14 +11,14 @@ export default function RecentActivity() {
   if (isLoading) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-200">
-            <h2 className="text-lg font-medium text-slate-900">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
               Recent Activity
             </h2>
           </div>
           <div className="px-6 py-4">
-            <ul className="divide-y divide-slate-200">
+            <ul className="divide-y divide-slate-200 dark:divide-slate-700">
               {[1, 2, 3, 4].map((item) => (
                 <li key={item} className="py-4 first:pt-0 last:pb-0">
                   <div className="flex space-x-3">
@@ -42,17 +42,17 @@ export default function RecentActivity() {
   if (isError || !activities) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-200">
-            <h2 className="text-lg font-medium text-slate-900">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
               Recent Activity
             </h2>
           </div>
           <div className="p-6 text-center">
-            <p className="text-red-500">Failed to load activities</p>
+            <p className="text-red-500 dark:text-red-400">Failed to load activities</p>
             <button 
               onClick={() => window.location.reload()}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
             >
               Try Again
             </button>
@@ -64,33 +64,33 @@ export default function RecentActivity() {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200">
-          <h2 className="text-lg font-medium text-slate-900">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+          <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
             Recent Activity
           </h2>
         </div>
         <div className="px-6 py-4">
-          <ul className="divide-y divide-slate-200">
+          <ul className="divide-y divide-slate-200 dark:divide-slate-700">
             {activities.map((activity) => (
               <li key={activity.id} className="py-4 first:pt-0 last:pb-0">
                 <div className="flex space-x-3">
                   <div className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-ocean-100 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-ocean-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="h-10 w-10 rounded-full bg-ocean-100 dark:bg-ocean-900/30 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-ocean-600 dark:text-ocean-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-slate-800">
-                      <a href="#" className="font-medium text-ocean-600 hover:underline">{activity.winnerName}</a>
+                    <p className="text-sm text-slate-800 dark:text-slate-200">
+                      <a href="#" className="font-medium text-ocean-600 dark:text-ocean-400 hover:underline">{activity.winnerName}</a>
                       {" "}won against{" "}
-                      <a href="#" className="font-medium text-ocean-600 hover:underline">{activity.loserName}</a>
+                      <a href="#" className="font-medium text-ocean-600 dark:text-ocean-400 hover:underline">{activity.loserName}</a>
                     </p>
                     <div className="mt-1 flex items-center">
-                      <span className="text-xs text-slate-500">{formatDistanceToNow(new Date(activity.timestamp))} ago</span>
-                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{formatDistanceToNow(new Date(activity.timestamp))} ago</span>
+                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                         +{activity.pointsChanged} points
                       </span>
                     </div>
