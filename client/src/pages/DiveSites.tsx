@@ -27,59 +27,69 @@ export default function DiveSites() {
   
   // Build a map of dive site IDs when data loads
   useEffect(() => {
-    if (regionData) {
-      const map = new Map<number, { mainRegion: string, subRegion?: string }>();
-      
-      regionData.forEach(region => {
-        // Map main region dive sites
-        region.diveSites.forEach(site => {
-          map.set(site.id, { mainRegion: region.region });
+    if (!regionData) return;
+    
+    const map = new Map<number, { mainRegion: string, subRegion?: string }>();
+    
+    // Helper function to process dive sites for a region
+    const processDiveSites = (sites: DiveSite[], mainRegion: string, subRegion?: string) => {
+      sites.forEach(site => {
+        map.set(site.id, { 
+          mainRegion, 
+          ...(subRegion && { subRegion }) 
         });
-        
-        // Map subregion dive sites if they exist
-        if (region.subregions) {
-          region.subregions.forEach(subregion => {
-            subregion.diveSites.forEach(site => {
-              map.set(site.id, { 
-                mainRegion: region.region,
-                subRegion: subregion.region 
-              });
-            });
-          });
-        }
       });
+    };
+    
+    // Process all regions and subregions
+    regionData.forEach(region => {
+      processDiveSites(region.diveSites, region.region);
       
-      diveSiteMap.current = map;
-      
-      // Once we have the map, if there's a selected site ID, set it as target
-      if (selectedSiteId && !targetSite) {
-        setTargetSite(selectedSiteId);
+      if (region.subregions) {
+        region.subregions.forEach(subregion => {
+          processDiveSites(subregion.diveSites, region.region, subregion.region);
+        });
       }
+    });
+    
+    diveSiteMap.current = map;
+    
+    // Once we have the map, if there's a selected site ID, set it as target
+    if (selectedSiteId && !targetSite) {
+      setTargetSite(selectedSiteId);
     }
   }, [regionData, selectedSiteId, targetSite]);
   
   // When we have a target site, scroll to it and highlight it
   useEffect(() => {
-    if (targetSite && regionData) {
-      // Small delay to ensure DOM is updated
+    if (!targetSite || !regionData) return;
+    
+    // Helper function to handle the highlight effect
+    const highlightElement = (element: HTMLElement) => {
+      // Scroll element into view
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Add highlight effect
+      element.classList.add('ring-4', 'ring-ocean-500', 'ring-opacity-70');
+      setHighlight(true);
+      
+      // Remove highlight after 3 seconds
       setTimeout(() => {
-        const element = document.getElementById(`dive-site-${targetSite}`);
-        if (element) {
-          // Scroll element into view
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // Add highlight effect
-          element.classList.add('ring-4', 'ring-ocean-500', 'ring-opacity-70');
-          setHighlight(true);
-          
-          // Remove highlight after 3 seconds
-          setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-ocean-500', 'ring-opacity-70');
-            setHighlight(false);
-          }, 3000);
-        }
-      }, 500);
-    }
+        element.classList.remove('ring-4', 'ring-ocean-500', 'ring-opacity-70');
+        setHighlight(false);
+      }, 3000);
+    };
+    
+    // Small delay to ensure DOM is updated
+    const timer = setTimeout(() => {
+      const element = document.getElementById(`dive-site-${targetSite}`);
+      if (element) {
+        highlightElement(element);
+      }
+    }, 500);
+    
+    // Clean up timeout on unmount
+    return () => clearTimeout(timer);
   }, [targetSite, regionData]);
 
   if (isLoading) {
@@ -227,8 +237,28 @@ interface DiveSiteCardProps {
 }
 
 function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
+  // Helper function to get difficulty class based on level
+  const getDifficultyClass = (difficulty: string | undefined) => {
+    switch(difficulty) {
+      case "Advanced":
+        return "text-red-600 dark:text-red-500";
+      case "Intermediate":
+        return "text-amber-600 dark:text-amber-500";
+      default:
+        return "text-green-600 dark:text-green-500";
+    }
+  };
+
+  // Helper function to format depth range
+  const getDepthRange = (min?: number | null, max?: number | null) => {
+    return (min != null && max != null) ? `${min}-${max}m` : "Not specified";
+  };
+
   return (
-    <div id={`dive-site-${diveSite.id}`} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
+    <div 
+      id={`dive-site-${diveSite.id}`} 
+      className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg"
+    >
       <div className="h-48 overflow-hidden">
         <img
           src={getDiveSiteImage(diveSite.name)}
@@ -240,7 +270,10 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
         <div className="flex justify-between items-center mb-1">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{diveSite.name}</h3>
           {diveSite.types.map((type) => (
-            <span key={type} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap">
+            <span 
+              key={type} 
+              className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap"
+            >
               {type}
             </span>
           ))}
@@ -256,22 +289,14 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
           <div className="flex flex-col">
             <span className="text-xs text-slate-400 dark:text-slate-500">Depth Range</span>
             <span className="text-sm font-medium dark:text-slate-300">
-              {diveSite.depthMin != null && diveSite.depthMax != null
-                ? `${diveSite.depthMin}-${diveSite.depthMax}m`
-                : "Not specified"}
+              {getDepthRange(diveSite.depthMin, diveSite.depthMax)}
             </span>
           </div>
           
           {/* Difficulty level */}
           <div className="flex flex-col">
             <span className="text-xs text-slate-400 dark:text-slate-500 text-right w-full block">Difficulty</span>
-            <span className={`text-sm font-medium text-right w-full block ${
-              diveSite.difficulty === "Advanced" 
-                ? "text-red-600 dark:text-red-500" 
-                : diveSite.difficulty === "Intermediate" 
-                  ? "text-amber-600 dark:text-amber-500" 
-                  : "text-green-600 dark:text-green-500"
-            }`}>
+            <span className={`text-sm font-medium text-right w-full block ${getDifficultyClass(diveSite.difficulty)}`}>
               {diveSite.difficulty || "Intermediate"}
             </span>
           </div>

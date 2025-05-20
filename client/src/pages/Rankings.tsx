@@ -3,36 +3,8 @@ import { DiveSiteRanking } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
-import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
 import { Link } from "wouter";
-
-// Helper function to get the correct image for a dive site
-const getDiveSiteImage = (name: string): string => {
-  // Direct match
-  if (name in diveSiteImages) {
-    return diveSiteImages[name as keyof typeof diveSiteImages];
-  }
-
-  // Check for specific problematic cases
-  if (name.includes("North Point") || name.includes("Rocky Point")) {
-    return diveSiteImages["North Point"];
-  }
-
-  if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
-    return diveSiteImages["Beacon Reef"];
-  }
-
-  if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
-    return diveSiteImages["Koh Bon Ridge"];
-  }
-
-  if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
-    return diveSiteImages["Koh Tachai Pinnacle"];
-  }
-
-  // Fallback to default image
-  return defaultDiveSiteImage;
-};
+import { getDiveSiteImage } from "@/lib/utils/getImage";
 
 export default function Rankings() {
   const { data: rankingsData, isLoading, isError } = useQuery<{ 
