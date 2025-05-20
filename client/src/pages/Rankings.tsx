@@ -146,7 +146,7 @@ export default function Rankings() {
             <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
               Complete Rankings
             </h2>
-            <Badge variant="ocean" className="px-3 text-xs shrink-0">
+            <Badge variant="ocean" className="px-3 text-xs shrink-0 max-w-[150px] break-words">
               Updated {formatDistanceToNow(new Date(lastUpdated))} ago
             </Badge>
           </div>
