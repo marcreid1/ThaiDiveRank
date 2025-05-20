@@ -164,34 +164,40 @@ export default function VotingSection() {
               Which dive site would you rather visit?
             </h2>
 
-            <div className="relative">
-              <div className="vs-badge">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-20 relative">
+              {/* VS Badge for loading state */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex">
                 <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
                   VS
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-28 md:gap-24 relative">
-                <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
-                  <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
-                    <Skeleton className="w-full h-full" />
-                  </div>
-                  <div className="p-4">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-3" />
-                    <Skeleton className="h-10 w-full mt-6" />
-                  </div>
+              <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
+                <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
+                  <Skeleton className="w-full h-full" />
                 </div>
+                <div className="p-4">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2 mb-3" />
+                  <Skeleton className="h-10 w-full mt-6" />
+                </div>
+              </div>
 
-                <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
-                  <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
-                    <Skeleton className="w-full h-full" />
-                  </div>
-                  <div className="p-4">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-3" />
-                    <Skeleton className="h-10 w-full mt-6" />
-                  </div>
+              {/* VS Badge for mobile view */}
+              <div className="flex md:hidden justify-center my-6">
+                <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
+                  VS
+                </div>
+              </div>
+
+              <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
+                <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
+                  <Skeleton className="w-full h-full" />
+                </div>
+                <div className="p-4">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2 mb-3" />
+                  <Skeleton className="h-10 w-full mt-6" />
                 </div>
               </div>
             </div>
@@ -236,21 +242,30 @@ export default function VotingSection() {
             Which Dive Site is Better?
           </h2>
 
-          <div className="relative">
-            {/* VS Badge */}
-            <div className="vs-badge absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-20 relative">
+            {/* VS Badge for desktop view - absolutely positioned */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex">
+              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg shadow-lg">
                 VS
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-28 md:gap-24 relative">
+            <div>
               <DiveSiteCard 
                 diveSite={diveSiteA} 
                 onVote={() => handleVoteLeft(diveSiteA, diveSiteB)}
                 showViewButton={false}
               />
+            </div>
 
+            {/* VS Badge for mobile view */}
+            <div className="flex md:hidden justify-center my-6">
+              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg shadow-lg">
+                VS
+              </div>
+            </div>
+
+            <div>
               <DiveSiteCard 
                 diveSite={diveSiteB} 
                 onVote={() => handleVoteRight(diveSiteB, diveSiteA)}
