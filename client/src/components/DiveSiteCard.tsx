@@ -84,7 +84,7 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="flex items-center">
                 <span className="text-slate-500 dark:text-slate-400 mr-1">Depth:</span>
-                <span className="font-medium text-ocean-900 dark:text-ocean-400">
+                <span className="font-medium text-ocean-900 dark:text-white">
                   {diveSite.depthMin && diveSite.depthMax 
                     ? `${diveSite.depthMin}-${diveSite.depthMax}m` 
                     : 'Not specified'}
@@ -108,7 +108,7 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
           <div className="mt-auto">
             <button 
               type="button" 
-              className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-green-800 bg-green-100 hover:bg-green-200 dark:text-green-100 dark:bg-green-900/30 dark:hover:bg-green-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-green-700 shadow-md hover:shadow-lg transition-all"
+              className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-green-800 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-offset-slate-900 shadow-md hover:shadow-lg transition-all"
               onClick={onVote}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
