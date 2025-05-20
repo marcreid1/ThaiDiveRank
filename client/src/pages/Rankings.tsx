@@ -44,38 +44,38 @@ export default function Rankings() {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-slate-900">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               Dive Site Rankings
             </h2>
             <Skeleton className="h-6 w-36" />
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Rankings
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Dive Site
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Score
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Change
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-slate-200">
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                 {[...Array(10)].map((_, index) => (
-                  <tr key={index} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                  <tr key={index} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-200">
                       <Skeleton className="h-4 w-4" />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-200">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
                           <Skeleton className="h-10 w-10" />
@@ -86,10 +86,10 @@ export default function Rankings() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                       <Skeleton className="h-4 w-12" />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                       <Skeleton className="h-4 w-8" />
                     </td>
                   </tr>
@@ -105,17 +105,17 @@ export default function Rankings() {
   if (isError || !rankingsData) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-900">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               Thailand Dive Site Rankings
             </h2>
           </div>
           <div className="p-6 text-center">
-            <p className="text-red-500">Failed to load rankings</p>
+            <p className="text-red-500 dark:text-red-400">Failed to load rankings</p>
             <button 
               onClick={() => window.location.reload()}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
             >
               Try Again
             </button>
@@ -131,17 +131,17 @@ export default function Rankings() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* PageHeader */}
       <div className="text-center my-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl">
           Dive Site Rankings
         </h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
+        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4">
           See how 43 dive sites in the Similan Islands & Surin Islands in Thailand rank, based on community voting.
         </p>
       </div>
       
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-slate-900">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
             Complete Rankings
           </h2>
           <Badge variant="ocean">
@@ -149,30 +149,30 @@ export default function Rankings() {
           </Badge>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
+          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <thead className="bg-slate-50 dark:bg-slate-800/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Rank
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Dive Site
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Score
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Change
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
               {rankings.map((site, index) => (
-                <tr key={site.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                <tr key={site.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-200">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-200">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
                         <img 
@@ -182,15 +182,15 @@ export default function Rankings() {
                         />
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-slate-900">{site.name}</div>
-                        <div className="text-sm text-slate-500">{site.location}</div>
+                        <div className="text-sm font-medium text-slate-900 dark:text-white">{site.name}</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">{site.location}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                     {Math.round(site.rating)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                     {site.rankChange > 0 ? (
                       <Badge variant="green" className="inline-flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
