@@ -8,9 +8,7 @@ export default function Footer() {
           <div className="px-5 py-2">
             <Link href="/about" className="text-base text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">About</Link>
           </div>
-          <div className="px-5 py-2">
-            <Link href="/dive-sites" className="text-base text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">Dive Sites</Link>
-          </div>
+
           <div className="px-5 py-2">
             <Link href="/contact" className="text-base text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">Contact</Link>
           </div>
