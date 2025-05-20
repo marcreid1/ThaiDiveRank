@@ -88,10 +88,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Additional Contact Info */}
-        <div className="mt-10 text-center text-slate-500 dark:text-slate-400">
-          <p>You can also find us on social media or visit our office in Thailand.</p>
-        </div>
+
       </div>
     </main>
   );
