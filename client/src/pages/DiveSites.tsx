@@ -76,15 +76,15 @@ export default function DiveSites() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
-          <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl mb-4">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl mb-4">
             Oops! Something went wrong.
           </h1>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4 mb-8">
+          <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4 mb-8">
             We couldn't load the dive site information. Please try again.
           </p>
           <button 
             onClick={() => window.location.reload()}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
           >
             Try Again
           </button>
