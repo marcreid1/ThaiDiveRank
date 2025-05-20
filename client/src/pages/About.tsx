@@ -9,7 +9,7 @@ export default function About() {
       </div>
 
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden p-8 mb-8 max-w-3xl w-full">
-        <div className="prose prose-ocean dark:prose-invert lg:prose-lg mx-auto text-center">
+        <div className="prose prose-ocean dark:prose-invert lg:prose-lg mx-auto text-left">
 
           <h2 className="text-slate-900 dark:text-slate-100">How We Rank Dive Sites</h2>
           <p className="text-slate-700 dark:text-slate-300">
