@@ -305,7 +305,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(diveSites)
       .where(
-        sql`${diveSites.id} IN (${Array.from(diveSiteIds).join(',')})`
+        in_(diveSites.id, Array.from(diveSiteIds))
       );
     
     // Create a map for faster lookups
