@@ -56,7 +56,7 @@ export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardPro
         <div className="mb-3">
           <div className="flex justify-between items-start">
             <div className="flex items-baseline gap-2">
-              <h3 className="font-semibold text-ocean-900 dark:text-ocean-400 text-lg">{diveSite.name}</h3>
+              <h3 className="font-semibold text-ocean-900 dark:text-white text-lg">{diveSite.name}</h3>
               <span className="text-sm text-slate-500 dark:text-slate-400">• {diveSite.location}</span>
             </div>
             <div className="flex flex-shrink-0">
