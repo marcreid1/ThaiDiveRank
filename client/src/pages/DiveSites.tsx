@@ -46,51 +46,105 @@ export default function DiveSites() {
   const urlParams = new URLSearchParams(window.location.search);
   const selectedSiteId = urlParams.get('site') ? Number(urlParams.get('site')) : null;
   
+  // Reference to track if we've opened accordions for the selected site
+  const hasExpandedAccordions = useRef(false);
+
   // Effect to scroll to the selected dive site when data is loaded
   useEffect(() => {
-    if (regionData && selectedSiteId) {
-      // Small delay to ensure the DOM is fully rendered
-      setTimeout(() => {
-        const diveSiteElement = document.getElementById(`dive-site-${selectedSiteId}`);
-        if (diveSiteElement) {
-          // Make sure all parent accordions are expanded
-          const expandAccordion = (element: Element) => {
-            // Find parent accordion item
-            const accordionItem = element.closest('[data-radix-collection-item]');
-            if (!accordionItem) return;
-            
-            // Get the accordion trigger button
-            const trigger = accordionItem.querySelector('[data-state]');
-            if (trigger && trigger.getAttribute('data-state') === 'closed') {
-              (trigger as HTMLElement).click();
+    if (regionData && selectedSiteId && !hasExpandedAccordions.current) {
+      // Find the dive site in the data
+      let targetDiveSite: DiveSite | null = null;
+      let parentRegion: string | null = null;
+      let subRegion: string | null = null;
+
+      // Search through all regions and subregions to find the dive site
+      regionData.forEach(region => {
+        // Check main region's dive sites
+        const mainRegionSite = region.diveSites.find(site => site.id === selectedSiteId);
+        if (mainRegionSite) {
+          targetDiveSite = mainRegionSite;
+          parentRegion = region.region;
+          return;
+        }
+
+        // Check subregions if they exist
+        if (region.subregions) {
+          region.subregions.forEach(sub => {
+            const subRegionSite = sub.diveSites.find(site => site.id === selectedSiteId);
+            if (subRegionSite) {
+              targetDiveSite = subRegionSite;
+              parentRegion = region.region;
+              subRegion = sub.region;
             }
-            
-            // Continue with parent accordion if exists
-            const parentAccordion = accordionItem.parentElement?.closest('[data-radix-collection-item]');
-            if (parentAccordion) {
-              expandAccordion(parentAccordion);
-            }
-          };
-          
-          // Expand all parent accordions
-          expandAccordion(diveSiteElement);
-          
-          // Scroll the element into view with smooth behavior after a slight delay
-          // to allow accordions to expand
-          setTimeout(() => {
-            diveSiteElement.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'center'
+          });
+        }
+      });
+
+      if (targetDiveSite) {
+        // Mark that we've handled this expansion
+        hasExpandedAccordions.current = true;
+        
+        // Delay to ensure DOM is rendered
+        setTimeout(() => {
+          // Force open the parent region accordion
+          if (parentRegion) {
+            const parentAccordionBtns = document.querySelectorAll('[data-state]');
+            parentAccordionBtns.forEach(btn => {
+              const text = btn.textContent;
+              if (text && text.includes(parentRegion) && btn.getAttribute('data-state') === 'closed') {
+                (btn as HTMLElement).click();
+              }
             });
             
-            // Add a highlight effect
-            diveSiteElement.classList.add('ring-2', 'ring-ocean-500', 'ring-offset-2');
-            setTimeout(() => {
-              diveSiteElement.classList.remove('ring-2', 'ring-ocean-500', 'ring-offset-2');
-            }, 3000);
-          }, 300);
-        }
-      }, 300);
+            // If there's a subregion, open that accordion too after a small delay
+            if (subRegion) {
+              setTimeout(() => {
+                const subAccordionBtns = document.querySelectorAll('[data-state]');
+                subAccordionBtns.forEach(btn => {
+                  const text = btn.textContent;
+                  if (text && text.includes(subRegion as string) && btn.getAttribute('data-state') === 'closed') {
+                    (btn as HTMLElement).click();
+                  }
+                });
+                
+                // After opening all accordions, scroll to the element
+                setTimeout(() => {
+                  const diveSiteElement = document.getElementById(`dive-site-${selectedSiteId}`);
+                  if (diveSiteElement) {
+                    diveSiteElement.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'center'
+                    });
+                    
+                    // Add a highlight effect
+                    diveSiteElement.classList.add('ring-2', 'ring-ocean-500', 'ring-offset-2');
+                    setTimeout(() => {
+                      diveSiteElement.classList.remove('ring-2', 'ring-ocean-500', 'ring-offset-2');
+                    }, 3000);
+                  }
+                }, 300);
+              }, 300);
+            } else {
+              // If no subregion, scroll directly to the element
+              setTimeout(() => {
+                const diveSiteElement = document.getElementById(`dive-site-${selectedSiteId}`);
+                if (diveSiteElement) {
+                  diveSiteElement.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                  });
+                  
+                  // Add a highlight effect
+                  diveSiteElement.classList.add('ring-2', 'ring-ocean-500', 'ring-offset-2');
+                  setTimeout(() => {
+                    diveSiteElement.classList.remove('ring-2', 'ring-ocean-500', 'ring-offset-2');
+                  }, 3000);
+                }
+              }, 300);
+            }
+          }
+        }, 300);
+      }
     }
   }, [regionData, selectedSiteId]);
 
