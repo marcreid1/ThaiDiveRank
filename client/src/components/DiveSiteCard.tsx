@@ -43,7 +43,7 @@ interface DiveSiteCardProps {
 
 export default function DiveSiteCard({ diveSite, rank, onVote }: DiveSiteCardProps) {
   return (
-    <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
+    <div className="dive-card relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl overflow-hidden shadow-md transition-all duration-200 hover:translate-y-[-4px] hover:shadow-lg">
       <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
         <img 
           src={getDiveSiteImage(diveSite.name)} 
