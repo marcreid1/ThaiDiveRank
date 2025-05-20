@@ -141,13 +141,15 @@ export default function Rankings() {
       </div>
 
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2">
-          <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-            Complete Rankings
-          </h2>
-          <Badge variant="ocean" className="px-3 whitespace-nowrap">
-            Updated {formatDistanceToNow(new Date(lastUpdated))} ago
-          </Badge>
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <div className="flex items-center">
+            <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
+              Complete Rankings
+            </h2>
+            <Badge variant="ocean" className="ml-3 px-3 whitespace-nowrap text-xs">
+              Updated {formatDistanceToNow(new Date(lastUpdated))} ago
+            </Badge>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
