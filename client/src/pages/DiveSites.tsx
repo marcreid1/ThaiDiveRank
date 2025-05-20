@@ -43,19 +43,19 @@ export default function DiveSites() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center my-8">
-          <Skeleton className="h-10 w-64 mx-auto mb-4" />
-          <Skeleton className="h-6 w-96 mx-auto" />
+          <Skeleton className="h-10 w-64 mx-auto mb-4 dark:bg-slate-700" />
+          <Skeleton className="h-6 w-96 mx-auto dark:bg-slate-700" />
         </div>
         
         {[1, 2, 3].map((region) => (
           <div key={region} className="mb-8">
-            <Skeleton className="h-8 w-48 mb-2" />
-            <Skeleton className="h-6 w-full mb-6" />
+            <Skeleton className="h-8 w-48 mb-2 dark:bg-slate-700" />
+            <Skeleton className="h-6 w-full mb-6 dark:bg-slate-700" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4].map((site) => (
-                <div key={site} className="bg-white rounded-xl shadow-md overflow-hidden">
-                  <div className="h-48 bg-slate-100">
+                <div key={site} className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+                  <div className="h-48 bg-slate-100 dark:bg-slate-700">
                     <Skeleton className="h-full w-full" />
                   </div>
                   <div className="p-6">
@@ -96,10 +96,10 @@ export default function DiveSites() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center my-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl">
           Dive Site Directory
         </h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 sm:mt-4">
+        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4">
           Explore 43 dive sites across the Similan Islands & Surin Islands in Thailand.
         </p>
       </div>
@@ -109,22 +109,22 @@ export default function DiveSites() {
           <AccordionItem 
             key={mainRegion.region} 
             value={mainRegion.region} 
-            className="border border-slate-200 rounded-lg mb-4 overflow-hidden bg-white"
+            className="border border-slate-200 dark:border-slate-700 rounded-lg mb-4 overflow-hidden bg-white dark:bg-slate-800"
           >
-            <AccordionTrigger className="px-6 py-4 hover:bg-slate-50">
+            <AccordionTrigger className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50">
               <div className="flex items-center">
-                <h2 className="text-xl font-semibold text-slate-900 text-left">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 text-left">
                   {mainRegion.region}
                 </h2>
                 {/* Count total dive sites including those in subregions */}
-                <Badge variant="outline" className="ml-3">
+                <Badge variant="outline" className="ml-3 dark:border-slate-600 dark:text-slate-300">
                   {mainRegion.diveSites.length + (mainRegion.subregions?.reduce((acc, sub) => acc + sub.diveSites.length, 0) || 0)} sites
                 </Badge>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pt-0">
-              <div className="p-6 border-b border-slate-200 bg-slate-50">
-                <p className="text-slate-700">{mainRegion.description}</p>
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                <p className="text-slate-700 dark:text-slate-300">{mainRegion.description}</p>
               </div>
               
               {/* If this main region has direct dive sites, show them */}
@@ -144,21 +144,21 @@ export default function DiveSites() {
                       <AccordionItem 
                         key={subregion.region} 
                         value={subregion.region} 
-                        className="border border-slate-100 rounded-md mb-3 overflow-hidden"
+                        className="border border-slate-100 dark:border-slate-700 rounded-md mb-3 overflow-hidden"
                       >
-                        <AccordionTrigger className="px-4 py-3 hover:bg-slate-50">
+                        <AccordionTrigger className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50">
                           <div className="flex items-center">
-                            <h3 className="text-lg font-medium text-slate-800 text-left">
+                            <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200 text-left">
                               {subregion.region}
                             </h3>
-                            <Badge variant="outline" className="ml-3">
+                            <Badge variant="outline" className="ml-3 dark:border-slate-600 dark:text-slate-300">
                               {subregion.diveSites.length} sites
                             </Badge>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="pt-0">
-                          <div className="p-4 border-b border-slate-100 bg-slate-50">
-                            <p className="text-slate-600 text-sm">{subregion.description}</p>
+                          <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                            <p className="text-slate-600 dark:text-slate-400 text-sm">{subregion.description}</p>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                             {subregion.diveSites.map((site) => (
@@ -185,7 +185,7 @@ interface DiveSiteCardProps {
 
 function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
           src={getDiveSiteImage(diveSite.name)}
@@ -195,24 +195,24 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
       </div>
       <div className="p-6 flex-grow flex flex-col">
         <div className="flex justify-between items-center mb-1">
-          <h3 className="text-lg font-semibold text-slate-900">{diveSite.name}</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{diveSite.name}</h3>
           {diveSite.types.map((type) => (
-            <span key={type} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 whitespace-nowrap">
+            <span key={type} className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap">
               {type}
             </span>
           ))}
         </div>
-        <p className="text-sm text-slate-500 mb-3">{diveSite.location}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">{diveSite.location}</p>
         
         {/* Dive site description */}
-        <p className="text-sm text-slate-600 flex-grow">{diveSite.description}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300 flex-grow">{diveSite.description}</p>
         
         {/* Dive site stats */}
-        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 dark:border-slate-700 pt-3">
           {/* Depth info */}
           <div className="flex flex-col">
-            <span className="text-xs text-slate-400">Depth Range</span>
-            <span className="text-sm font-medium">
+            <span className="text-xs text-slate-400 dark:text-slate-500">Depth Range</span>
+            <span className="text-sm font-medium dark:text-slate-300">
               {diveSite.depthMin != null && diveSite.depthMax != null
                 ? `${diveSite.depthMin}-${diveSite.depthMax}m`
                 : "Not specified"}
@@ -221,13 +221,13 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
           
           {/* Difficulty level */}
           <div className="flex flex-col">
-            <span className="text-xs text-slate-400 text-right w-full block">Difficulty</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 text-right w-full block">Difficulty</span>
             <span className={`text-sm font-medium text-right w-full block ${
               diveSite.difficulty === "Advanced" 
-                ? "text-red-600" 
+                ? "text-red-600 dark:text-red-500" 
                 : diveSite.difficulty === "Intermediate" 
-                  ? "text-amber-600" 
-                  : "text-green-600"
+                  ? "text-amber-600 dark:text-amber-500" 
+                  : "text-green-600 dark:text-green-500"
             }`}>
               {diveSite.difficulty || "Intermediate"}
             </span>
@@ -235,10 +235,10 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
           
           {/* Rating info */}
           <div className="flex flex-col col-span-2 mt-2">
-            <span className="text-xs text-slate-400">Ranking Stats</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">Ranking Stats</span>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-slate-500">ELO: {Math.round(diveSite.rating)}</span>
-              <span className="text-xs text-slate-500">{diveSite.wins} wins / {diveSite.losses} losses</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">ELO: {Math.round(diveSite.rating)}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{diveSite.wins} wins / {diveSite.losses} losses</span>
             </div>
           </div>
         </div>
