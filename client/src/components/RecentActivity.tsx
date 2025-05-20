@@ -73,10 +73,10 @@ export default function RecentActivity() {
                 <li key={activity.id} className="py-4 first:pt-0 last:pb-0">
                   <div className="flex space-x-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm text-slate-900 dark:text-slate-200">
-                        <span className="font-medium text-ocean-600 dark:text-ocean-400">{activity.winnerName}</span>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <span className="font-medium text-slate-900 dark:text-white">{activity.winnerName}</span>
                         {' '}won against{' '}
-                        <span className="font-medium">{activity.loserName}</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{activity.loserName}</span>
                         {' '}(+{activity.pointsChanged} points)
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
