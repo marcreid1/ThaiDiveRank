@@ -100,7 +100,7 @@ export default function DiveSites() {
           Dive Site Directory
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4">
-          Explore 43 dive sites across the Similan Islands & Surin Islands in Thailand.
+          Dive into the details of 43 dive sites
         </p>
       </div>
       
