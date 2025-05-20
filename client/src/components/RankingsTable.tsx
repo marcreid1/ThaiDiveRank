@@ -168,7 +168,7 @@ export default function RankingsTable() {
                     {index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-200">
-                    <div className="flex items-center">
+                    <Link href={`/dive-sites?site=${site.id}`} className="flex items-center hover:opacity-80 transition-opacity">
                       <div className="flex-shrink-0 h-10 w-10 rounded-md overflow-hidden">
                         <img src={getDiveSiteImage(site.name)} alt={site.name} className="h-10 w-10 object-cover" />
                       </div>
@@ -176,7 +176,7 @@ export default function RankingsTable() {
                         <div className="text-sm font-medium text-slate-900 dark:text-slate-200">{site.name}</div>
                         <div className="text-sm text-slate-500 dark:text-slate-400">{site.location}</div>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 text-center">
                     {Math.round(site.rating)}

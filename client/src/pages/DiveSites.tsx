@@ -5,6 +5,8 @@ import { RegionDiveSites } from "@/types/region-dive-sites";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { diveSiteImages, defaultDiveSiteImage } from "@/assets/index";
+import { useEffect, useRef } from "react";
+import { useLocation } from "wouter";
 
 // Helper function to get the correct image for a dive site
 const getDiveSiteImage = (name: string): string => {
@@ -35,9 +37,62 @@ const getDiveSiteImage = (name: string): string => {
 };
 
 export default function DiveSites() {
+  const [location] = useLocation();
   const { data: regionData, isLoading, isError } = useQuery<RegionDiveSites[]>({
     queryKey: ["/api/dive-sites-by-region"]
   });
+  
+  // Get selected site ID from URL query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedSiteId = urlParams.get('site') ? Number(urlParams.get('site')) : null;
+  
+  // Effect to scroll to the selected dive site when data is loaded
+  useEffect(() => {
+    if (regionData && selectedSiteId) {
+      // Small delay to ensure the DOM is fully rendered
+      setTimeout(() => {
+        const diveSiteElement = document.getElementById(`dive-site-${selectedSiteId}`);
+        if (diveSiteElement) {
+          // Make sure all parent accordions are expanded
+          const expandAccordion = (element: Element) => {
+            // Find parent accordion item
+            const accordionItem = element.closest('[data-radix-collection-item]');
+            if (!accordionItem) return;
+            
+            // Get the accordion trigger button
+            const trigger = accordionItem.querySelector('[data-state]');
+            if (trigger && trigger.getAttribute('data-state') === 'closed') {
+              (trigger as HTMLElement).click();
+            }
+            
+            // Continue with parent accordion if exists
+            const parentAccordion = accordionItem.parentElement?.closest('[data-radix-collection-item]');
+            if (parentAccordion) {
+              expandAccordion(parentAccordion);
+            }
+          };
+          
+          // Expand all parent accordions
+          expandAccordion(diveSiteElement);
+          
+          // Scroll the element into view with smooth behavior after a slight delay
+          // to allow accordions to expand
+          setTimeout(() => {
+            diveSiteElement.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'center'
+            });
+            
+            // Add a highlight effect
+            diveSiteElement.classList.add('ring-2', 'ring-ocean-500', 'ring-offset-2');
+            setTimeout(() => {
+              diveSiteElement.classList.remove('ring-2', 'ring-ocean-500', 'ring-offset-2');
+            }, 3000);
+          }, 300);
+        }
+      }, 300);
+    }
+  }, [regionData, selectedSiteId]);
 
   if (isLoading) {
     return (
@@ -185,7 +240,7 @@ interface DiveSiteCardProps {
 
 function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
+    <div id={`dive-site-${diveSite.id}`} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
           src={getDiveSiteImage(diveSite.name)}
