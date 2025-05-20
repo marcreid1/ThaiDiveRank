@@ -1,11 +1,14 @@
 export default function Contact() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="prose dark:prose-invert prose-slate max-w-none">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* PageHeader */}
+      <div className="text-center my-8">
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl">
           Contact Us
         </h1>
-        
+      </div>
+      
+      <div className="max-w-3xl mx-auto prose dark:prose-invert prose-slate">
         <p className="text-slate-700 dark:text-slate-300 mt-6">
           Have questions, feedback, or want to suggest a dive site? We'd love to hear from you! 
           You can reach the DiveRank team through any of the following channels:
@@ -101,6 +104,6 @@ export default function Contact() {
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
