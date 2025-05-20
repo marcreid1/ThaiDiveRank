@@ -298,6 +298,7 @@ export class DatabaseStorage implements IStorage {
     });
     
     // Fetch all needed dive sites in one query
+    const diveSiteIdsArray = Array.from(diveSiteIds);
     const sites = await db
       .select({
         id: diveSites.id,
@@ -305,7 +306,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(diveSites)
       .where(
-        in_(diveSites.id, Array.from(diveSiteIds))
+        sql`${diveSites.id} = ANY(ARRAY[${diveSiteIdsArray.join(',')}]::int[])`
       );
     
     // Create a map for faster lookups
