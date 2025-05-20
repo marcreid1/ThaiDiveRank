@@ -11,24 +11,24 @@ const getDiveSiteImage = (name: string): string => {
   if (name in diveSiteImages) {
     return diveSiteImages[name as keyof typeof diveSiteImages];
   }
-  
+
   // Check for specific problematic cases
   if (name.includes("North Point") || name.includes("Rocky Point")) {
     return diveSiteImages["North Point"];
   }
-  
+
   if (name.includes("Beacon Reef") || name.includes("Beacon Beach")) {
     return diveSiteImages["Beacon Reef"];
   }
-  
+
   if (name.includes("Koh Bon Ridge") || name.includes("West Ridge") || name.includes("Manta Road")) {
     return diveSiteImages["Koh Bon Ridge"];
   }
-  
+
   if (name.includes("Koh Tachai Pinnacle") || name.includes("Plateau")) {
     return diveSiteImages["Koh Tachai Pinnacle"];
   }
-  
+
   // Fallback to default image
   return defaultDiveSiteImage;
 };
@@ -135,10 +135,10 @@ export default function Rankings() {
           Dive Site Rankings
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-500 dark:text-slate-400 sm:mt-4">
-          See how 43 dive sites in the Similan Islands & Surin Islands in Thailand rank, based on community voting.
+          See how 43 dive sites rank, based on community voting
         </p>
       </div>
-      
+
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-md overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
           <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
