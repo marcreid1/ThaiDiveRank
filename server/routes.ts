@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const vote = await storage.createVote({
         winnerId,
         loserId,
-        pointsChanged
+        userId: undefined, // Optional user tracking for future use
       });
       
       res.json({ success: true, vote });
