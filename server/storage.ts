@@ -297,30 +297,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
-    // Use a simpler query with JOIN to get all data at once
-    const recentActivity = await db
+    // Get recent votes with basic data
+    const recentVotes = await db
       .select({
         id: votes.id,
+        winnerId: votes.winnerId,
+        loserId: votes.loserId,
         pointsChanged: votes.pointsChanged,
         timestamp: votes.timestamp,
-        winnerName: sql<string>`winner_site.name`.as('winnerName'),
-        loserName: sql<string>`loser_site.name`.as('loserName'),
-        username: sql<string>`COALESCE(${users.username}, 'Anonymous')`.as('username'),
+        userId: votes.userId,
       })
       .from(votes)
-      .leftJoin(diveSites.as('winner_site'), eq(votes.winnerId, sql`winner_site.id`))
-      .leftJoin(diveSites.as('loser_site'), eq(votes.loserId, sql`loser_site.id`))
-      .leftJoin(users, eq(votes.userId, users.id))
       .orderBy(desc(votes.timestamp))
       .limit(limit);
 
-    return recentActivity.map(activity => ({
-      id: activity.id,
-      winnerName: activity.winnerName || "Unknown",
-      loserName: activity.loserName || "Unknown", 
-      pointsChanged: activity.pointsChanged,
-      timestamp: activity.timestamp.toISOString(),
-      username: activity.username || "Anonymous",
+    if (recentVotes.length === 0) {
+      return [];
+    }
+
+    // Get dive site names
+    const siteIds = [...new Set([...recentVotes.map(v => v.winnerId), ...recentVotes.map(v => v.loserId)])];
+    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
+    const siteMap = new Map(sites.map(site => [site.id, site.name]));
+
+    // Get usernames for votes with user IDs
+    const userIds = [...new Set(recentVotes.map(v => v.userId).filter(id => id !== null))];
+    const usersList = [];
+    for (const userId of userIds) {
+      const user = await db.select({ id: users.id, username: users.username }).from(users).where(eq(users.id, userId));
+      if (user.length > 0) {
+        usersList.push(user[0]);
+      }
+    }
+    const userMap = new Map(usersList.map(user => [user.id, user.username]));
+
+    return recentVotes.map(vote => ({
+      id: vote.id,
+      winnerName: siteMap.get(vote.winnerId) || "Unknown",
+      loserName: siteMap.get(vote.loserId) || "Unknown",
+      pointsChanged: vote.pointsChanged,
+      timestamp: vote.timestamp.toISOString(),
+      username: vote.userId ? userMap.get(vote.userId) || "Anonymous" : "Anonymous",
     }));
   }
 

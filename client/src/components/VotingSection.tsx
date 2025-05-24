@@ -38,7 +38,7 @@ export default function VotingSection() {
   // Submit vote and update champion
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      await apiRequest("POST", "/api/vote", { winnerId, loserId, userId: user?.id });
+      await apiRequest("POST", "/api/vote", { winnerId, loserId });
     },
     onSuccess: () => {
       // Invalidate other queries but not matchup yet - we'll handle that manually

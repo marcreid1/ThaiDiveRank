@@ -148,12 +148,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate ELO change
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
       
-      // Create the vote
+      // Create the vote with session user ID
       const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
-        userId: userId || null, // Track user if provided
+        userId: req.session.userId,
       });
       
       res.json({ success: true, vote });
@@ -280,19 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw error;
       }
 
-      // Check for duplicate vote (same user, same matchup)
-      const existingVotes = await storage.getVotes();
-      const duplicateVote = existingVotes.find(vote => 
-        vote.userId === userId &&
-        ((vote.winnerId === winnerId && vote.loserId === loserId) ||
-         (vote.winnerId === loserId && vote.loserId === winnerId))
-      );
-
-      if (duplicateVote) {
-        return res.status(400).json({ message: "You have already voted on this matchup" });
-      }
-
-      // Calculate ELO changes
+      // Get dive sites for the vote
       const winner = await storage.getDiveSite(winnerId);
       const loser = await storage.getDiveSite(loserId);
       
@@ -300,17 +288,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Dive site not found" });
       }
 
+      // Calculate ELO change
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
 
       // Create vote with authenticated user ID
-      console.log("Creating vote with userId:", userId);
       const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
-        userId
+        userId: req.session.userId,
       });
-      console.log("Vote created:", vote);
 
       // Update dive site ratings
       await storage.updateDiveSite(winnerId, { 
