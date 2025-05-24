@@ -65,7 +65,6 @@ export default function Navbar() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        credentials: 'include',
       });
       if (!response.ok) {
         const error = await response.text();
@@ -99,7 +98,6 @@ export default function Navbar() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        credentials: 'include',
       });
       if (!response.ok) {
         const error = await response.text();
