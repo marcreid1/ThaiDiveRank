@@ -16,7 +16,6 @@ interface UserVote {
 
 interface UserStats {
   totalVotes: number;
-  votingStreak: number;
   favoriteWinner: string;
   recentVotes: UserVote[];
 }
@@ -54,7 +53,6 @@ export default function Profile() {
 
   const stats: UserStats = userStats || {
     totalVotes: 0,
-    votingStreak: 0,
     favoriteWinner: "None yet",
     recentVotes: []
   };
@@ -87,13 +85,13 @@ export default function Profile() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Voting Streak</CardTitle>
+            <CardTitle className="text-sm font-medium">Voting Impact</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.votingStreak}</div>
+            <div className="text-2xl font-bold">Active</div>
             <p className="text-xs text-muted-foreground">
-              Consecutive days voting
+              Contributing to rankings
             </p>
           </CardContent>
         </Card>
