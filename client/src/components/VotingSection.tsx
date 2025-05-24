@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { User, UserPlus } from "lucide-react";
 
 export default function VotingSection() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // State to track the currently winning dive site and which side it was on
@@ -129,17 +129,20 @@ export default function VotingSection() {
     localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
     // Store user vote locally for profile tracking
-    const userVote = {
-      id: Date.now(),
-      winnerName: winner.name,
-      loserName: loser.name,
-      pointsChanged: 32, // Default ELO change
-      timestamp: new Date().toISOString(),
-    };
-    
-    const existingVotes = JSON.parse(localStorage.getItem('user_votes') || '[]');
-    const updatedVotes = [userVote, ...existingVotes].slice(0, 50); // Keep last 50 votes
-    localStorage.setItem('user_votes', JSON.stringify(updatedVotes));
+    if (user?.id) {
+      const userVote = {
+        id: Date.now(),
+        winnerName: winner.name,
+        loserName: loser.name,
+        pointsChanged: 32, // Default ELO change
+        timestamp: new Date().toISOString(),
+      };
+      
+      const userSpecificKey = `user_votes_${user.id}`;
+      const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+      const updatedVotes = [userVote, ...existingVotes].slice(0, 50); // Keep last 50 votes
+      localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
+    }
 
     voteMutation.mutate({ 
       winnerId: winner.id, 
