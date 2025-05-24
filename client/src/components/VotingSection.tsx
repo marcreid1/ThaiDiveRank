@@ -14,14 +14,22 @@ export default function VotingSection() {
   const { isAuthenticated } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
-  // Simple query to get random matchups - no tracking of previous winners
+  // Track the current winner and which side they're on
+  const [currentWinner, setCurrentWinner] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
+  
+  // Query to get matchups - include winner info when available
   const { data: matchup, isLoading, isError, error } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
-    queryKey: ["/api/matchup"],
+    queryKey: ["/api/matchup", currentWinner?.diveSite.id, currentWinner?.side],
     queryFn: async () => {
-      return await fetch('/api/matchup').then(res => {
+      let url = '/api/matchup';
+      if (currentWinner) {
+        url += `?winnerId=${currentWinner.diveSite.id}&winnerSide=${currentWinner.side}`;
+      }
+      
+      return await fetch(url).then(res => {
         if (!res.ok) throw new Error('Failed to fetch matchup');
         return res.json();
       });
@@ -49,25 +57,29 @@ export default function VotingSection() {
     }
   });
 
-  const handleVote = (winner: DiveSite, loser: DiveSite) => {
+  const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
     // Check if user is authenticated
     if (!isAuthenticated) {
       setShowAuthDialog(true);
       return;
     }
 
-    // Simply submit the vote - no tracking or restrictions
+    // Set the winner to stay on the same side for next matchup
+    setCurrentWinner({ diveSite: winner, side });
+
+    // Submit the vote
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
     });
   };
   
-  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser);
-  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser);
+  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'A');
+  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'B');
 
   const handleSkip = () => {
-    // Simply get a new matchup
+    // Clear current winner and get a completely new matchup
+    setCurrentWinner(null);
     skipMutation.mutate();
   };
 

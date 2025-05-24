@@ -28,7 +28,7 @@ export interface IStorage {
   getDiveSitesByRegion(): Promise<RegionDiveSites[]>;
   
   // Matchup methods
-  getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
+  getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
   
   // Vote methods
   createVote(vote: InsertVote): Promise<Vote>;
@@ -185,14 +185,36 @@ export class DatabaseStorage implements IStorage {
     return regions;
   }
 
-  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+  async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allSites = await this.getAllDiveSites();
     
     if (allSites.length < 2) {
       throw new Error("Not enough dive sites for matchup");
     }
 
-    // Simple random selection for now
+    // If we have a winner from previous vote, keep them on the same side
+    if (winnerId && winnerSide) {
+      const winner = allSites.find(site => site.id === winnerId);
+      if (winner) {
+        // Get a random opponent (excluding the winner)
+        const opponents = allSites.filter(site => site.id !== winnerId);
+        const randomOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+        
+        if (winnerSide === 'A') {
+          return {
+            diveSiteA: winner,
+            diveSiteB: randomOpponent,
+          };
+        } else {
+          return {
+            diveSiteA: randomOpponent,
+            diveSiteB: winner,
+          };
+        }
+      }
+    }
+
+    // Default random selection for new matchups
     const shuffled = allSites.sort(() => 0.5 - Math.random());
     return {
       diveSiteA: shuffled[0],

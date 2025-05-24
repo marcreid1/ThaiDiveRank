@@ -18,10 +18,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get a random matchup
   app.get("/api/matchup", async (req, res) => {
     try {
-      // Check if we're requesting a specific winnerId to be included
       const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
+      const winnerSide = req.query.winnerSide as 'A' | 'B' | undefined;
       
-      const matchup = await storage.getRandomMatchup();
+      const matchup = await storage.getRandomMatchup(winnerId, winnerSide);
       res.json(matchup);
     } catch (error) {
       res.status(500).json({ 
