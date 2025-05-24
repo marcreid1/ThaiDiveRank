@@ -936,4 +936,212 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { users, type User, type InsertUser, diveSites, type DiveSite, type InsertDiveSite, votes, type Vote, type InsertVote } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, sql, inArray } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getAllDiveSites(): Promise<DiveSite[]> {
+    return await db.select().from(diveSites).orderBy(desc(diveSites.rating));
+  }
+
+  async getDiveSite(id: number): Promise<DiveSite | undefined> {
+    const [diveSite] = await db.select().from(diveSites).where(eq(diveSites.id, id));
+    return diveSite || undefined;
+  }
+
+  async createDiveSite(insertDiveSite: InsertDiveSite): Promise<DiveSite> {
+    const [diveSite] = await db
+      .insert(diveSites)
+      .values({
+        ...insertDiveSite,
+        rating: 1500,
+        wins: 0,
+        losses: 0,
+        depthMin: 0,
+        depthMax: 0,
+        difficulty: "Intermediate",
+      })
+      .returning();
+    return diveSite;
+  }
+
+  async updateDiveSite(id: number, diveSiteUpdate: Partial<DiveSite>): Promise<DiveSite | undefined> {
+    const [diveSite] = await db
+      .update(diveSites)
+      .set(diveSiteUpdate)
+      .where(eq(diveSites.id, id))
+      .returning();
+    return diveSite || undefined;
+  }
+
+  async getDiveSiteRankings(): Promise<{ rankings: DiveSiteRanking[], lastUpdated: string }> {
+    const allSites = await db.select().from(diveSites).orderBy(desc(diveSites.rating));
+    
+    // Get the most recent vote timestamp
+    const [latestVote] = await db.select({ timestamp: votes.timestamp }).from(votes).orderBy(desc(votes.timestamp)).limit(1);
+    const lastUpdated = latestVote?.timestamp?.toISOString() || new Date().toISOString();
+
+    const rankings = allSites.map(site => ({
+      ...site,
+      rankChange: 0, // For now, we'll set rank changes to 0 - could be enhanced later
+    }));
+
+    return { rankings, lastUpdated };
+  }
+
+  async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
+    const allSites = await this.getAllDiveSites();
+    
+    // Group dive sites by region (based on location patterns)
+    const regionMap = new Map<string, DiveSite[]>();
+    
+    allSites.forEach(site => {
+      let region = "Other";
+      
+      if (site.location.includes("Similan")) {
+        region = "Similan Islands";
+      } else if (site.location.includes("Surin")) {
+        region = "Surin Islands";
+      } else if (site.location.includes("Richelieu")) {
+        region = "Richelieu Rock Area";
+      }
+      
+      if (!regionMap.has(region)) {
+        regionMap.set(region, []);
+      }
+      regionMap.get(region)!.push(site);
+    });
+
+    const regions: RegionDiveSites[] = [];
+    
+    regionMap.forEach((sites, regionName) => {
+      let description = "";
+      
+      switch (regionName) {
+        case "Similan Islands":
+          description = "A pristine archipelago known for its crystal-clear waters and diverse marine life.";
+          break;
+        case "Surin Islands":
+          description = "Remote islands offering untouched coral reefs and excellent visibility.";
+          break;
+        case "Richelieu Rock Area":
+          description = "Famous seamount diving with whale shark encounters and macro life.";
+          break;
+        default:
+          description = "Additional diving locations in the region.";
+      }
+      
+      regions.push({
+        region: regionName,
+        description,
+        diveSites: sites,
+      });
+    });
+
+    return regions;
+  }
+
+  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+    const allSites = await this.getAllDiveSites();
+    
+    if (allSites.length < 2) {
+      throw new Error("Not enough dive sites for matchup");
+    }
+
+    // Simple random selection for now
+    const shuffled = allSites.sort(() => 0.5 - Math.random());
+    return {
+      diveSiteA: shuffled[0],
+      diveSiteB: shuffled[1],
+    };
+  }
+
+  async createVote(insertVote: InsertVote): Promise<Vote> {
+    const [vote] = await db
+      .insert(votes)
+      .values(insertVote)
+      .returning();
+
+    // Update the dive site ratings
+    const winner = await this.getDiveSite(insertVote.winnerId);
+    const loser = await this.getDiveSite(insertVote.loserId);
+
+    if (winner && loser) {
+      await db
+        .update(diveSites)
+        .set({ 
+          rating: winner.rating + insertVote.pointsChanged,
+          wins: winner.wins + 1,
+        })
+        .where(eq(diveSites.id, insertVote.winnerId));
+
+      await db
+        .update(diveSites)
+        .set({ 
+          rating: loser.rating - insertVote.pointsChanged,
+          losses: loser.losses + 1,
+        })
+        .where(eq(diveSites.id, insertVote.loserId));
+    }
+
+    return vote;
+  }
+
+  async getVotes(limit = 20): Promise<Vote[]> {
+    return await db.select().from(votes).orderBy(desc(votes.timestamp)).limit(limit);
+  }
+
+  async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
+    const recentVotes = await db
+      .select({
+        id: votes.id,
+        winnerId: votes.winnerId,
+        loserId: votes.loserId,
+        pointsChanged: votes.pointsChanged,
+        timestamp: votes.timestamp,
+      })
+      .from(votes)
+      .orderBy(desc(votes.timestamp))
+      .limit(limit);
+
+    const activities: VoteActivity[] = [];
+
+    for (const vote of recentVotes) {
+      const winner = await this.getDiveSite(vote.winnerId);
+      const loser = await this.getDiveSite(vote.loserId);
+
+      if (winner && loser) {
+        activities.push({
+          id: vote.id,
+          winnerName: winner.name,
+          loserName: loser.name,
+          pointsChanged: vote.pointsChanged,
+          timestamp: vote.timestamp.toISOString(),
+        });
+      }
+    }
+
+    return activities;
+  }
+}
+
+export const storage = new DatabaseStorage();
