@@ -1,6 +1,6 @@
 // Dive site images
 import coralGardens from './images/dive-sites/1. Coral Gardens.png';
-import sharkFinReef from './images/dive-sites/2. Shark Fin Reef.png';
+import sharkFinReef from './images/dive-sites/2. Shark Fin Reef.jpg';
 import boulderCity from './images/dive-sites/3. Boulder City.png';
 import princessBay from './images/dive-sites/4. Princess Bay.png';
 import honeymoonBay from './images/dive-sites/5. Honeymoon Bay.png';
