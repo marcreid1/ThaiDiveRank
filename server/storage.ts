@@ -1,7 +1,7 @@
 import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface RegionDiveSites {
@@ -308,11 +308,70 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserStats(userId?: number): Promise<any> {
-    // Return basic stats - the frontend handles detailed calculations from localStorage
+    if (!userId) {
+      return {
+        totalVotes: 0,
+        favoriteWinner: "None yet",
+        recentVotes: []
+      };
+    }
+
+    // Get actual user voting statistics from the database
+    const userVotes = await db
+      .select({
+        id: votes.id,
+        pointsChanged: votes.pointsChanged,
+        timestamp: votes.timestamp,
+        winnerId: votes.winnerId,
+        loserId: votes.loserId
+      })
+      .from(votes)
+      .where(eq(votes.userId, userId))
+      .orderBy(desc(votes.timestamp))
+      .limit(50);
+
+    if (userVotes.length === 0) {
+      return {
+        totalVotes: 0,
+        favoriteWinner: "None yet",
+        recentVotes: []
+      };
+    }
+
+    // Get dive site names for the votes
+    const siteIds = [...new Set([...userVotes.map(v => v.winnerId), ...userVotes.map(v => v.loserId)])];
+    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
+    const siteMap = new Map(sites.map(site => [site.id, site.name]));
+
+    // Calculate favorite winner
+    const winnerCounts = new Map<string, number>();
+    userVotes.forEach(vote => {
+      const winnerName = siteMap.get(vote.winnerId) || "Unknown";
+      winnerCounts.set(winnerName, (winnerCounts.get(winnerName) || 0) + 1);
+    });
+
+    let favoriteWinner = "None yet";
+    let maxVotes = 0;
+    for (const [winner, count] of winnerCounts.entries()) {
+      if (count > maxVotes) {
+        maxVotes = count;
+        favoriteWinner = winner;
+      }
+    }
+
+    // Format recent votes
+    const recentVotes = userVotes.slice(0, 10).map(vote => ({
+      id: vote.id,
+      winnerName: siteMap.get(vote.winnerId) || "Unknown",
+      loserName: siteMap.get(vote.loserId) || "Unknown",
+      pointsChanged: vote.pointsChanged,
+      timestamp: vote.timestamp.toISOString(),
+    }));
+
     return {
-      totalVotes: 0,
-      favoriteWinner: "None yet",
-      recentVotes: []
+      totalVotes: userVotes.length,
+      favoriteWinner,
+      recentVotes
     };
   }
 }
