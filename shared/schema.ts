@@ -52,11 +52,11 @@ export const insertDiveSiteSchema = createInsertSchema(diveSites).omit({
 export type InsertDiveSite = z.infer<typeof insertDiveSiteSchema>;
 export type DiveSite = typeof diveSites.$inferSelect;
 
-// Votes schema
+// Votes schema with proper foreign key constraints
 export const votes = pgTable("votes", {
   id: serial("id").primaryKey(),
-  winnerId: integer("winner_id").notNull(),
-  loserId: integer("loser_id").notNull(),
+  winnerId: integer("winner_id").notNull().references(() => diveSites.id),
+  loserId: integer("loser_id").notNull().references(() => diveSites.id),
   pointsChanged: integer("points_changed").notNull(),
   userId: integer("user_id").references(() => users.id),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
