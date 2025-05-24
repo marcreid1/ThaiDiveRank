@@ -265,6 +265,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { winnerId, loserId } = req.body;
       
+      // Debug session
+      console.log("Session data:", req.session);
+      console.log("Session userId:", req.session.userId);
+      
       // Check if user is authenticated through session
       if (!req.session.userId) {
         return res.status(401).json({ message: "Authentication required" });
