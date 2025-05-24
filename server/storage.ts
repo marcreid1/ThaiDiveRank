@@ -866,6 +866,15 @@ export class MemStorage implements IStorage {
     const loser = await this.getDiveSite(insertVote.loserId);
     
     if (winner && loser) {
+      // Capture current rankings BEFORE making any changes
+      const currentRankings = Array.from(this.diveSites.values())
+        .sort((a, b) => b.rating - a.rating);
+      
+      // Store current positions as previous positions for next calculation
+      currentRankings.forEach((site, index) => {
+        this.previousRankings.set(site.id, index + 1);
+      });
+      
       // Calculate ELO rating change
       const ratingChange = calculateEloChange(winner.rating, loser.rating);
       
