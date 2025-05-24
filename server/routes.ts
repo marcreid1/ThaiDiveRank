@@ -165,9 +165,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
-      console.log("SIGNUP DEBUG - Full request body:", JSON.stringify(req.body, null, 2));
-      console.log("SIGNUP DEBUG - Body keys:", Object.keys(req.body));
-      console.log("SIGNUP DEBUG - Content-Type:", req.headers['content-type']);
+      console.log("=== SIGNUP DEBUG START ===");
+      console.log("Full request body:", JSON.stringify(req.body, null, 2));
+      console.log("Body keys:", Object.keys(req.body));
+      console.log("Content-Type:", req.headers['content-type']);
       
       // Ensure we have the required fields
       const username = req.body.username;
