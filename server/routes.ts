@@ -264,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         winnerId,
         loserId,
         pointsChanged,
-        userId: req.session.userId
+        userId: req.session.userId!
       });
 
       // Update dive site ratings
