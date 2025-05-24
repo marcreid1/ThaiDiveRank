@@ -73,10 +73,10 @@ export default function Profile() {
     );
   }
 
-  const stats: UserStats = userStats || {
-    totalVotes: 0,
-    favoriteWinner: "None yet", 
-    recentVotes: []
+  const stats: UserStats = {
+    totalVotes: (userStats as any)?.totalVotes || 0,
+    favoriteWinner: (userStats as any)?.favoriteWinner || "None yet",
+    recentVotes: (userStats as any)?.recentVotes || []
   };
 
   // Calculate user's favorite winner from their voting history

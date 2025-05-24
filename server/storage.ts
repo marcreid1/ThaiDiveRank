@@ -96,7 +96,9 @@ export class DatabaseStorage implements IStorage {
 
     const rankings = allSites.map(site => ({
       ...site,
-      rankChange: site.previousRank > 0 ? site.previousRank - site.currentRank : 0,
+      rankChange: (site.previousRank !== null && site.currentRank !== null && site.previousRank > 0) 
+        ? site.previousRank - site.currentRank 
+        : 0,
     }));
 
     return { rankings, lastUpdated };

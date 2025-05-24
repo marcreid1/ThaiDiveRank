@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if we're requesting a specific winnerId to be included
       const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
       
-      const matchup = await storage.getRandomMatchup(winnerId);
+      const matchup = await storage.getRandomMatchup();
       res.json(matchup);
     } catch (error) {
       res.status(500).json({ 
@@ -120,6 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const vote = await storage.createVote({
         winnerId,
         loserId,
+        pointsChanged,
         userId: userId || null, // Track user if provided
       });
       
