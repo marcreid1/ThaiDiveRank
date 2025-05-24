@@ -1,11 +1,12 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
-import rateLimit from "express-rate-limit";
 import { storage } from "./storage";
 import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
-import crypto from "crypto";
+import { createRateLimiter } from "./middleware/logging";
+import { securityLogger, requestAnalytics } from "./logger";
+import { getAnalyticsData, getSecuritySummary } from "./analytics";
 
 // Use the session interface from express-session
 declare module 'express-session' {
@@ -15,41 +16,27 @@ declare module 'express-session' {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Rate limiting configurations
-  const generalLimit = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: { message: "Too many requests, please try again later." },
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  });
-
-  const authLimit = rateLimit({
+  // Enhanced rate limiting with logging
+  const authLimit = createRateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 authentication attempts per windowMs
-    message: { message: "Too many authentication attempts, please try again later." },
-    standardHeaders: true,
-    legacyHeaders: false,
+    message: "Too many authentication attempts, please try again later.",
+    name: "auth"
   });
 
-  const voteLimit = rateLimit({
+  const voteLimit = createRateLimiter({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 10, // limit each IP to 10 votes per minute
-    message: { message: "Too many votes, please slow down." },
-    standardHeaders: true,
-    legacyHeaders: false,
+    message: "Too many votes, please slow down.",
+    name: "vote"
   });
 
-  const readLimit = rateLimit({
+  const readLimit = createRateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000, // generous limit for read operations
-    message: { message: "Too many requests, please try again later." },
-    standardHeaders: true,
-    legacyHeaders: false,
+    message: "Too many requests, please try again later.",
+    name: "read"
   });
-
-  // Apply general rate limiting to all API routes
-  app.use("/api", generalLimit);
 
   // Check authentication status
   app.get("/api/auth/me", readLimit, async (req, res) => {
@@ -226,8 +213,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Authenticate user with secure password checking
       const user = await storage.authenticateUser(username, password);
       if (!user) {
+        // Log failed login attempt
+        securityLogger.failedLogin(
+          req.ip || 'unknown',
+          username,
+          req.get('User-Agent')
+        );
         return res.status(401).json({ message: "Invalid credentials" });
       }
+      
+      // Log successful login
+      securityLogger.successfulLogin(
+        req.ip || 'unknown',
+        username,
+        user.id,
+        req.get('User-Agent')
+      );
       
       // Store user ID in session
       req.session.userId = user.id;
@@ -251,6 +252,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to logout" 
+      });
+    }
+  });
+
+  // Analytics endpoints (for monitoring)
+  app.get("/api/analytics/security", readLimit, async (req, res) => {
+    try {
+      // Note: In production, you'd want proper admin authentication here
+      const summary = getSecuritySummary();
+      res.json(summary);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get security analytics" 
+      });
+    }
+  });
+
+  app.get("/api/analytics/logs", readLimit, async (req, res) => {
+    try {
+      // Note: In production, you'd want proper admin authentication here
+      const data = getAnalyticsData();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get log analytics" 
       });
     }
   });
@@ -288,6 +314,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate ELO change
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
 
+      // Log the vote for analytics
+      requestAnalytics.trackVote(req, winnerId, loserId, pointsChanged);
+      
       // Create vote with authenticated user ID
       console.log("Creating vote with userId:", req.session.userId);
       const vote = await storage.createVote({

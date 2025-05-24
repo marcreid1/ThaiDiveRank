@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { securityLogger, appLogger, requestAnalytics } from '../logger';
 
 // Custom Morgan format for structured logging
-export const httpLogger = morgan((tokens, req, res) => {
+export const httpLogger = morgan((tokens: any, req: any, res: any) => {
   const logData = {
     method: tokens.method(req, res),
     url: tokens.url(req, res),
@@ -58,17 +58,7 @@ export function createRateLimiter(options: {
 
       res.status(429).json({ message: options.message });
     },
-    onLimitReached: (req: Request) => {
-      securityLogger.suspiciousActivity(
-        req.ip || 'unknown',
-        'Rate limit threshold reached',
-        {
-          endpoint: req.originalUrl,
-          limitName: options.name,
-          userAgent: req.get('User-Agent')
-        }
-      );
-    }
+    // Note: onLimitReached callback removed due to version compatibility
   });
 }
 
