@@ -25,16 +25,25 @@ export default function Profile() {
   const { user, isAuthenticated } = useAuth();
   const [userVotes, setUserVotes] = useState<UserVote[]>([]);
 
-  // Load user votes from localStorage
+  // Load user votes from localStorage and refresh on interval
   useEffect(() => {
-    const storedVotes = localStorage.getItem('user_votes');
-    if (storedVotes) {
-      try {
-        setUserVotes(JSON.parse(storedVotes));
-      } catch {
-        setUserVotes([]);
+    const loadUserVotes = () => {
+      const storedVotes = localStorage.getItem('user_votes');
+      if (storedVotes) {
+        try {
+          setUserVotes(JSON.parse(storedVotes));
+        } catch {
+          setUserVotes([]);
+        }
       }
-    }
+    };
+
+    loadUserVotes();
+    
+    // Refresh user votes every 2 seconds to catch new votes
+    const interval = setInterval(loadUserVotes, 2000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const { data: userStats, isLoading } = useQuery({
