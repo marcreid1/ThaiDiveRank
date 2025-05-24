@@ -209,6 +209,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
+      // Store user ID in session
+      req.session.userId = user.id;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -219,14 +222,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User logout
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      req.session.userId = undefined;
+      res.json({ success: true, message: "Logged out successfully" });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to logout" 
+      });
+    }
+  });
+
   // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
       // Get stats for the authenticated user
       const userId = req.session?.userId;
+      console.log("Getting user stats for userId:", userId);
       const stats = await storage.getUserStats(userId);
+      console.log("User stats result:", stats);
       res.json(stats);
     } catch (error: any) {
+      console.error("Error getting user stats:", error);
       res.status(500).json({ message: error.message });
     }
   });
