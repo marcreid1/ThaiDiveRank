@@ -96,6 +96,7 @@ export default function VotingSection() {
     onSuccess: (data: any) => {
       // Store user vote with actual ELO points from server
       if (user?.id && data?.response?.vote) {
+        console.log("Storing vote:", data);
         const userVote = {
           id: Date.now(),
           winnerName: data.winner.name,
@@ -108,6 +109,9 @@ export default function VotingSection() {
         const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
         const updatedVotes = [userVote, ...existingVotes].slice(0, 50);
         localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
+        console.log("Stored votes:", updatedVotes);
+      } else {
+        console.log("Vote storage failed - missing data:", { user: user?.id, response: data?.response, vote: data?.response?.vote });
       }
       
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
