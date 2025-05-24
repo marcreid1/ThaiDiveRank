@@ -7,35 +7,16 @@ import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VotingSection() {
-  // State to track the currently winning dive site and which side it was on
-  // Use localStorage to persist between tab navigation
-  const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(() => {
-    const saved = localStorage.getItem('previousWinner');
-    return saved ? JSON.parse(saved) : null;
-  });
-  
-  const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(() => {
-    return localStorage.getItem('winnerSide') as 'left' | 'right' | null;
-  });
-  
-  const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(() => {
-    const saved = localStorage.getItem('matchedDiveSites');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
-  
-  // Query to get matchups, including the previous winner when available
-  const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
-    diveSiteA: DiveSite;
-    diveSiteB: DiveSite;
+  // Query to get matchups
+  const { data: matchupData, isLoading, isError, error } = useQuery<{
+    diveSiteA?: DiveSite;
+    diveSiteB?: DiveSite;
+    completed?: boolean;
+    message?: string;
   }>({
-    queryKey: ["/api/matchup", previousWinner?.id],
-    queryFn: async ({ queryKey }) => {
-      const winnerId = queryKey[1];
-      const url = winnerId
-        ? `/api/matchup?winnerId=${winnerId}`
-        : '/api/matchup';
-      
-      return await fetch(url).then(res => {
+    queryKey: ["/api/matchup"],
+    queryFn: async () => {
+      return await fetch('/api/matchup').then(res => {
         if (!res.ok) throw new Error('Failed to fetch matchup');
         return res.json();
       });

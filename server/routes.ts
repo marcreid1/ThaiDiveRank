@@ -9,10 +9,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get a random matchup
   app.get("/api/matchup", async (req, res) => {
     try {
-      // Check if we're requesting a specific winnerId to be included
-      const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
+      const matchup = await storage.getRandomMatchup();
       
-      const matchup = await storage.getRandomMatchup(winnerId);
+      if (!matchup) {
+        // All matchups completed
+        return res.json({ 
+          completed: true, 
+          message: "All dive site comparisons have been completed!" 
+        });
+      }
+      
       res.json(matchup);
     } catch (error) {
       res.status(500).json({ 
@@ -123,7 +129,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pointsChanged
       });
       
-      res.json({ success: true, vote });
+      // Mark this matchup as completed
+      await storage.markMatchupCompleted(winnerId, loserId);
+      
+      // Check if all matchups are completed
+      const allCompleted = await storage.areAllMatchupsCompleted();
+      
+      res.json({ 
+        success: true, 
+        vote, 
+        allMatchupsCompleted: allCompleted 
+      });
     } catch (error) {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to process vote" 

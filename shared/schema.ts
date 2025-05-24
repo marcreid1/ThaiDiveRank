@@ -67,6 +67,23 @@ export const insertVoteSchema = createInsertSchema(votes).omit({
 export type InsertVote = z.infer<typeof insertVoteSchema>;
 export type Vote = typeof votes.$inferSelect;
 
+// Matchups schema - tracks which dive sites have been compared
+export const matchups = pgTable("matchups", {
+  id: serial("id").primaryKey(),
+  siteAId: integer("site_a_id").notNull(),
+  siteBId: integer("site_b_id").notNull(),
+  completed: boolean("completed").notNull().default(false),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+export const insertMatchupSchema = createInsertSchema(matchups).omit({
+  id: true,
+  timestamp: true,
+});
+
+export type InsertMatchup = z.infer<typeof insertMatchupSchema>;
+export type Matchup = typeof matchups.$inferSelect;
+
 // Additional types for the API responses
 export interface DiveSiteRanking extends DiveSite {
   rankChange: number;
