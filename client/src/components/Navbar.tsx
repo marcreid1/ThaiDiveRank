@@ -301,7 +301,10 @@ export default function Navbar() {
                 </Form>
               </DialogContent>
             </Dialog>
-
+              </>
+            )}
+            
+            {/* Dark mode toggle - always visible */}
             {mounted && (
               <Button
                 variant="ghost"
@@ -316,8 +319,6 @@ export default function Navbar() {
                   <Moon className="h-5 w-5" />
                 )}
               </Button>
-            )}
-              </>
             )}
             <button 
               className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ocean-500 dark:hover:bg-slate-800 dark:text-slate-300"
