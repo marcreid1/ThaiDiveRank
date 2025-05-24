@@ -90,9 +90,30 @@ export default function VotingSection() {
 
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      await apiRequest("POST", "/api/vote", { winnerId, loserId });
+      return await apiRequest("POST", "/api/vote", { winnerId, loserId });
     },
-    onSuccess: () => {
+    onSuccess: (data: any, variables) => {
+      // Update localStorage with the actual ELO points from server response
+      if (user?.id && data?.vote) {
+        const winner = matchup?.diveSiteA?.id === variables.winnerId ? matchup.diveSiteA : matchup?.diveSiteB;
+        const loser = matchup?.diveSiteA?.id === variables.loserId ? matchup.diveSiteA : matchup?.diveSiteB;
+        
+        if (winner && loser) {
+          const userVote = {
+            id: Date.now(),
+            winnerName: winner.name,
+            loserName: loser.name,
+            pointsChanged: data.vote.pointsChanged, // Use actual ELO points from server
+            timestamp: new Date().toISOString(),
+          };
+          
+          const userSpecificKey = `user_votes_${user.id}`;
+          const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+          const updatedVotes = [userVote, ...existingVotes].slice(0, 50);
+          localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
+        }
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
@@ -128,22 +149,6 @@ export default function VotingSection() {
     setMatchedDiveSites(updatedMatchedSites);
     localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
-    // Store user vote locally for profile tracking
-    if (user?.id) {
-      const userVote = {
-        id: Date.now(),
-        winnerName: winner.name,
-        loserName: loser.name,
-        pointsChanged: 32, // Default ELO change
-        timestamp: new Date().toISOString(),
-      };
-      
-      const userSpecificKey = `user_votes_${user.id}`;
-      const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
-      const updatedVotes = [userVote, ...existingVotes].slice(0, 50); // Keep last 50 votes
-      localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
-    }
-
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
