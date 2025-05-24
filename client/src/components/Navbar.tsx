@@ -17,9 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
 const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
-  captcha: z.string().min(1),
+  captcha: z.string().min(1, "Security challenge required"),
 });
 
 const signUpSchema = z.object({
@@ -48,7 +48,7 @@ export default function Navbar() {
   const signInForm = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
       captcha: "",
     },
@@ -78,7 +78,7 @@ export default function Navbar() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          email: data.email, 
+          username: data.username, 
           password: data.password 
         }),
       });
@@ -242,12 +242,12 @@ export default function Navbar() {
                   <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
                     <FormField
                       control={signInForm.control}
-                      name="email"
+                      name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email Address</FormLabel>
+                          <FormLabel>Username</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="Enter your email address" {...field} />
+                            <Input placeholder="Enter your username" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -276,6 +276,7 @@ export default function Navbar() {
                               value={field.value}
                               onChange={field.onChange}
                               onVerify={setSignInCaptchaValid}
+                              error={signInForm.formState.errors.captcha?.message}
                             />
                           </FormControl>
                           <FormMessage />

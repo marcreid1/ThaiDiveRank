@@ -164,42 +164,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
-    console.log("🔥 SIGNUP ROUTE HIT - Request received");
     try {
-      console.log("=== SIGNUP DEBUG START ===");
-      console.log("Raw body:", req.body);
-      console.log("Body type:", typeof req.body);
-      console.log("Body keys:", Object.keys(req.body || {}));
-      console.log("Headers:", req.headers);
+      const { username, password } = req.body;
       
-      // Check if body exists and has expected structure
-      if (!req.body) {
-        console.log("ERROR: No request body received!");
-        return res.status(400).json({ message: "No data received" });
+      // Validate input
+      try {
+        insertUserSchema.parse({ username, password });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+        }
+        throw error;
       }
-      
-      // Ensure we have the required fields
-      const username = req.body.username;
-      const email = req.body.email;
-      const password = req.body.password;
-      
-      console.log("Field extraction results:");
-      console.log("- username:", username, "(type:", typeof username, ")");
-      console.log("- email:", email, "(type:", typeof email, ")");
-      console.log("- password:", password ? "***present***" : "***missing***", "(type:", typeof password, ")");
-      
-      // Basic validation
-      if (!username || !email || !password) {
-        return res.status(400).json({ 
-          message: `Missing required fields. Username, email, and password are required.` 
-        });
-      }
-      
-      if (!email.includes('@')) {
-        return res.status(400).json({ message: "Please enter a valid email address" });
-      }
-      
-      console.log("SIGNUP DEBUG - Final email to use:", email);
       
       // Check if user already exists
       const existingUser = await storage.getUserByUsername(username);
@@ -207,14 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username already exists" });
       }
       
-      // Check if email already exists
-      const existingEmail = await storage.getUserByEmail(email);
-      if (existingEmail) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-      
       // Create new user
-      const user = await storage.createUser({ username, email, password });
+      const user = await storage.createUser({ username, password });
       
       // Don't return password in response
       const { password: _, ...userResponse } = user;
@@ -229,24 +199,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signin
   app.post("/api/auth/signin", authLimit, async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { username, password } = req.body;
       
-      // Basic validation
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password required" });
-      }
-      
-      if (!email.includes('@')) {
-        return res.status(400).json({ message: "Please enter a valid email address" });
+      // Validate input
+      try {
+        insertUserSchema.parse({ username, password });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid credentials" });
+        }
+        throw error;
       }
       
       // Authenticate user with secure password checking
-      const user = await storage.authenticateUser(email, password);
+      const user = await storage.authenticateUser(username, password);
       if (!user) {
         // Log failed login attempt
         securityLogger.failedLogin(
           req.ip || 'unknown',
-          email,
+          username,
           req.get('User-Agent')
         );
         return res.status(401).json({ message: "Invalid credentials" });
@@ -255,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log successful login
       securityLogger.successfulLogin(
         req.ip || 'unknown',
-        email,
+        username,
         user.id,
         req.get('User-Agent')
       );

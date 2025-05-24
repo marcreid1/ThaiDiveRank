@@ -22,25 +22,8 @@ app.use(securityMonitor);
 app.use(spikeDetection);
 app.use(httpLogger);
 
-// Add body parsing with debugging
-app.use((req, res, next) => {
-  console.log(`📥 Incoming ${req.method} ${req.path}`);
-  if (req.path === '/api/auth/signup') {
-    console.log('🔥 SIGNUP REQUEST DETECTED');
-  }
-  next();
-});
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Debug middleware to check body parsing
-app.use((req, res, next) => {
-  if (req.path === '/api/auth/signup' && req.method === 'POST') {
-    console.log('🧪 BODY AFTER PARSING:', JSON.stringify(req.body, null, 2));
-  }
-  next();
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Set up session management
 app.use(session({

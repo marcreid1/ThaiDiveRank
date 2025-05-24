@@ -58,23 +58,6 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async getUserByUsernameOrEmail(usernameOrEmail: string): Promise<User | undefined> {
-    // First try to find by username
-    let user = await this.getUserByUsername(usernameOrEmail);
-    
-    // If not found, try to find by email
-    if (!user) {
-      user = await this.getUserByEmail(usernameOrEmail);
-    }
-    
-    return user;
-  }
-
   async createUser(insertUser: InsertUser): Promise<User> {
     // Hash the password before storing
     const saltRounds = 12;
@@ -90,13 +73,8 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async authenticateUser(email: string, password: string): Promise<User | null> {
-    // Only allow authentication with email address
-    if (!email.includes('@')) {
-      return null;
-    }
-    
-    const user = await this.getUserByEmail(email);
+  async authenticateUser(username: string, password: string): Promise<User | null> {
+    const user = await this.getUserByUsername(username);
     if (!user) {
       return null;
     }
