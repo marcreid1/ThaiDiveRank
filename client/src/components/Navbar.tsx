@@ -263,7 +263,24 @@ export default function Navbar() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={signInMutation.isPending}>
+                    <FormField
+                      control={signInForm.control}
+                      name="captcha"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Captcha
+                              value={field.value}
+                              onChange={field.onChange}
+                              onVerify={setSignInCaptchaValid}
+                              error={signInForm.formState.errors.captcha?.message}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={signInMutation.isPending || !signInCaptchaValid}>
                       {signInMutation.isPending ? "Signing In..." : "Sign In"}
                     </Button>
                   </form>
@@ -311,7 +328,24 @@ export default function Navbar() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={signUpMutation.isPending}>
+                    <FormField
+                      control={signUpForm.control}
+                      name="captcha"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Captcha
+                              value={field.value}
+                              onChange={field.onChange}
+                              onVerify={setSignUpCaptchaValid}
+                              error={signUpForm.formState.errors.captcha?.message}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={signUpMutation.isPending || !signUpCaptchaValid}>
                       {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
                     </Button>
                   </form>
