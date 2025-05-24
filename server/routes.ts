@@ -164,6 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
+    console.log("🔥 SIGNUP ROUTE HIT - Request received");
     try {
       console.log("=== SIGNUP DEBUG START ===");
       console.log("Raw body:", req.body);
