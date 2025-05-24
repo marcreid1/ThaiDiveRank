@@ -58,7 +58,7 @@ export const votes = pgTable("votes", {
   winnerId: integer("winner_id").notNull().references(() => diveSites.id),
   loserId: integer("loser_id").notNull().references(() => diveSites.id),
   pointsChanged: integer("points_changed").notNull(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").notNull().references(() => users.id),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
@@ -66,7 +66,7 @@ export const insertVoteSchema = createInsertSchema(votes).omit({
   id: true,
   timestamp: true,
 }).extend({
-  userId: z.number().optional(),
+  userId: z.number(), // Required - votes must be linked to authenticated users
 });
 
 export type InsertVote = z.infer<typeof insertVoteSchema>;
