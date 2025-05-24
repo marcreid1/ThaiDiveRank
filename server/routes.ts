@@ -274,6 +274,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a vote with authentication and duplicate prevention
   app.post("/api/vote", async (req, res) => {
     try {
+      // Debug session data
+      console.log("Session data:", req.session);
+      console.log("User ID from session:", req.session.userId);
+      
       // Check if user is authenticated
       if (!req.session.userId) {
         return res.status(401).json({ message: "Authentication required" });
