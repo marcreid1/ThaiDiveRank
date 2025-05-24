@@ -92,47 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Vote for a dive site
-  app.post("/api/vote", async (req, res) => {
-    try {
-      const { winnerId, loserId, userId } = req.body;
-      
-      // Validate the vote data
-      try {
-        insertVoteSchema.parse({ winnerId, loserId, pointsChanged: 0 });
-      } catch (error) {
-        if (error instanceof ZodError) {
-          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
-        }
-        throw error;
-      }
-      
-      // Get the dive sites
-      const winner = await storage.getDiveSite(winnerId);
-      const loser = await storage.getDiveSite(loserId);
-      
-      if (!winner || !loser) {
-        return res.status(404).json({ message: "One or both dive sites not found" });
-      }
-      
-      // Calculate ELO change
-      const pointsChanged = calculateEloChange(winner.rating, loser.rating);
-      
-      // Create the vote
-      const vote = await storage.createVote({
-        winnerId,
-        loserId,
-        pointsChanged,
-        userId: userId || null, // Track user if provided
-      });
-      
-      res.json({ success: true, vote });
-    } catch (error) {
-      res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to process vote" 
-      });
-    }
-  });
+
   
   // Skip current matchup
   app.post("/api/skip", async (req, res) => {
