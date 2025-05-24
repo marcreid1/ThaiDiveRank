@@ -47,16 +47,23 @@ export default function VotingSection() {
       return params;
     },
     onSuccess: (data) => {
-      // Set the winner to stay on the same side for next matchup
+      // Set the winner first
       if (data.winnerSide && data.winnerDiveSite) {
         setCurrentWinner({ diveSite: data.winnerDiveSite, side: data.winnerSide });
+        
+        // Wait for state update then invalidate queries
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+        }, 10);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
       }
-      
-      // Force refetch with new winner parameters
-      queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
     }
   });
 
