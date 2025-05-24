@@ -266,65 +266,43 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Invalid dive site IDs");
     }
 
-    // Get current rankings before vote
-    const currentRankings = await db.select().from(diveSites).orderBy(desc(diveSites.rating));
-    const rankingMap = new Map();
-    currentRankings.forEach((site, index) => {
-      rankingMap.set(site.id, index + 1);
-    });
+    // Use database transaction for atomic operations
+    return await db.transaction(async (tx) => {
+      // Calculate ELO change
+      const eloChange = calculateEloChange(winner.rating, loser.rating);
 
-    // Store previous ranks
-    await Promise.all([
-      db.update(diveSites).set({ previousRank: rankingMap.get(insertVote.winnerId) }).where(eq(diveSites.id, insertVote.winnerId)),
-      db.update(diveSites).set({ previousRank: rankingMap.get(insertVote.loserId) }).where(eq(diveSites.id, insertVote.loserId))
-    ]);
-
-    // Calculate ELO change
-    const eloChange = calculateEloChange(winner.rating, loser.rating);
-
-    // Create the vote with calculated points
-    const [vote] = await db
-      .insert(votes)
-      .values({
-        winnerId: insertVote.winnerId,
-        loserId: insertVote.loserId,
-        pointsChanged: eloChange,
-        userId: insertVote.userId,
-      })
-      .returning();
-
-    // Update the dive site ratings
-    await Promise.all([
-      db
-        .update(diveSites)
-        .set({ 
-          rating: winner.rating + eloChange,
-          wins: winner.wins + 1,
+      // Create vote and update ratings atomically
+      const [vote] = await tx
+        .insert(votes)
+        .values({
+          winnerId: insertVote.winnerId,
+          loserId: insertVote.loserId,
+          pointsChanged: eloChange,
+          userId: insertVote.userId,
         })
-        .where(eq(diveSites.id, insertVote.winnerId)),
-      
-      db
-        .update(diveSites)
-        .set({ 
-          rating: loser.rating - eloChange,
-          losses: loser.losses + 1,
-        })
-        .where(eq(diveSites.id, insertVote.loserId))
-    ]);
+        .returning();
 
-    // Get new rankings after vote and update current ranks
-    const newRankings = await db.select().from(diveSites).orderBy(desc(diveSites.rating));
-    const newRankingMap = new Map();
-    newRankings.forEach((site, index) => {
-      newRankingMap.set(site.id, index + 1);
+      // Update dive site ratings
+      await Promise.all([
+        tx
+          .update(diveSites)
+          .set({ 
+            rating: winner.rating + eloChange,
+            wins: winner.wins + 1,
+          })
+          .where(eq(diveSites.id, insertVote.winnerId)),
+        
+        tx
+          .update(diveSites)
+          .set({ 
+            rating: loser.rating - eloChange,
+            losses: loser.losses + 1,
+          })
+          .where(eq(diveSites.id, insertVote.loserId))
+      ]);
+
+      return vote;
     });
-
-    // Update current ranks for all sites
-    await Promise.all(newRankings.map((site, index) => 
-      db.update(diveSites).set({ currentRank: index + 1 }).where(eq(diveSites.id, site.id))
-    ));
-
-    return vote;
   }
 
   async getVotes(limit = 20): Promise<Vote[]> {
@@ -332,46 +310,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
-    // Get recent votes with basic data
-    const recentVotes = await db
+    // Single efficient query with JOINs to get all data at once
+    const recentActivity = await db
       .select({
         id: votes.id,
-        winnerId: votes.winnerId,
-        loserId: votes.loserId,
         pointsChanged: votes.pointsChanged,
         timestamp: votes.timestamp,
-        userId: votes.userId,
+        winnerName: sql<string>`winner_site.name`,
+        loserName: sql<string>`loser_site.name`,
       })
       .from(votes)
+      .leftJoin(sql`${diveSites} AS winner_site`, sql`${votes.winnerId} = winner_site.id`)
+      .leftJoin(sql`${diveSites} AS loser_site`, sql`${votes.loserId} = loser_site.id`)
       .orderBy(desc(votes.timestamp))
       .limit(limit);
 
-    if (recentVotes.length === 0) {
-      return [];
-    }
-
-    // Get dive site names
-    const siteIds = [...new Set([...recentVotes.map(v => v.winnerId), ...recentVotes.map(v => v.loserId)])];
-    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
-    const siteMap = new Map(sites.map(site => [site.id, site.name]));
-
-    // Get usernames for votes with user IDs
-    const userIds = [...new Set(recentVotes.map(v => v.userId).filter(id => id !== null))];
-    const usersList = [];
-    for (const userId of userIds) {
-      const user = await db.select({ id: users.id, username: users.username }).from(users).where(eq(users.id, userId));
-      if (user.length > 0) {
-        usersList.push(user[0]);
-      }
-    }
-    const userMap = new Map(usersList.map(user => [user.id, user.username]));
-
-    return recentVotes.map(vote => ({
-      id: vote.id,
-      winnerName: siteMap.get(vote.winnerId) || "Unknown",
-      loserName: siteMap.get(vote.loserId) || "Unknown",
-      pointsChanged: vote.pointsChanged,
-      timestamp: vote.timestamp.toISOString(),
+    return recentActivity.map(activity => ({
+      id: activity.id,
+      winnerName: activity.winnerName || "Unknown",
+      loserName: activity.loserName || "Unknown",
+      pointsChanged: activity.pointsChanged,
+      timestamp: activity.timestamp.toISOString(),
       username: "Anonymous User",
     }));
   }
