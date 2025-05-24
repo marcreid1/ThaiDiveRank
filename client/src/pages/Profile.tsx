@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trophy, Calendar, TrendingUp } from "lucide-react";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
-import { useState, useEffect } from "react";
 
 interface UserVote {
   id: number;
@@ -23,31 +22,10 @@ interface UserStats {
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
-  const [userVotes, setUserVotes] = useState<UserVote[]>([]);
-
-  // Load user votes from localStorage and refresh on interval
-  useEffect(() => {
-    const loadUserVotes = () => {
-      const storedVotes = localStorage.getItem('user_votes');
-      if (storedVotes) {
-        try {
-          setUserVotes(JSON.parse(storedVotes));
-        } catch {
-          setUserVotes([]);
-        }
-      }
-    };
-
-    loadUserVotes();
-    
-    // Refresh user votes every 2 seconds to catch new votes
-    const interval = setInterval(loadUserVotes, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   const { data: userStats, isLoading } = useQuery({
-    queryKey: ["/api/user/stats"],
+    queryKey: ["/api/user/stats", user?.id],
+    enabled: isAuthenticated && !!user?.id,
   });
 
   if (!isAuthenticated || !user) {
@@ -75,43 +53,8 @@ export default function Profile() {
 
   const stats: UserStats = userStats || {
     totalVotes: 0,
-    favoriteWinner: "None yet", 
+    favoriteWinner: "None yet",
     recentVotes: []
-  };
-
-  // Calculate user's favorite winner from their voting history
-  const calculateFavoriteWinner = (votes: UserVote[]) => {
-    console.log("Calculating favorite winner from votes:", votes);
-    
-    if (votes.length === 0) return "None yet";
-    
-    const winnerCounts = new Map<string, number>();
-    votes.forEach(vote => {
-      const count = winnerCounts.get(vote.winnerName) || 0;
-      winnerCounts.set(vote.winnerName, count + 1);
-    });
-    
-    console.log("Winner counts:", Array.from(winnerCounts.entries()));
-    
-    let maxVotes = 0;
-    let favoriteWinner = "None yet";
-    for (const [winner, count] of winnerCounts.entries()) {
-      if (count > maxVotes) {
-        maxVotes = count;
-        favoriteWinner = winner;
-      }
-    }
-    
-    console.log("Favorite winner:", favoriteWinner, "with", maxVotes, "votes");
-    return favoriteWinner;
-  };
-
-  // Merge user's personal votes with community stats
-  const personalStats = {
-    ...stats,
-    totalVotes: userVotes.length,
-    favoriteWinner: calculateFavoriteWinner(userVotes),
-    recentVotes: userVotes.slice(0, 10)
   };
 
   return (
@@ -133,7 +76,7 @@ export default function Profile() {
             <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{personalStats.totalVotes}</div>
+            <div className="text-2xl font-bold">{stats.totalVotes}</div>
             <p className="text-xs text-muted-foreground">
               Dive site comparisons made
             </p>
@@ -172,13 +115,13 @@ export default function Profile() {
       {/* Recent Votes */}
       <Card>
         <CardHeader>
-          <CardTitle>Your Voting Activity</CardTitle>
+          <CardTitle>Recent Voting Activity</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Your recent dive site comparisons
+            Your latest dive site comparisons
           </p>
         </CardHeader>
         <CardContent>
-          {personalStats.recentVotes.length === 0 ? (
+          {stats.recentVotes.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-slate-600 dark:text-slate-400">
                 No votes yet! Start voting to see your activity here.
@@ -186,7 +129,7 @@ export default function Profile() {
             </div>
           ) : (
             <div className="space-y-4">
-              {personalStats.recentVotes.map((vote) => (
+              {stats.recentVotes.map((vote) => (
                 <div key={vote.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">

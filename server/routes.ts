@@ -93,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vote for a dive site
   app.post("/api/vote", async (req, res) => {
     try {
-      const { winnerId, loserId, userId } = req.body;
+      const { winnerId, loserId } = req.body;
       
       // Validate the vote data
       try {
@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const vote = await storage.createVote({
         winnerId,
         loserId,
-        userId: userId || null, // Track user if provided
+        userId: undefined, // Optional user tracking for future use
       });
       
       res.json({ success: true, vote });
