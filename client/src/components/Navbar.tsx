@@ -19,7 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
-  captcha: z.string().min(1, "Security challenge required"),
+  captcha: z.string().min(1),
 });
 
 const signUpSchema = z.object({
@@ -276,7 +276,6 @@ export default function Navbar() {
                               value={field.value}
                               onChange={field.onChange}
                               onVerify={setSignInCaptchaValid}
-                              error={signInForm.formState.errors.captcha?.message}
                             />
                           </FormControl>
                           <FormMessage />
