@@ -5,7 +5,14 @@ import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
-
+// Extend Express Request interface to include session
+declare module 'express-serve-static-core' {
+  interface Request {
+    session: {
+      userId?: number;
+    };
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get a random matchup
@@ -92,7 +99,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-
+  // Vote for a dive site
+  app.post("/api/vote", async (req, res) => {
+    try {
+      const { winnerId, loserId, userId } = req.body;
+      
+      // Validate the vote data
+      try {
+        insertVoteSchema.parse({ winnerId, loserId, pointsChanged: 0 });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
+        }
+        throw error;
+      }
+      
+      // Get the dive sites
+      const winner = await storage.getDiveSite(winnerId);
+      const loser = await storage.getDiveSite(loserId);
+      
+      if (!winner || !loser) {
+        return res.status(404).json({ message: "One or both dive sites not found" });
+      }
+      
+      // Calculate ELO change
+      const pointsChanged = calculateEloChange(winner.rating, loser.rating);
+      
+      // Create the vote
+      const vote = await storage.createVote({
+        winnerId,
+        loserId,
+        pointsChanged,
+        userId: userId || null, // Track user if provided
+      });
+      
+      res.json({ success: true, vote });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to process vote" 
+      });
+    }
+  });
   
   // Skip current matchup
   app.post("/api/skip", async (req, res) => {
@@ -131,9 +178,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user
       const user = await storage.createUser({ username, password });
       
-      // Set session data for new user
-      req.session.userId = user.id;
-      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -165,8 +209,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // Set session data
+      // Store user ID in session
       req.session.userId = user.id;
+      console.log("Session set for user:", user.id, "session:", req.session);
       
       // Don't return password in response
       const { password: _, ...userResponse } = user;
@@ -181,12 +226,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User logout
   app.post("/api/auth/logout", async (req, res) => {
     try {
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({ message: "Failed to logout" });
-        }
-        res.json({ success: true, message: "Logged out successfully" });
-      });
+      req.session.userId = undefined;
+      res.json({ success: true, message: "Logged out successfully" });
     } catch (error) {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to logout" 
@@ -194,59 +235,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User statistics endpoint - requires authentication
+  // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
-      if (!req.session.userId) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-      
-      const stats = await storage.getUserStats(req.session.userId);
+      // Get stats for the authenticated user (accept userId from query parameter)
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      console.log("Getting user stats for userId:", userId);
+      const stats = await storage.getUserStats(userId);
+      console.log("User stats result:", stats);
       res.json(stats);
     } catch (error: any) {
+      console.error("Error getting user stats:", error);
       res.status(500).json({ message: error.message });
     }
   });
 
-  // Check authentication status
-  app.get("/api/auth/me", async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-      
-      const user = await storage.getUser(req.session.userId);
-      if (!user) {
-        req.session.destroy(() => {});
-        return res.status(401).json({ message: "User not found" });
-      }
-      
-      // Don't return password in response
-      const { password: _, ...userResponse } = user;
-      res.json({ user: userResponse });
-    } catch (error) {
-      res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to check authentication" 
-      });
-    }
-  });
-
-  // Simple vote endpoint that bypasses validation issues
+  // Create a vote with authentication and duplicate prevention
   app.post("/api/vote", async (req, res) => {
     try {
-      // Check if user is authenticated
-      if (!req.session.userId) {
+      const { winnerId, loserId, userId } = req.body;
+      
+      // Check if user is authenticated (accept userId from frontend)
+      console.log("Vote request - userId from body:", userId);
+      if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-
-      const { winnerId, loserId } = req.body;
       
-      // Simple validation
-      if (!winnerId || !loserId) {
-        return res.status(400).json({ message: "Missing dive site IDs" });
+      // Validate input
+      try {
+        insertVoteSchema.parse({ winnerId, loserId, userId });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
+        }
+        throw error;
       }
 
-      // Get dive sites
+      // Check for duplicate vote (same user, same matchup)
+      const existingVotes = await storage.getVotes();
+      const duplicateVote = existingVotes.find(vote => 
+        vote.userId === userId &&
+        ((vote.winnerId === winnerId && vote.loserId === loserId) ||
+         (vote.winnerId === loserId && vote.loserId === winnerId))
+      );
+
+      if (duplicateVote) {
+        return res.status(400).json({ message: "You have already voted on this matchup" });
+      }
+
+      // Calculate ELO changes
       const winner = await storage.getDiveSite(winnerId);
       const loser = await storage.getDiveSite(loserId);
       
@@ -254,16 +291,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Dive site not found" });
       }
 
-      // Calculate ELO changes
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
 
-      // Insert vote directly into database bypassing validation
-      const [vote] = await db.insert(votes).values({
+      // Create vote with authenticated user ID
+      console.log("Creating vote with userId:", userId);
+      const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
-        userId: req.session.userId
-      }).returning();
+        userId
+      });
+      console.log("Vote created:", vote);
 
       // Update dive site ratings
       await storage.updateDiveSite(winnerId, { 
@@ -277,7 +315,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(vote);
     } catch (error) {
-      console.error("Vote error:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to create vote" 
       });

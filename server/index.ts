@@ -3,9 +3,9 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-// Extend Express session to include userId
+// Extend Express session interface
 declare module 'express-session' {
-  interface SessionData {
+  interface Session {
     userId?: number;
   }
 }
@@ -14,11 +14,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Session configuration
+// Set up session management
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'diving-site-voting-secret-key',
+  secret: process.env.SESSION_SECRET || 'dive-site-voting-secret-key',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
+  name: 'dive-session',
   cookie: {
     secure: false, // Set to true in production with HTTPS
     httpOnly: true,
