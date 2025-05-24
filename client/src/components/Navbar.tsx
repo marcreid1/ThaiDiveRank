@@ -182,15 +182,39 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {/* Sign In Dialog */}
-            <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                  <User className="h-4 w-4 mr-1" />
-                  Sign In
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+            {isAuthenticated ? (
+              /* User Menu */
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                    <User className="h-4 w-4 mr-1" />
+                    {user?.username}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout} className="flex items-center">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                {/* Sign In Dialog */}
+                <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                      <User className="h-4 w-4 mr-1" />
+                      Sign In
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Sign In</DialogTitle>
                 </DialogHeader>
@@ -292,6 +316,8 @@ export default function Navbar() {
                   <Moon className="h-5 w-5" />
                 )}
               </Button>
+            )}
+              </>
             )}
             <button 
               className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ocean-500 dark:hover:bg-slate-800 dark:text-slate-300"
