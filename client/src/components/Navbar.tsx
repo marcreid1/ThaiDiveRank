@@ -81,8 +81,8 @@ export default function Navbar() {
         }),
       });
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || "Failed to sign in");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to sign in");
       }
       return response.json();
     },
@@ -122,8 +122,8 @@ export default function Navbar() {
         }),
       });
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || "Failed to create account");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create account");
       }
       return response.json();
     },
