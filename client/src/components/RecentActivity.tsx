@@ -71,8 +71,10 @@ export default function RecentActivity() {
                 <div className="flex space-x-3">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
+                      <span className="font-medium text-ocean-600 dark:text-ocean-400">{activity.username}</span>
+                      {' '}voted{' '}
                       <span className="font-medium text-slate-900 dark:text-white">{activity.winnerName}</span>
-                      {' '}won against{' '}
+                      {' '}over{' '}
                       <span className="font-medium text-slate-900 dark:text-white">{activity.loserName}</span>
                       {' '}(+{activity.pointsChanged} points)
                     </p>

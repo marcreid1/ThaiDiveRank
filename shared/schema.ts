@@ -83,4 +83,5 @@ export interface VoteActivity {
   loserName: string;
   pointsChanged: number;
   timestamp: string;
+  username: string;
 }

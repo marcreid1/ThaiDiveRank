@@ -1,7 +1,7 @@
 import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface RegionDiveSites {
@@ -304,6 +304,7 @@ export class DatabaseStorage implements IStorage {
         loserId: votes.loserId,
         pointsChanged: votes.pointsChanged,
         timestamp: votes.timestamp,
+        userId: votes.userId,
       })
       .from(votes)
       .orderBy(desc(votes.timestamp))
@@ -317,8 +318,15 @@ export class DatabaseStorage implements IStorage {
     const siteIds = [...new Set([...recentVotes.map(v => v.winnerId), ...recentVotes.map(v => v.loserId)])];
     const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
     
-    // Create a map for quick lookup
+    // Get all unique user IDs and fetch their usernames
+    const userIds = [...new Set(recentVotes.map(v => v.userId).filter(id => id !== null))];
+    const usersList = userIds.length > 0 
+      ? await db.select({ id: users.id, username: users.username }).from(users).where(sql`${users.id} = ANY(${userIds})`)
+      : [];
+    
+    // Create maps for quick lookup
     const siteMap = new Map(sites.map(site => [site.id, site.name]));
+    const userMap = new Map(usersList.map(user => [user.id, user.username]));
 
     return recentVotes.map(vote => ({
       id: vote.id,
@@ -326,6 +334,7 @@ export class DatabaseStorage implements IStorage {
       loserName: siteMap.get(vote.loserId) || "Unknown",
       pointsChanged: vote.pointsChanged,
       timestamp: vote.timestamp.toISOString(),
+      username: vote.userId ? userMap.get(vote.userId) || "Anonymous" : "Anonymous",
     }));
   }
 
