@@ -209,10 +209,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // Store user ID in session
-      req.session.userId = user.id;
-      console.log("Session set for user:", user.id, "session:", req.session);
-      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -223,29 +219,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User logout
-  app.post("/api/auth/logout", async (req, res) => {
-    try {
-      req.session.userId = undefined;
-      res.json({ success: true, message: "Logged out successfully" });
-    } catch (error) {
-      res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to logout" 
-      });
-    }
-  });
-
   // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
-      // Get stats for the authenticated user (accept userId from query parameter)
-      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
-      console.log("Getting user stats for userId:", userId);
-      const stats = await storage.getUserStats(userId);
-      console.log("User stats result:", stats);
+      const stats = await storage.getUserStats();
       res.json(stats);
     } catch (error: any) {
-      console.error("Error getting user stats:", error);
       res.status(500).json({ message: error.message });
     }
   });
@@ -253,17 +232,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a vote with authentication and duplicate prevention
   app.post("/api/vote", async (req, res) => {
     try {
-      const { winnerId, loserId, userId } = req.body;
-      
-      // Check if user is authenticated (accept userId from frontend)
-      console.log("Vote request - userId from body:", userId);
-      if (!userId) {
+      // Check if user is authenticated
+      if (!req.session.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
+
+      const { winnerId, loserId } = req.body;
       
       // Validate input
       try {
-        insertVoteSchema.parse({ winnerId, loserId, userId });
+        insertVoteSchema.parse({ winnerId, loserId, userId: req.session.userId });
       } catch (error) {
         if (error instanceof ZodError) {
           return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
@@ -274,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check for duplicate vote (same user, same matchup)
       const existingVotes = await storage.getVotes();
       const duplicateVote = existingVotes.find(vote => 
-        vote.userId === userId &&
+        vote.userId === req.session.userId &&
         ((vote.winnerId === winnerId && vote.loserId === loserId) ||
          (vote.winnerId === loserId && vote.loserId === winnerId))
       );
@@ -294,14 +272,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
 
       // Create vote with authenticated user ID
-      console.log("Creating vote with userId:", userId);
       const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
-        userId
+        userId: req.session.userId
       });
-      console.log("Vote created:", vote);
 
       // Update dive site ratings
       await storage.updateDiveSite(winnerId, { 

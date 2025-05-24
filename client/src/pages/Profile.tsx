@@ -26,12 +26,7 @@ export default function Profile() {
   // Remove localStorage dependency - votes now come from database via userStats
 
   const { data: userStats, isLoading } = useQuery({
-    queryKey: ["/api/user/stats", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const response = await fetch(`/api/user/stats?userId=${user.id}`);
-      return response.json();
-    },
+    queryKey: ["/api/user/stats"],
   });
 
   if (!isAuthenticated || !user) {
