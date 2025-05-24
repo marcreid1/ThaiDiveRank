@@ -24,6 +24,7 @@ const signInSchema = z.object({
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   captcha: z.string().min(1, "Security challenge required"),
 });
@@ -57,6 +58,7 @@ export default function Navbar() {
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       captcha: "",
     },
