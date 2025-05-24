@@ -14,90 +14,74 @@ export default function VotingSection() {
   const { isAuthenticated } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
-  // Track the current winner and which side they're on
-  const [currentWinner, setCurrentWinner] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
+  // Track the current champion and which side they're on
+  const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
   
-  // Query to get matchups - include winner info when available
-  const { data: matchup, isLoading, isError, error } = useQuery<{
+  // Get matchup data with champion preferences
+  const { data: matchup, isLoading, isError, error, refetch } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
-    queryKey: ["/api/matchup", currentWinner?.diveSite.id, currentWinner?.side],
+    queryKey: ["/api/matchup", champion?.diveSite.id, champion?.side],
     queryFn: async () => {
       let url = '/api/matchup';
-      if (currentWinner) {
-        url += `?winnerId=${currentWinner.diveSite.id}&winnerSide=${currentWinner.side}`;
+      if (champion) {
+        url += `?winnerId=${champion.diveSite.id}&winnerSide=${champion.side}`;
       }
       
-      return await fetch(url).then(res => {
-        if (!res.ok) throw new Error('Failed to fetch matchup');
-        return res.json();
-      });
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch matchup');
+      return response.json();
     }
   });
 
+  // Submit vote and update champion
   const voteMutation = useMutation({
-    mutationFn: async (params: { 
-      winnerId: number, 
-      loserId: number, 
-      winnerSide?: 'A' | 'B', 
-      winnerDiveSite?: DiveSite 
-    }) => {
-      await apiRequest("POST", "/api/vote", { winnerId: params.winnerId, loserId: params.loserId });
-      return params;
+    mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
+      await apiRequest("POST", "/api/vote", { winnerId, loserId });
     },
-    onSuccess: (data) => {
-      // Set the winner first
-      if (data.winnerSide && data.winnerDiveSite) {
-        setCurrentWinner({ diveSite: data.winnerDiveSite, side: data.winnerSide });
-        
-        // Wait for state update then invalidate queries
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
-          queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
-          queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
-          queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
-        }, 10);
-      } else {
-        queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
-      }
+    onSuccess: () => {
+      // Invalidate other queries but not matchup yet - we'll handle that manually
+      queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
     }
   });
 
+  // Skip current matchup
   const skipMutation = useMutation({
     mutationFn: async () => {
       await apiRequest("POST", "/api/skip");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+      setChampion(null);
+      refetch();
     }
   });
 
+  // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
-    // Check if user is authenticated
     if (!isAuthenticated) {
       setShowAuthDialog(true);
       return;
     }
 
-    // Submit the vote first, then set winner in onSuccess callback
+    // Submit vote
     voteMutation.mutate({ 
       winnerId: winner.id, 
-      loserId: loser.id,
-      winnerSide: side,
-      winnerDiveSite: winner
+      loserId: loser.id 
     });
+
+    // Update champion state and refetch with new parameters
+    setChampion({ diveSite: winner, side });
+    refetch();
   };
   
   const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'A');
   const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'B');
 
   const handleSkip = () => {
-    // Clear current winner and get a completely new matchup
-    setCurrentWinner(null);
+    setChampion(null);
     skipMutation.mutate();
   };
 
