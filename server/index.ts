@@ -3,20 +3,28 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-// Extend Express Request interface to include session
-declare global {
-  namespace Express {
-    interface Request {
-      session: session.Session & {
-        userId?: number;
-      };
-    }
+// Extend Express session to include userId
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
   }
 }
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'diving-site-voting-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true in production with HTTPS
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();

@@ -5,14 +5,7 @@ import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
-// Extend Express Request interface to include session
-declare module 'express-serve-static-core' {
-  interface Request {
-    session: {
-      userId?: number;
-    };
-  }
-}
+
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get a random matchup
@@ -178,6 +171,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user
       const user = await storage.createUser({ username, password });
       
+      // Set session data for new user
+      req.session.userId = user.id;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -209,6 +205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
+      // Set session data
+      req.session.userId = user.id;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -219,13 +218,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User statistics endpoint
+  // User logout
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Failed to logout" });
+        }
+        res.json({ success: true, message: "Logged out successfully" });
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to logout" 
+      });
+    }
+  });
+
+  // User statistics endpoint - requires authentication
   app.get("/api/user/stats", async (req, res) => {
     try {
-      const stats = await storage.getUserStats();
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      const stats = await storage.getUserStats(req.session.userId);
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Check authentication status
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        req.session.destroy(() => {});
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      // Don't return password in response
+      const { password: _, ...userResponse } = user;
+      res.json({ user: userResponse });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to check authentication" 
+      });
     }
   });
 
