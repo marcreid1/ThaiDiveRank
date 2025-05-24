@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Captcha } from "@/components/ui/captcha";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,11 +19,13 @@ import { useAuth } from "@/hooks/useAuth";
 const signInSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
+  captcha: z.string().min(1, "Please solve the security challenge"),
 });
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  captcha: z.string().min(1, "Please solve the security challenge"),
 });
 
 export default function Navbar() {
@@ -32,6 +35,8 @@ export default function Navbar() {
   const [signUpOpen, setSignUpOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [signInCaptchaValid, setSignInCaptchaValid] = useState(false);
+  const [signUpCaptchaValid, setSignUpCaptchaValid] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -44,6 +49,7 @@ export default function Navbar() {
     defaultValues: {
       username: "",
       password: "",
+      captcha: "",
     },
   });
 
@@ -52,6 +58,7 @@ export default function Navbar() {
     defaultValues: {
       username: "",
       password: "",
+      captcha: "",
     },
   });
 
@@ -59,12 +66,19 @@ export default function Navbar() {
 
   const signInMutation = useMutation({
     mutationFn: async (data: z.infer<typeof signInSchema>) => {
+      if (!signInCaptchaValid) {
+        throw new Error("Please solve the security challenge correctly");
+      }
+      
       const response = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ 
+          username: data.username, 
+          password: data.password 
+        }),
       });
       if (!response.ok) {
         const error = await response.text();
@@ -80,6 +94,7 @@ export default function Navbar() {
       });
       setSignInOpen(false);
       signInForm.reset();
+      setSignInCaptchaValid(false);
     },
     onError: (error: any) => {
       toast({
@@ -92,12 +107,19 @@ export default function Navbar() {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: z.infer<typeof signUpSchema>) => {
+      if (!signUpCaptchaValid) {
+        throw new Error("Please solve the security challenge correctly");
+      }
+      
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ 
+          username: data.username, 
+          password: data.password 
+        }),
       });
       if (!response.ok) {
         const error = await response.text();
@@ -113,6 +135,7 @@ export default function Navbar() {
       });
       setSignUpOpen(false);
       signUpForm.reset();
+      setSignUpCaptchaValid(false);
     },
     onError: (error: any) => {
       toast({
