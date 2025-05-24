@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trophy, Calendar, TrendingUp } from "lucide-react";
 import { formatDistanceToNow } from "@/lib/utils/formatDate";
+import { useState, useEffect } from "react";
 
 interface UserVote {
   id: number;
@@ -22,10 +23,22 @@ interface UserStats {
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
+  const [userVotes, setUserVotes] = useState<UserVote[]>([]);
+
+  // Load user votes from localStorage
+  useEffect(() => {
+    const storedVotes = localStorage.getItem('user_votes');
+    if (storedVotes) {
+      try {
+        setUserVotes(JSON.parse(storedVotes));
+      } catch {
+        setUserVotes([]);
+      }
+    }
+  }, []);
 
   const { data: userStats, isLoading } = useQuery({
-    queryKey: ["/api/user/stats", user?.id],
-    enabled: isAuthenticated && !!user?.id,
+    queryKey: ["/api/user/stats"],
   });
 
   if (!isAuthenticated || !user) {
@@ -53,8 +66,15 @@ export default function Profile() {
 
   const stats: UserStats = userStats || {
     totalVotes: 0,
-    favoriteWinner: "None yet",
+    favoriteWinner: "None yet", 
     recentVotes: []
+  };
+
+  // Merge user's personal votes with community stats
+  const personalStats = {
+    ...stats,
+    totalVotes: userVotes.length,
+    recentVotes: userVotes.slice(0, 10)
   };
 
   return (
@@ -76,7 +96,7 @@ export default function Profile() {
             <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalVotes}</div>
+            <div className="text-2xl font-bold">{personalStats.totalVotes}</div>
             <p className="text-xs text-muted-foreground">
               Dive site comparisons made
             </p>
@@ -115,13 +135,13 @@ export default function Profile() {
       {/* Recent Votes */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Voting Activity</CardTitle>
+          <CardTitle>Your Voting Activity</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Your latest dive site comparisons
+            Your recent dive site comparisons
           </p>
         </CardHeader>
         <CardContent>
-          {stats.recentVotes.length === 0 ? (
+          {personalStats.recentVotes.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-slate-600 dark:text-slate-400">
                 No votes yet! Start voting to see your activity here.
@@ -129,7 +149,7 @@ export default function Profile() {
             </div>
           ) : (
             <div className="space-y-4">
-              {stats.recentVotes.map((vote) => (
+              {personalStats.recentVotes.map((vote) => (
                 <div key={vote.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
