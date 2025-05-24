@@ -1,9 +1,18 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
+
+// Extend Express Request interface to include session
+declare module 'express-serve-static-core' {
+  interface Request {
+    session: {
+      userId?: number;
+    };
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get a random matchup
@@ -217,6 +226,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a vote with authentication and duplicate prevention
+  app.post("/api/vote", async (req, res) => {
+    try {
+      // Check if user is authenticated
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { winnerId, loserId } = req.body;
+      
+      // Validate input
+      try {
+        insertVoteSchema.parse({ winnerId, loserId, userId: req.session.userId });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
+        }
+        throw error;
+      }
+
+      // Check for duplicate vote (same user, same matchup)
+      const existingVotes = await storage.getVotes();
+      const duplicateVote = existingVotes.find(vote => 
+        vote.userId === req.session.userId &&
+        ((vote.winnerId === winnerId && vote.loserId === loserId) ||
+         (vote.winnerId === loserId && vote.loserId === winnerId))
+      );
+
+      if (duplicateVote) {
+        return res.status(400).json({ message: "You have already voted on this matchup" });
+      }
+
+      // Calculate ELO changes
+      const winner = await storage.getDiveSite(winnerId);
+      const loser = await storage.getDiveSite(loserId);
+      
+      if (!winner || !loser) {
+        return res.status(404).json({ message: "Dive site not found" });
+      }
+
+      const pointsChanged = calculateEloChange(winner.rating, loser.rating);
+
+      // Create vote with authenticated user ID
+      const vote = await storage.createVote({
+        winnerId,
+        loserId,
+        pointsChanged,
+        userId: req.session.userId
+      });
+
+      // Update dive site ratings
+      await storage.updateDiveSite(winnerId, { 
+        rating: winner.rating + pointsChanged,
+        wins: winner.wins + 1
+      });
+      await storage.updateDiveSite(loserId, { 
+        rating: loser.rating - pointsChanged,
+        losses: loser.losses + 1
+      });
+
+      res.json(vote);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to create vote" 
+      });
     }
   });
 

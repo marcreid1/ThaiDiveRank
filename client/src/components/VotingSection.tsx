@@ -128,19 +128,7 @@ export default function VotingSection() {
     setMatchedDiveSites(updatedMatchedSites);
     localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
-    // Store user vote locally for profile tracking
-    const userVote = {
-      id: Date.now(),
-      winnerName: winner.name,
-      loserName: loser.name,
-      pointsChanged: 32, // Default ELO change
-      timestamp: new Date().toISOString(),
-    };
-    
-    const existingVotes = JSON.parse(localStorage.getItem('user_votes') || '[]');
-    const updatedVotes = [userVote, ...existingVotes].slice(0, 50); // Keep last 50 votes
-    localStorage.setItem('user_votes', JSON.stringify(updatedVotes));
-
+    // Only store vote in database
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
