@@ -81,6 +81,8 @@ export default function Profile() {
 
   // Calculate user's favorite winner from their voting history
   const calculateFavoriteWinner = (votes: UserVote[]) => {
+    console.log("Calculating favorite winner from votes:", votes);
+    
     if (votes.length === 0) return "None yet";
     
     const winnerCounts = new Map<string, number>();
@@ -88,6 +90,8 @@ export default function Profile() {
       const count = winnerCounts.get(vote.winnerName) || 0;
       winnerCounts.set(vote.winnerName, count + 1);
     });
+    
+    console.log("Winner counts:", Array.from(winnerCounts.entries()));
     
     let maxVotes = 0;
     let favoriteWinner = "None yet";
@@ -98,6 +102,7 @@ export default function Profile() {
       }
     }
     
+    console.log("Favorite winner:", favoriteWinner, "with", maxVotes, "votes");
     return favoriteWinner;
   };
 
