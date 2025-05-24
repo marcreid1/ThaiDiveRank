@@ -197,8 +197,10 @@ export class DatabaseStorage implements IStorage {
     const [vote] = await db
       .insert(votes)
       .values({
-        ...insertVote,
+        winnerId: insertVote.winnerId,
+        loserId: insertVote.loserId,
         pointsChanged: eloChange,
+        userId: insertVote.userId || null,
       })
       .returning();
 

@@ -63,6 +63,8 @@ export const votes = pgTable("votes", {
 export const insertVoteSchema = createInsertSchema(votes).omit({
   id: true,
   timestamp: true,
+}).extend({
+  userId: z.number().optional(),
 });
 
 export type InsertVote = z.infer<typeof insertVoteSchema>;
