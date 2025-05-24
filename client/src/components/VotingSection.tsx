@@ -37,10 +37,22 @@ export default function VotingSection() {
   });
 
   const voteMutation = useMutation({
-    mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      await apiRequest("POST", "/api/vote", { winnerId, loserId });
+    mutationFn: async (params: { 
+      winnerId: number, 
+      loserId: number, 
+      winnerSide?: 'A' | 'B', 
+      winnerDiveSite?: DiveSite 
+    }) => {
+      await apiRequest("POST", "/api/vote", { winnerId: params.winnerId, loserId: params.loserId });
+      return params;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Set the winner to stay on the same side for next matchup
+      if (data.winnerSide && data.winnerDiveSite) {
+        setCurrentWinner({ diveSite: data.winnerDiveSite, side: data.winnerSide });
+      }
+      
+      // Force refetch with new winner parameters
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
@@ -64,13 +76,12 @@ export default function VotingSection() {
       return;
     }
 
-    // Set the winner to stay on the same side for next matchup
-    setCurrentWinner({ diveSite: winner, side });
-
-    // Submit the vote
+    // Submit the vote first, then set winner in onSuccess callback
     voteMutation.mutate({ 
       winnerId: winner.id, 
-      loserId: loser.id 
+      loserId: loser.id,
+      winnerSide: side,
+      winnerDiveSite: winner
     });
   };
   
