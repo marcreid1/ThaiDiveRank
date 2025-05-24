@@ -23,7 +23,7 @@ import threeTrees from './images/dive-sites/21. Three Trees.png';
 import northPoint from './images/dive-sites/22. North Point.png';
 import breakfastBend from './images/dive-sites/23. Breakfast Bend.png';
 import christmasPoint from './images/dive-sites/24. Christmas Point.png';
-import batfishBend from './images/dive-sites/25. Batfish Bend.png';
+import batfishBend from './images/dive-sites/25. Batfish Bend.jpg';
 import kohBonPinnacle from './images/dive-sites/26. Koh Bon Pinnacle.png';
 import kohBonRidge from './images/dive-sites/27. Koh Bon Ridge.png';
 import kohBonBay from './images/dive-sites/28. Koh Bon Bay.png';
