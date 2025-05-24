@@ -310,6 +310,8 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(votes.timestamp))
       .limit(limit);
 
+    console.log("Recent votes with userId:", recentVotes.map(v => ({ id: v.id, userId: v.userId })));
+
     if (recentVotes.length === 0) {
       return [];
     }
@@ -320,15 +322,22 @@ export class DatabaseStorage implements IStorage {
     
     // Get all unique user IDs and fetch their usernames
     const userIds = [...new Set(recentVotes.map(v => v.userId).filter(id => id !== null))];
-    const usersList = userIds.length > 0 
-      ? await db.select({ id: users.id, username: users.username }).from(users).where(sql`${users.id} = ANY(${userIds})`)
-      : [];
+    console.log("User IDs to fetch:", userIds);
+    
+    const usersList = [];
+    for (const userId of userIds) {
+      const user = await db.select({ id: users.id, username: users.username }).from(users).where(eq(users.id, userId));
+      if (user.length > 0) {
+        usersList.push(user[0]);
+      }
+    }
+    console.log("Fetched users:", usersList);
     
     // Create maps for quick lookup
     const siteMap = new Map(sites.map(site => [site.id, site.name]));
     const userMap = new Map(usersList.map(user => [user.id, user.username]));
 
-    return recentVotes.map(vote => ({
+    const result = recentVotes.map(vote => ({
       id: vote.id,
       winnerName: siteMap.get(vote.winnerId) || "Unknown",
       loserName: siteMap.get(vote.loserId) || "Unknown",
@@ -336,6 +345,9 @@ export class DatabaseStorage implements IStorage {
       timestamp: vote.timestamp.toISOString(),
       username: vote.userId ? userMap.get(vote.userId) || "Anonymous" : "Anonymous",
     }));
+    
+    console.log("Final result with usernames:", result.map(r => ({ id: r.id, username: r.username })));
+    return result;
   }
 
 
