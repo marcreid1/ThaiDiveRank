@@ -281,26 +281,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { winnerId, loserId } = req.body;
       
-      // Validate input
-      try {
-        insertVoteSchema.parse({ winnerId, loserId, userId: req.session.userId });
-      } catch (error) {
-        if (error instanceof ZodError) {
-          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
-        }
-        throw error;
-      }
-
-      // Check for duplicate vote (same user, same matchup)
-      const existingVotes = await storage.getVotes();
-      const duplicateVote = existingVotes.find(vote => 
-        vote.userId === req.session.userId &&
-        ((vote.winnerId === winnerId && vote.loserId === loserId) ||
-         (vote.winnerId === loserId && vote.loserId === winnerId))
-      );
-
-      if (duplicateVote) {
-        return res.status(400).json({ message: "You have already voted on this matchup" });
+      // Basic validation - just check that winnerId and loserId are numbers
+      if (!winnerId || !loserId || typeof winnerId !== 'number' || typeof loserId !== 'number') {
+        return res.status(400).json({ message: "Invalid dive site IDs" });
       }
 
       // Calculate ELO changes
