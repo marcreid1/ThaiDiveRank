@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { calculateEloChange } from "./utils/elo";
-import { insertVoteSchema } from "@shared/schema";
+import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -140,6 +140,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to skip matchup" 
+      });
+    }
+  });
+
+  // User signup
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Validate input
+      try {
+        insertUserSchema.parse({ username, password });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+        }
+        throw error;
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      // Create new user
+      const user = await storage.createUser({ username, password });
+      
+      // Don't return password in response
+      const { password: _, ...userResponse } = user;
+      res.json({ success: true, user: userResponse });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to create account" 
+      });
+    }
+  });
+
+  // User signin
+  app.post("/api/auth/signin", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Validate input
+      try {
+        insertUserSchema.parse({ username, password });
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(400).json({ message: "Invalid credentials" });
+        }
+        throw error;
+      }
+      
+      // Find user by username
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Check password (in a real app, you'd use proper password hashing)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Don't return password in response
+      const { password: _, ...userResponse } = user;
+      res.json({ success: true, user: userResponse });
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to sign in" 
       });
     }
   });
