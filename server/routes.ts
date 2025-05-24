@@ -224,6 +224,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check authentication status and sync session
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const sessionUser = (req as any).session?.user;
+      if (sessionUser) {
+        const { password: _, ...userResponse } = sessionUser;
+        res.json({ user: userResponse });
+      } else {
+        res.status(401).json({ message: "Not authenticated" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
