@@ -160,7 +160,7 @@ export default function Profile() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-ocean-600 dark:text-ocean-400">
-              {stats.favoriteWinner}
+              {personalStats.favoriteWinner}
             </div>
             <p className="text-xs text-muted-foreground">
               Most voted dive site
