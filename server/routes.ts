@@ -165,9 +165,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
+      console.log('Raw request body:', JSON.stringify(req.body));
       const { username, email, password } = req.body;
       
-      console.log('Signup request body:', { username, email, password: password ? '[REDACTED]' : 'undefined' });
+      console.log('Extracted fields:', { username, email, password: password ? '[REDACTED]' : 'undefined' });
       
       // Validate input
       try {
