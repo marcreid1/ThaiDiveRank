@@ -166,16 +166,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
       console.log("=== SIGNUP DEBUG START ===");
-      console.log("Full request body:", JSON.stringify(req.body, null, 2));
-      console.log("Body keys:", Object.keys(req.body));
-      console.log("Content-Type:", req.headers['content-type']);
+      console.log("Raw body:", req.body);
+      console.log("Body type:", typeof req.body);
+      console.log("Body keys:", Object.keys(req.body || {}));
+      console.log("Headers:", req.headers);
+      
+      // Check if body exists and has expected structure
+      if (!req.body) {
+        console.log("ERROR: No request body received!");
+        return res.status(400).json({ message: "No data received" });
+      }
       
       // Ensure we have the required fields
       const username = req.body.username;
       const email = req.body.email;
       const password = req.body.password;
       
-      console.log("SIGNUP DEBUG - Extracted values:", { username, email, password: password ? "***" : null });
+      console.log("Field extraction results:");
+      console.log("- username:", username, "(type:", typeof username, ")");
+      console.log("- email:", email, "(type:", typeof email, ")");
+      console.log("- password:", password ? "***present***" : "***missing***", "(type:", typeof password, ")");
       
       // Basic validation
       if (!username || !email || !password) {
