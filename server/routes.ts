@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { winnerId, loserId } = req.body;
       
       // Get user ID from session if authenticated
-      const userId = (req as any).user?.id || null;
+      const userId = (req as any).session?.user?.id || null;
       
       // Validate the vote data
       try {
@@ -172,6 +172,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user
       const user = await storage.createUser({ username, password });
       
+      // Store user in session
+      (req as any).session.user = user;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -207,6 +210,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
+      
+      // Store user in session
+      (req as any).session.user = user;
       
       // Don't return password in response
       const { password: _, ...userResponse } = user;
