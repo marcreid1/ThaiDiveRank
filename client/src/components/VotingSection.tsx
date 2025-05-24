@@ -13,85 +13,24 @@ import { User, UserPlus } from "lucide-react";
 export default function VotingSection() {
   const { isAuthenticated } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-
-  // State to track the currently winning dive site and which side it was on
-  // Use localStorage to persist between tab navigation
-  const [previousWinner, setPreviousWinner] = useState<DiveSite | null>(() => {
-    const saved = localStorage.getItem('previousWinner');
-    return saved ? JSON.parse(saved) : null;
-  });
   
-  const [winnerSide, setWinnerSide] = useState<'left' | 'right' | null>(() => {
-    return localStorage.getItem('winnerSide') as 'left' | 'right' | null;
-  });
-  
-  const [matchedDiveSites, setMatchedDiveSites] = useState<Set<number>>(() => {
-    const saved = localStorage.getItem('matchedDiveSites');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
-  
-  // Query to get matchups, including the previous winner when available
-  const { data: fetchedMatchup, isLoading, isError, error } = useQuery<{
+  // Simple query to get random matchups - no tracking of previous winners
+  const { data: matchup, isLoading, isError, error } = useQuery<{
     diveSiteA: DiveSite;
     diveSiteB: DiveSite;
   }>({
-    queryKey: ["/api/matchup", previousWinner?.id],
-    queryFn: async ({ queryKey }) => {
-      const winnerId = queryKey[1];
-      const url = winnerId
-        ? `/api/matchup?winnerId=${winnerId}`
-        : '/api/matchup';
-      
-      return await fetch(url).then(res => {
+    queryKey: ["/api/matchup"],
+    queryFn: async () => {
+      return await fetch('/api/matchup').then(res => {
         if (!res.ok) throw new Error('Failed to fetch matchup');
         return res.json();
       });
     }
   });
-  
-  // Create the final matchup to display
-  let matchup = fetchedMatchup;
-  
-  // If we have a previous winner and the fetched matchup data
-  if (previousWinner && fetchedMatchup && winnerSide) {
-    // Check if our previous winner is in the current matchup
-    const winnerIsInMatchup = 
-      fetchedMatchup.diveSiteA.id === previousWinner.id || 
-      fetchedMatchup.diveSiteB.id === previousWinner.id;
-      
-    if (!winnerIsInMatchup) {
-      // If the winner isn't in the matchup, place it on the appropriate side
-      if (winnerSide === 'left') {
-        matchup = {
-          diveSiteA: previousWinner,
-          diveSiteB: fetchedMatchup.diveSiteB
-        };
-      } else {
-        matchup = {
-          diveSiteA: fetchedMatchup.diveSiteA,
-          diveSiteB: previousWinner
-        };
-      }
-    } else {
-      // The winner is in the matchup, but might be on the wrong side
-      const isOnCorrectSide = 
-        (winnerSide === 'left' && fetchedMatchup.diveSiteA.id === previousWinner.id) ||
-        (winnerSide === 'right' && fetchedMatchup.diveSiteB.id === previousWinner.id);
-        
-      // If the winner is on the wrong side, swap the positions
-      if (!isOnCorrectSide) {
-        matchup = {
-          diveSiteA: fetchedMatchup.diveSiteB,
-          diveSiteB: fetchedMatchup.diveSiteA
-        };
-      }
-    }
-  }
 
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      const { user } = useAuth();
-      await apiRequest("POST", "/api/vote", { winnerId, loserId, userId: user?.id });
+      await apiRequest("POST", "/api/vote", { winnerId, loserId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
@@ -110,47 +49,25 @@ export default function VotingSection() {
     }
   });
 
-  const handleVote = (winner: DiveSite, loser: DiveSite, side: 'left' | 'right') => {
+  const handleVote = (winner: DiveSite, loser: DiveSite) => {
     // Check if user is authenticated
     if (!isAuthenticated) {
       setShowAuthDialog(true);
       return;
     }
 
-    // Store the winner
-    setPreviousWinner(winner);
-    localStorage.setItem('previousWinner', JSON.stringify(winner));
-    
-    setWinnerSide(side);
-    localStorage.setItem('winnerSide', side);
-    
-    // Track that we've matched this winner against this loser
-    const updatedMatchedSites = new Set(matchedDiveSites);
-    updatedMatchedSites.add(loser.id);
-    setMatchedDiveSites(updatedMatchedSites);
-    localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
-    
-    // Only store vote in database
+    // Simply submit the vote - no tracking or restrictions
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
     });
   };
   
-  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'left');
-  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'right');
+  const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser);
+  const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser);
 
   const handleSkip = () => {
-    // Reset all tracking when skipping
-    setPreviousWinner(null);
-    setWinnerSide(null);
-    setMatchedDiveSites(new Set());
-    
-    // Clear localStorage items
-    localStorage.removeItem('previousWinner');
-    localStorage.removeItem('winnerSide');
-    localStorage.removeItem('matchedDiveSites');
-    
+    // Simply get a new matchup
     skipMutation.mutate();
   };
 

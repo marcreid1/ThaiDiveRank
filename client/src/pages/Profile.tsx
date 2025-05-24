@@ -58,9 +58,9 @@ export default function Profile() {
   }
 
   const stats: UserStats = {
-    totalVotes: (userStats as any)?.totalVotes || 0,
-    favoriteWinner: (userStats as any)?.favoriteWinner || "None yet",
-    recentVotes: (userStats as any)?.recentVotes || []
+    totalVotes: userStats?.totalVotes || 0,
+    favoriteWinner: userStats?.favoriteWinner || "None yet",
+    recentVotes: userStats?.recentVotes || []
   };
 
 
