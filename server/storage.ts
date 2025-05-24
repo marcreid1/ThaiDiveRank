@@ -1,7 +1,7 @@
-import { users, diveSites, votes, matchups, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type Matchup, type InsertMatchup, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
+import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc, and, or, count, sql } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface RegionDiveSites {
   region: string;
@@ -25,10 +25,7 @@ export interface IStorage {
   getDiveSitesByRegion(): Promise<RegionDiveSites[]>;
   
   // Matchup methods
-  getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite } | null>;
-  initializeMatchups(): Promise<void>;
-  markMatchupCompleted(siteAId: number, siteBId: number): Promise<void>;
-  areAllMatchupsCompleted(): Promise<boolean>;
+  getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
   
   // Vote methods
   createVote(vote: InsertVote): Promise<Vote>;
@@ -156,83 +153,19 @@ export class DatabaseStorage implements IStorage {
     return regions;
   }
 
-  async initializeMatchups(): Promise<void> {
-    // Get all dive sites
+  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allSites = await this.getAllDiveSites();
     
-    // Check if matchups already exist
-    const existingMatchups = await db.select().from(matchups).limit(1);
-    if (existingMatchups.length > 0) {
-      return; // Already initialized
+    if (allSites.length < 2) {
+      throw new Error("Not enough dive sites for matchup");
     }
-    
-    // Create all possible matchups (every site vs every other site)
-    const matchupsToCreate: InsertMatchup[] = [];
-    
-    for (let i = 0; i < allSites.length; i++) {
-      for (let j = i + 1; j < allSites.length; j++) {
-        matchupsToCreate.push({
-          siteAId: allSites[i].id,
-          siteBId: allSites[j].id,
-          completed: false,
-        });
-      }
-    }
-    
-    // Insert all matchups
-    if (matchupsToCreate.length > 0) {
-      await db.insert(matchups).values(matchupsToCreate);
-    }
-  }
 
-  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite } | null> {
-    // Initialize matchups if not already done
-    await this.initializeMatchups();
-    
-    // Get an incomplete matchup
-    const [incompleteMatchup] = await db
-      .select()
-      .from(matchups)
-      .where(eq(matchups.completed, false))
-      .limit(1);
-    
-    if (!incompleteMatchup) {
-      return null; // All matchups completed
-    }
-    
-    // Get the dive sites for this matchup
-    const diveSiteA = await this.getDiveSite(incompleteMatchup.siteAId);
-    const diveSiteB = await this.getDiveSite(incompleteMatchup.siteBId);
-    
-    if (!diveSiteA || !diveSiteB) {
-      throw new Error("Invalid dive site IDs in matchup");
-    }
-    
+    // Simple random selection for now
+    const shuffled = allSites.sort(() => 0.5 - Math.random());
     return {
-      diveSiteA,
-      diveSiteB,
+      diveSiteA: shuffled[0],
+      diveSiteB: shuffled[1],
     };
-  }
-
-  async markMatchupCompleted(siteAId: number, siteBId: number): Promise<void> {
-    await db
-      .update(matchups)
-      .set({ completed: true })
-      .where(
-        or(
-          and(eq(matchups.siteAId, siteAId), eq(matchups.siteBId, siteBId)),
-          and(eq(matchups.siteAId, siteBId), eq(matchups.siteBId, siteAId))
-        )
-      );
-  }
-
-  async areAllMatchupsCompleted(): Promise<boolean> {
-    const [result] = await db
-      .select({ count: count() })
-      .from(matchups)
-      .where(eq(matchups.completed, false));
-    
-    return (result?.count || 0) === 0;
   }
 
   async createVote(insertVote: InsertVote): Promise<Vote> {
