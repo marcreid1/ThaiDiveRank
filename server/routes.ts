@@ -194,14 +194,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw error;
       }
       
-      // Find user by username
-      const user = await storage.getUserByUsername(username);
+      // Authenticate user with secure password checking
+      const user = await storage.authenticateUser(username, password);
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-      
-      // Check password (in a real app, you'd use proper password hashing)
-      if (user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
