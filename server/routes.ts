@@ -223,6 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get user ID from session if authenticated
       const userId = (req as any).user?.id || null;
+      console.log("User stats request - userId:", userId, "session user:", (req as any).user);
       const stats = await storage.getUserStats(userId);
       res.json(stats);
     } catch (error: any) {
