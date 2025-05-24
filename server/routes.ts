@@ -165,15 +165,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
+      // Debug the incoming request
+      console.log("Full request body:", JSON.stringify(req.body, null, 2));
+      console.log("Body keys:", Object.keys(req.body));
+      
       // Ensure we have the required fields
       const username = req.body.username;
       const email = req.body.email;
       const password = req.body.password;
       
+      console.log("Extracted values:", { username, email, password: password ? "***" : null });
+      
       // Basic validation
       if (!username || !email || !password) {
         return res.status(400).json({ 
-          message: "Missing required fields: username, email, and password are required" 
+          message: `Missing required fields. Received: username=${username}, email=${email}, password=${password ? 'present' : 'missing'}` 
         });
       }
       
