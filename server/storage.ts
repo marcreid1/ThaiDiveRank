@@ -14,7 +14,7 @@ export interface RegionDiveSites {
 
 export interface IStorage {
   // User methods
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: number, requestingUserId?: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   authenticateUser(username: string, password: string): Promise<User | null>;
@@ -22,9 +22,9 @@ export interface IStorage {
   // Session methods
   createUserSession(sessionId: string, userId: number): Promise<UserSession>;
   getUserFromSession(sessionId: string): Promise<User | null>;
-  deleteSession(sessionId: string): Promise<void>;
+  deleteSession(sessionId: string, userId?: number): Promise<void>;
   
-  // Dive site methods
+  // Dive site methods (public data)
   getAllDiveSites(): Promise<DiveSite[]>;
   getDiveSite(id: number): Promise<DiveSite | undefined>;
   createDiveSite(diveSite: InsertDiveSite): Promise<DiveSite>;
@@ -35,14 +35,20 @@ export interface IStorage {
   // Matchup methods
   getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
   
-  // Vote methods
-  createVote(vote: InsertVote): Promise<Vote>;
-  getVotes(limit?: number): Promise<Vote[]>;
-  getRecentActivity(limit?: number): Promise<VoteActivity[]>;
+  // Vote methods with user authorization
+  createVote(vote: InsertVote, requestingUserId: number): Promise<Vote>;
+  getUserVotes(userId: number, requestingUserId: number, limit?: number): Promise<Vote[]>;
+  getVotes(limit?: number): Promise<Vote[]>; // Admin only - returns anonymized data
+  getRecentActivity(limit?: number): Promise<VoteActivity[]>; // Public activity without user details
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: number, requestingUserId?: number): Promise<User | undefined> {
+    // Users can only access their own profile data
+    if (requestingUserId && requestingUserId !== id) {
+      throw new Error("Unauthorized: Users can only access their own data");
+    }
+    
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
@@ -113,8 +119,18 @@ export class DatabaseStorage implements IStorage {
     return session?.user || null;
   }
 
-  async deleteSession(sessionId: string): Promise<void> {
-    await db.delete(userSessions).where(eq(userSessions.sessionId, sessionId));
+  async deleteSession(sessionId: string, userId?: number): Promise<void> {
+    if (userId) {
+      // User can only delete their own sessions
+      await db.delete(userSessions)
+        .where(and(
+          eq(userSessions.sessionId, sessionId),
+          eq(userSessions.userId, userId)
+        ));
+    } else {
+      // Admin or system can delete any session
+      await db.delete(userSessions).where(eq(userSessions.sessionId, sessionId));
+    }
   }
 
   async getAllDiveSites(): Promise<DiveSite[]> {
@@ -257,7 +273,11 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async createVote(insertVote: InsertVote): Promise<Vote> {
+  async createVote(insertVote: InsertVote, requestingUserId: number): Promise<Vote> {
+    // Ensure the vote is being created by the authenticated user
+    if (insertVote.userId && insertVote.userId !== requestingUserId) {
+      throw new Error("Unauthorized: Users can only create votes for themselves");
+    }
     // Get current ratings for ELO calculation
     const winner = await this.getDiveSite(insertVote.winnerId);
     const loser = await this.getDiveSite(insertVote.loserId);
@@ -278,7 +298,7 @@ export class DatabaseStorage implements IStorage {
           winnerId: insertVote.winnerId,
           loserId: insertVote.loserId,
           pointsChanged: eloChange,
-          userId: insertVote.userId,
+          userId: requestingUserId, // Always use the authenticated user
         })
         .returning();
 
@@ -305,8 +325,33 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
+  async getUserVotes(userId: number, requestingUserId: number, limit = 20): Promise<Vote[]> {
+    // Users can only access their own votes
+    if (userId !== requestingUserId) {
+      throw new Error("Unauthorized: Users can only access their own votes");
+    }
+    
+    return await db.select()
+      .from(votes)
+      .where(eq(votes.userId, userId))
+      .orderBy(desc(votes.timestamp))
+      .limit(limit);
+  }
+
   async getVotes(limit = 20): Promise<Vote[]> {
-    return await db.select().from(votes).orderBy(desc(votes.timestamp)).limit(limit);
+    // Return votes without exposing user IDs - for admin/analytics only
+    return await db.select({
+      id: votes.id,
+      winnerId: votes.winnerId,
+      loserId: votes.loserId,
+      pointsChanged: votes.pointsChanged,
+      timestamp: votes.timestamp,
+      // Don't expose userId or sessionId
+      userId: sql`NULL`,
+      sessionId: sql`NULL`
+    }).from(votes)
+      .orderBy(desc(votes.timestamp))
+      .limit(limit);
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
