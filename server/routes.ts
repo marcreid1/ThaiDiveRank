@@ -6,12 +6,10 @@ import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import crypto from "crypto";
 
-// Extend Express Request interface to include session
-declare module 'express-serve-static-core' {
-  interface Request {
-    session: {
-      userId?: number;
-    };
+// Use the session interface from express-session
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
   }
 }
 
