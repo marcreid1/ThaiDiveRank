@@ -372,7 +372,7 @@ export class DatabaseStorage implements IStorage {
       loserName: siteMap.get(vote.loserId) || "Unknown",
       pointsChanged: vote.pointsChanged,
       timestamp: vote.timestamp.toISOString(),
-      username: vote.userId ? userMap.get(vote.userId) || "Anonymous" : "Anonymous",
+      username: "Anonymous User... voted",
     }));
   }
 
