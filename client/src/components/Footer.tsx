@@ -3,7 +3,6 @@ import { Link } from "wouter";
 export default function Footer() {
   const footerLinks = [
     { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
     { href: "/privacy", label: "Privacy" },
     { href: "/terms", label: "Terms" }
   ];
