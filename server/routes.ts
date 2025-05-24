@@ -165,20 +165,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
-      console.log('Raw request body:', JSON.stringify(req.body));
-      const { username, email, password } = req.body;
+      // Ensure we have the required fields
+      const username = req.body.username;
+      const email = req.body.email;
+      const password = req.body.password;
       
-      console.log('Extracted fields:', { username, email, password: password ? '[REDACTED]' : 'undefined' });
+      // Basic validation
+      if (!username || !email || !password) {
+        return res.status(400).json({ 
+          message: "Missing required fields: username, email, and password are required" 
+        });
+      }
       
-      // Validate input
-      try {
-        insertUserSchema.parse({ username, email, password });
-      } catch (error) {
-        console.log('Validation error:', error);
-        if (error instanceof ZodError) {
-          return res.status(400).json({ message: "Invalid user data", errors: error.errors });
-        }
-        throw error;
+      if (!email.includes('@')) {
+        return res.status(400).json({ message: "Invalid email format" });
       }
       
       // Check if user already exists
