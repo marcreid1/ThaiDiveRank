@@ -53,7 +53,12 @@ export default function Terms() {
           DiveRank shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our services.
         </p>
 
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">7. Changes to Terms</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">7. Image Disclaimer</h2>
+        <p className="text-slate-700 dark:text-slate-300">
+          The images displayed on this website are artistic representations intended to capture the spirit and beauty of our dive experiences. They may not accurately reflect the exact appearance of the dive sites or conditions at any given time. Variations in marine life, water visibility, and environmental conditions are natural and expected.
+        </p>
+
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">8. Changes to Terms</h2>
         <p className="text-slate-700 dark:text-slate-300">
           We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to the website. Your continued use of DiveRank constitutes acceptance of the updated terms.
         </p>
