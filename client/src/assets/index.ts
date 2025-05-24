@@ -16,7 +16,7 @@ import waterfallBay from './images/dive-sites/14. Waterfall Bay.png';
 import elephantHeadRock from './images/dive-sites/15. Elephant Head Rock.png';
 import beaconPoint from './images/dive-sites/16. Beacon Point.png';
 import fantasyReef from './images/dive-sites/17. Fantasy Reef.png';
-import beaconReef from './images/dive-sites/18. Beacon Reef.png';
+import beaconReef from './images/dive-sites/18. Beacon Reef.jpg';
 import donaldDuckBay from './images/dive-sites/19. Donald Duck Bay.png';
 import snapperAlley from './images/dive-sites/20. Snapper Alley.png';
 import threeTrees from './images/dive-sites/21. Three Trees.png';
