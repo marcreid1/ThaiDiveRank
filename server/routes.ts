@@ -5,6 +5,7 @@ import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { createRateLimiter } from "./middleware/logging";
+import { requireAuth, optionalAuth } from "./middleware/auth";
 import { securityLogger, requestAnalytics } from "./logger";
 import { getAnalyticsData, getSecuritySummary } from "./analytics";
 
@@ -256,6 +257,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User profile endpoint - users can only access their own data
+  app.get("/api/user/profile", readLimit, requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.userId!, req.userId!);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Don't return password
+      const { password: _, ...userResponse } = user;
+      res.json(userResponse);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get user profile" 
+      });
+    }
+  });
+
+  // User's votes endpoint - users can only access their own votes
+  app.get("/api/user/votes", readLimit, requireAuth, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const userVotes = await storage.getUserVotes(req.userId!, req.userId!, limit);
+      res.json(userVotes);
+    } catch (error) {
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get user votes" 
+      });
+    }
+  });
+
   // Analytics endpoints (for monitoring)
   app.get("/api/analytics/security", readLimit, async (req, res) => {
     try {
@@ -284,18 +316,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Create a vote with authentication
-  app.post("/api/vote", voteLimit, async (req, res) => {
+  app.post("/api/vote", voteLimit, requireAuth, async (req, res) => {
     try {
       const { winnerId, loserId } = req.body;
       
-      // Check if user is authenticated through session
-      if (!req.session.userId) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-      
       // Validate input
       try {
-        insertVoteSchema.parse({ winnerId, loserId, userId: req.session.userId });
+        insertVoteSchema.parse({ winnerId, loserId, userId: req.userId });
       } catch (error) {
         if (error instanceof ZodError) {
           return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
@@ -318,24 +345,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       requestAnalytics.trackVote(req, winnerId, loserId, pointsChanged);
       
       // Create vote with authenticated user ID
-      console.log("Creating vote with userId:", req.session.userId);
+      console.log("Creating vote with userId:", req.userId);
       const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
-        userId: req.session.userId,
-      });
+        userId: req.userId,
+      }, req.userId!);
       console.log("Vote created:", vote);
 
-      // Update dive site ratings
-      await storage.updateDiveSite(winnerId, { 
-        rating: winner.rating + pointsChanged,
-        wins: winner.wins + 1
-      });
-      await storage.updateDiveSite(loserId, { 
-        rating: loser.rating - pointsChanged,
-        losses: loser.losses + 1
-      });
+      // Note: Ratings are now updated within the createVote method using transactions
 
       res.json(vote);
     } catch (error) {

@@ -340,18 +340,22 @@ export class DatabaseStorage implements IStorage {
 
   async getVotes(limit = 20): Promise<Vote[]> {
     // Return votes without exposing user IDs - for admin/analytics only
-    return await db.select({
+    const results = await db.select({
       id: votes.id,
       winnerId: votes.winnerId,
       loserId: votes.loserId,
       pointsChanged: votes.pointsChanged,
       timestamp: votes.timestamp,
-      // Don't expose userId or sessionId
-      userId: sql`NULL`,
-      sessionId: sql`NULL`
     }).from(votes)
       .orderBy(desc(votes.timestamp))
       .limit(limit);
+    
+    // Map to Vote type with null userId and sessionId
+    return results.map(vote => ({
+      ...vote,
+      userId: null,
+      sessionId: null
+    }));
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
