@@ -275,6 +275,15 @@ export class DatabaseStorage implements IStorage {
       timestamp: vote.timestamp.toISOString(),
     }));
   }
+
+  async getUserStats(userId?: number): Promise<any> {
+    // Return basic stats - the frontend handles detailed calculations from localStorage
+    return {
+      totalVotes: 0,
+      favoriteWinner: "None yet",
+      recentVotes: []
+    };
+  }
 }
 
 export const storage = new DatabaseStorage();

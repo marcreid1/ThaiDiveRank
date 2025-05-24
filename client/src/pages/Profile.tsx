@@ -52,7 +52,7 @@ export default function Profile() {
 
   if (!isAuthenticated || !user) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
             Please sign in to view your profile
@@ -64,7 +64,7 @@ export default function Profile() {
 
   if (isLoading) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-500 mx-auto"></div>
           <p className="mt-4 text-slate-600 dark:text-slate-400">Loading your profile...</p>
@@ -115,7 +115,7 @@ export default function Profile() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
           Welcome back, {user.username}!
