@@ -21,7 +21,7 @@ import donaldDuckBay from './images/dive-sites/19. Donald Duck Bay.png';
 import snapperAlley from './images/dive-sites/20. Snapper Alley.png';
 import threeTrees from './images/dive-sites/21. Three Trees.png';
 import northPoint from './images/dive-sites/22. North Point.png';
-import breakfastBend from './images/dive-sites/23. Breakfast Bend.png';
+import breakfastBend from './images/dive-sites/23. Breakfast Bend.jpg';
 import christmasPoint from './images/dive-sites/24. Christmas Point.png';
 import batfishBend from './images/dive-sites/25. Batfish Bend.jpg';
 import kohBonPinnacle from './images/dive-sites/26. Koh Bon Pinnacle.png';
