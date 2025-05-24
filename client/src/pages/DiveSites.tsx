@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RegionDiveSites } from "@/types/region-dive-sites";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getDiveSiteImage } from "@/lib/utils/getImage";
@@ -259,13 +260,35 @@ function DiveSiteCard({ diveSite }: DiveSiteCardProps) {
       id={`dive-site-${diveSite.id}`} 
       className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg"
     >
-      <div className="h-48 overflow-hidden">
-        <img
-          src={getDiveSiteImage(diveSite.name)}
-          alt={diveSite.name}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-        />
-      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <div className="h-48 overflow-hidden cursor-pointer group relative">
+            <img
+              src={getDiveSiteImage(diveSite.name)}
+              alt={diveSite.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+              <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                Click to view full image
+              </span>
+            </div>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden">
+          <div className="relative">
+            <img
+              src={getDiveSiteImage(diveSite.name)}
+              alt={diveSite.name}
+              className="w-full h-auto max-h-[85vh] object-contain"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+              <h3 className="text-white text-xl font-semibold">{diveSite.name}</h3>
+              <p className="text-white/90 text-sm">{diveSite.location}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="p-6 flex-grow flex flex-col">
         <div className="flex justify-between items-center mb-1">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{diveSite.name}</h3>
