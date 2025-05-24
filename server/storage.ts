@@ -95,7 +95,7 @@ export class DatabaseStorage implements IStorage {
 
     const rankings = allSites.map(site => ({
       ...site,
-      rankChange: 0, // For now, we'll set rank changes to 0 - could be enhanced later
+      rankChange: site.previousRank > 0 ? site.previousRank - site.currentRank : 0,
     }));
 
     return { rankings, lastUpdated };
@@ -177,6 +177,19 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Invalid dive site IDs");
     }
 
+    // Get current rankings before vote
+    const currentRankings = await db.select().from(diveSites).orderBy(desc(diveSites.rating));
+    const rankingMap = new Map();
+    currentRankings.forEach((site, index) => {
+      rankingMap.set(site.id, index + 1);
+    });
+
+    // Store previous ranks
+    await Promise.all([
+      db.update(diveSites).set({ previousRank: rankingMap.get(insertVote.winnerId) }).where(eq(diveSites.id, insertVote.winnerId)),
+      db.update(diveSites).set({ previousRank: rankingMap.get(insertVote.loserId) }).where(eq(diveSites.id, insertVote.loserId))
+    ]);
+
     // Calculate ELO change
     const eloChange = calculateEloChange(winner.rating, loser.rating);
 
@@ -189,7 +202,7 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
 
-    // Update the dive site ratings in a single transaction
+    // Update the dive site ratings
     await Promise.all([
       db
         .update(diveSites)
@@ -207,6 +220,18 @@ export class DatabaseStorage implements IStorage {
         })
         .where(eq(diveSites.id, insertVote.loserId))
     ]);
+
+    // Get new rankings after vote and update current ranks
+    const newRankings = await db.select().from(diveSites).orderBy(desc(diveSites.rating));
+    const newRankingMap = new Map();
+    newRankings.forEach((site, index) => {
+      newRankingMap.set(site.id, index + 1);
+    });
+
+    // Update current ranks for all sites
+    await Promise.all(newRankings.map((site, index) => 
+      db.update(diveSites).set({ currentRank: index + 1 }).where(eq(diveSites.id, site.id))
+    ));
 
     return vote;
   }

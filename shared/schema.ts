@@ -31,6 +31,8 @@ export const diveSites = pgTable("dive_sites", {
   depthMin: integer("depth_min").default(0),
   depthMax: integer("depth_max").default(0),
   difficulty: text("difficulty").default("Intermediate"),
+  previousRank: integer("previous_rank").default(0),
+  currentRank: integer("current_rank").default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
