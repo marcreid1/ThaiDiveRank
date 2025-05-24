@@ -317,7 +317,8 @@ export default function VotingSection() {
             </p>
             <div className="flex flex-col gap-3">
               <Button 
-                className="w-full" 
+                variant="outline" 
+                className="w-full"
                 onClick={() => {
                   setShowAuthDialog(false);
                   // Small delay to ensure dialog closes before triggering navbar dialog
@@ -331,8 +332,7 @@ export default function VotingSection() {
                 Sign In
               </Button>
               <Button 
-                variant="outline" 
-                className="w-full"
+                className="w-full" 
                 onClick={() => {
                   setShowAuthDialog(false);
                   // Small delay to ensure dialog closes before triggering navbar dialog
