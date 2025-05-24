@@ -320,9 +320,11 @@ export default function VotingSection() {
                 className="w-full" 
                 onClick={() => {
                   setShowAuthDialog(false);
-                  // Trigger the sign in dialog from navbar
-                  const signInButton = document.querySelector('[data-sign-in-trigger]') as HTMLElement;
-                  if (signInButton) signInButton.click();
+                  // Small delay to ensure dialog closes before triggering navbar dialog
+                  setTimeout(() => {
+                    const signInButton = document.querySelector('[data-sign-in-trigger]') as HTMLElement;
+                    if (signInButton) signInButton.click();
+                  }, 100);
                 }}
               >
                 <User className="h-4 w-4 mr-2" />
@@ -333,9 +335,11 @@ export default function VotingSection() {
                 className="w-full"
                 onClick={() => {
                   setShowAuthDialog(false);
-                  // Trigger the sign up dialog from navbar
-                  const signUpButton = document.querySelector('[data-sign-up-trigger]') as HTMLElement;
-                  if (signUpButton) signUpButton.click();
+                  // Small delay to ensure dialog closes before triggering navbar dialog
+                  setTimeout(() => {
+                    const signUpButton = document.querySelector('[data-sign-up-trigger]') as HTMLElement;
+                    if (signUpButton) signUpButton.click();
+                  }, 100);
                 }}
               >
                 <UserPlus className="h-4 w-4 mr-2" />

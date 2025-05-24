@@ -209,7 +209,7 @@ export default function Navbar() {
                 {/* Sign In Dialog */}
                 <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex" data-sign-in-trigger>
                       <User className="h-4 w-4 mr-1" />
                       Sign In
                     </Button>
@@ -257,7 +257,7 @@ export default function Navbar() {
             {/* Sign Up Dialog */}
             <Dialog open={signUpOpen} onOpenChange={setSignUpOpen}>
               <DialogTrigger asChild>
-                <Button variant="default" size="sm" className="hidden sm:inline-flex">
+                <Button variant="default" size="sm" className="hidden sm:inline-flex" data-sign-up-trigger>
                   <UserPlus className="h-4 w-4 mr-1" />
                   Sign Up
                 </Button>
