@@ -1,5 +1,6 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
+import rateLimit from "express-rate-limit";
 import { storage } from "./storage";
 import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
@@ -14,8 +15,44 @@ declare module 'express-session' {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Rate limiting configurations
+  const generalLimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: { message: "Too many requests, please try again later." },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+  const authLimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // limit each IP to 5 authentication attempts per windowMs
+    message: { message: "Too many authentication attempts, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const voteLimit = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 votes per minute
+    message: { message: "Too many votes, please slow down." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const readLimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // generous limit for read operations
+    message: { message: "Too many requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  // Apply general rate limiting to all API routes
+  app.use("/api", generalLimit);
+
   // Check authentication status
-  app.get("/api/auth/me", async (req, res) => {
+  app.get("/api/auth/me", readLimit, async (req, res) => {
     try {
       if (req.session?.userId) {
         const user = await storage.getUser(req.session.userId);
@@ -33,12 +70,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Sign out
-  app.post("/api/auth/signout", (req, res) => {
+  app.post("/api/auth/signout", readLimit, (req, res) => {
     req.session.userId = undefined;
     res.json({ success: true });
   });
+  
   // Get a random matchup
-  app.get("/api/matchup", async (req, res) => {
+  app.get("/api/matchup", readLimit, async (req, res) => {
     try {
       const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
       const winnerSide = req.query.winnerSide as 'A' | 'B' | undefined;
@@ -53,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get rankings
-  app.get("/api/rankings", async (req, res) => {
+  app.get("/api/rankings", readLimit, async (req, res) => {
     try {
       const rankingsData = await storage.getDiveSiteRankings();
       res.json(rankingsData);
@@ -65,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get recent voting activity
-  app.get("/api/activities", async (req, res) => {
+  app.get("/api/activities", readLimit, async (req, res) => {
     try {
       const activities = await storage.getRecentActivity(10);
       res.json(activities);
@@ -77,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get all dive sites
-  app.get("/api/dive-sites", async (req, res) => {
+  app.get("/api/dive-sites", readLimit, async (req, res) => {
     try {
       const diveSites = await storage.getAllDiveSites();
       res.json(diveSites);
@@ -89,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get dive sites organized by region
-  app.get("/api/dive-sites-by-region", async (req, res) => {
+  app.get("/api/dive-sites-by-region", readLimit, async (req, res) => {
     try {
       const diveSitesByRegion = await storage.getDiveSitesByRegion();
       res.json(diveSitesByRegion);
@@ -101,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get a specific dive site
-  app.get("/api/dive-sites/:id", async (req, res) => {
+  app.get("/api/dive-sites/:id", readLimit, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
