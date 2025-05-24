@@ -1,8 +1,9 @@
-import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
+import { users, diveSites, votes, userSessions, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type UserSession, type InsertUserSession, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc, sql, inArray } from "drizzle-orm";
+import { eq, desc, sql, inArray, gt } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export interface RegionDiveSites {
   region: string;
@@ -18,6 +19,10 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   authenticateUser(username: string, password: string): Promise<User | null>;
 
+  // Session methods
+  createUserSession(sessionId: string, userId: number): Promise<UserSession>;
+  getUserFromSession(sessionId: string): Promise<User | null>;
+  deleteSession(sessionId: string): Promise<void>;
   
   // Dive site methods
   getAllDiveSites(): Promise<DiveSite[]>;
