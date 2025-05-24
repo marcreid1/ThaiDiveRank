@@ -58,40 +58,10 @@ export default function Profile() {
     recentVotes: (userStats as any)?.recentVotes || []
   };
 
-  // Calculate user's favorite winner from their voting history
-  const calculateFavoriteWinner = (votes: UserVote[]) => {
-    console.log("Calculating favorite winner from votes:", votes);
-    
-    if (votes.length === 0) return "None yet";
-    
-    const winnerCounts = new Map<string, number>();
-    votes.forEach(vote => {
-      const count = winnerCounts.get(vote.winnerName) || 0;
-      winnerCounts.set(vote.winnerName, count + 1);
-    });
-    
-    console.log("Winner counts:", Array.from(winnerCounts.entries()));
-    
-    let maxVotes = 0;
-    let favoriteWinner = "None yet";
-    for (const [winner, count] of winnerCounts.entries()) {
-      if (count > maxVotes) {
-        maxVotes = count;
-        favoriteWinner = winner;
-      }
-    }
-    
-    console.log("Favorite winner:", favoriteWinner, "with", maxVotes, "votes");
-    return favoriteWinner;
-  };
 
-  // Merge user's personal votes with community stats
-  const personalStats = {
-    ...stats,
-    totalVotes: userVotes.length,
-    favoriteWinner: calculateFavoriteWinner(userVotes),
-    recentVotes: userVotes.slice(0, 10)
-  };
+
+  // Use stats directly from database
+  const personalStats = stats;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
@@ -124,7 +94,7 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {personalStats.recentVotes.map((vote) => (
+                  {personalStats.recentVotes.map((vote: UserVote) => (
                     <div key={vote.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
