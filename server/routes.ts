@@ -165,11 +165,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const { username, email, password } = req.body;
       
       // Validate input
       try {
-        insertUserSchema.parse({ username, password });
+        insertUserSchema.parse({ username, email, password });
       } catch (error) {
         if (error instanceof ZodError) {
           return res.status(400).json({ message: "Invalid user data", errors: error.errors });
@@ -184,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create new user
-      const user = await storage.createUser({ username, password });
+      const user = await storage.createUser({ username, email, password });
       
       // Don't return password in response
       const { password: _, ...userResponse } = user;
