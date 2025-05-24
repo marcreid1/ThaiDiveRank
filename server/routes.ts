@@ -231,19 +231,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a vote with authentication and duplicate prevention
+  // Create a vote with authentication
   app.post("/api/vote", async (req, res) => {
     try {
+      console.log("Vote request body:", req.body);
+      
       // Check if user is authenticated
       if (!req.session.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
       const { winnerId, loserId } = req.body;
+      console.log("Extracted winnerId:", winnerId, "loserId:", loserId);
       
-      // Basic validation - just check that winnerId and loserId are numbers
-      if (!winnerId || !loserId || typeof winnerId !== 'number' || typeof loserId !== 'number') {
-        return res.status(400).json({ message: "Invalid dive site IDs" });
+      // Basic validation - just check that winnerId and loserId exist
+      if (!winnerId || !loserId) {
+        return res.status(400).json({ message: "Missing dive site IDs" });
       }
 
       // Calculate ELO changes
