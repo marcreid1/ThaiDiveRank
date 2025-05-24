@@ -886,7 +886,7 @@ export class MemStorage implements IStorage {
       winnerMatchHistory.add(loser.id);
       this.matchupHistory.set(winner.id, winnerMatchHistory);
       
-      // Update ranks after vote
+      // Update ranks after vote (this needs to happen after rating changes)
       this.updateRankings();
     }
     
@@ -932,11 +932,16 @@ export class MemStorage implements IStorage {
     // Calculate position changes for each site
     currentRankedSites.forEach((site, index) => {
       const currentPosition = index + 1;
-      const previousPosition = this.previousRankings.get(site.id) || currentPosition;
+      const previousPosition = this.previousRankings.get(site.id);
       
-      // Position change: negative means moved up, positive means moved down
-      const positionChange = previousPosition - currentPosition;
-      this.rankChanges.set(site.id, positionChange);
+      if (previousPosition !== undefined) {
+        // Position change: positive means moved up, negative means moved down
+        const positionChange = previousPosition - currentPosition;
+        this.rankChanges.set(site.id, positionChange);
+      } else {
+        // First time ranking, no change
+        this.rankChanges.set(site.id, 0);
+      }
       
       // Update the previous position for next time
       this.previousRankings.set(site.id, currentPosition);
