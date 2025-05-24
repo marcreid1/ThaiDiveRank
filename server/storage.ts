@@ -37,7 +37,6 @@ export class MemStorage implements IStorage {
   private diveSites: Map<number, DiveSite>;
   private votes: Map<number, Vote>;
   private rankChanges: Map<number, number>; // Tracks rank changes for dive sites
-  private previousRankings: Map<number, number>; // Stores previous position for each site
   private lastUpdated: string;
   
   // Track which dive sites have been matched against each winner
@@ -52,7 +51,6 @@ export class MemStorage implements IStorage {
     this.diveSites = new Map();
     this.votes = new Map();
     this.rankChanges = new Map();
-    this.previousRankings = new Map();
     this.matchupHistory = new Map();
     this.lastUpdated = new Date().toISOString();
     
@@ -62,9 +60,6 @@ export class MemStorage implements IStorage {
     
     // Initialize with dive sites from the CSV file
     this.initializeDiveSites();
-    
-    // Initialize previous rankings after dive sites are loaded
-    this.initializePreviousRankings();
   }
 
   private initializeDiveSites() {
@@ -571,17 +566,6 @@ export class MemStorage implements IStorage {
     }
   }
 
-  private initializePreviousRankings() {
-    // Get initial rankings sorted by rating
-    const initialRankedSites = Array.from(this.diveSites.values())
-      .sort((a, b) => b.rating - a.rating);
-    
-    // Set initial positions
-    initialRankedSites.forEach((site, index) => {
-      this.previousRankings.set(site.id, index + 1);
-    });
-  }
-
   // User methods (from original)
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
@@ -866,15 +850,6 @@ export class MemStorage implements IStorage {
     const loser = await this.getDiveSite(insertVote.loserId);
     
     if (winner && loser) {
-      // Capture current rankings BEFORE making any changes
-      const currentRankings = Array.from(this.diveSites.values())
-        .sort((a, b) => b.rating - a.rating);
-      
-      // Store current positions as previous positions for next calculation
-      currentRankings.forEach((site, index) => {
-        this.previousRankings.set(site.id, index + 1);
-      });
-      
       // Calculate ELO rating change
       const ratingChange = calculateEloChange(winner.rating, loser.rating);
       
@@ -895,7 +870,7 @@ export class MemStorage implements IStorage {
       winnerMatchHistory.add(loser.id);
       this.matchupHistory.set(winner.id, winnerMatchHistory);
       
-      // Update ranks after vote (this needs to happen after rating changes)
+      // Update ranks after vote
       this.updateRankings();
     }
     
@@ -934,26 +909,26 @@ export class MemStorage implements IStorage {
   }
   
   private updateRankings() {
-    // Get current rankings sorted by rating
-    const currentRankedSites = Array.from(this.diveSites.values())
+    // Get previous rankings
+    const prevRankedSites = Array.from(this.diveSites.values())
       .sort((a, b) => b.rating - a.rating);
     
-    // Calculate position changes for each site
-    currentRankedSites.forEach((site, index) => {
+    // Get current rankings
+    const currRankedSites = Array.from(this.diveSites.values())
+      .sort((a, b) => b.rating - a.rating);
+    
+    // Build maps of previous and current positions
+    const prevPositions = new Map<number, number>();
+    prevRankedSites.forEach((site, index) => {
+      prevPositions.set(site.id, index + 1);
+    });
+    
+    // Calculate change in positions
+    currRankedSites.forEach((site, index) => {
       const currentPosition = index + 1;
-      const previousPosition = this.previousRankings.get(site.id);
-      
-      if (previousPosition !== undefined) {
-        // Position change: positive means moved up, negative means moved down
-        const positionChange = previousPosition - currentPosition;
-        this.rankChanges.set(site.id, positionChange);
-      } else {
-        // First time ranking, no change
-        this.rankChanges.set(site.id, 0);
-      }
-      
-      // Update the previous position for next time
-      this.previousRankings.set(site.id, currentPosition);
+      const previousPosition = prevPositions.get(site.id) || currentPosition;
+      const change = previousPosition - currentPosition;
+      this.rankChanges.set(site.id, change);
     });
     
     // Update the lastUpdated timestamp
