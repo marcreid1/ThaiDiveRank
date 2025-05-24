@@ -12,10 +12,10 @@ export const users = pgTable("users", {
   lastLoginAt: timestamp("last_login_at"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  email: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  lastLoginAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

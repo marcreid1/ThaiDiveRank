@@ -172,6 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         insertUserSchema.parse({ username, email, password });
       } catch (error) {
         if (error instanceof ZodError) {
+          console.log("Validation errors:", error.errors);
           return res.status(400).json({ message: "Invalid user data", errors: error.errors });
         }
         throw error;
