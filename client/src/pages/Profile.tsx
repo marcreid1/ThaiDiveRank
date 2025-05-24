@@ -3,59 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Trophy, Calendar, TrendingUp } from "lucide-react";
-import { formatDistanceToNow } from "@/lib/utils/formatDate";
-import { useState, useEffect } from "react";
-
-interface UserVote {
-  id: number;
-  winnerName: string;
-  loserName: string;
-  pointsChanged: number;
-  timestamp: string;
-}
-
-interface UserStats {
-  totalVotes: number;
-  favoriteWinner: string;
-  recentVotes: UserVote[];
-}
+import { Trophy, Calendar, TrendingUp, Target, Star } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { UserStats, UserVote } from "@shared/schema";
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
-  const [userVotes, setUserVotes] = useState<UserVote[]>([]);
 
-  // Load user votes from localStorage and refresh on interval
-  useEffect(() => {
-    const loadUserVotes = () => {
-      if (!user?.id) {
-        setUserVotes([]);
-        return;
-      }
-      
-      const userSpecificKey = `user_votes_${user.id}`;
-      const storedVotes = localStorage.getItem(userSpecificKey);
-      if (storedVotes) {
-        try {
-          setUserVotes(JSON.parse(storedVotes));
-        } catch {
-          setUserVotes([]);
-        }
-      } else {
-        setUserVotes([]);
-      }
-    };
-
-    loadUserVotes();
-    
-    // Refresh user votes every 2 seconds to catch new votes
-    const interval = setInterval(loadUserVotes, 2000);
-    
-    return () => clearInterval(interval);
-  }, [user?.id]);
-
+  // Fetch user-specific statistics from the API
   const { data: userStats, isLoading } = useQuery({
-    queryKey: ["/api/user/stats"],
+    queryKey: ["/api/user/stats", user?.id],
+    queryFn: () => fetch(`/api/user/stats?userId=${user?.id}`).then(res => res.json()),
+    enabled: !!user?.id,
+  });
+
+  // Fetch user-specific votes from the API
+  const { data: userVotes } = useQuery({
+    queryKey: ["/api/user/votes", user?.id],
+    queryFn: () => fetch(`/api/user/votes?userId=${user?.id}&limit=20`).then(res => res.json()),
+    enabled: !!user?.id,
   });
 
   if (!isAuthenticated || !user) {
@@ -84,42 +50,9 @@ export default function Profile() {
   const stats: UserStats = userStats || {
     totalVotes: 0,
     favoriteWinner: "None yet", 
-    recentVotes: []
-  };
-
-  // Calculate user's favorite winner from their voting history
-  const calculateFavoriteWinner = (votes: UserVote[]) => {
-    console.log("Calculating favorite winner from votes:", votes);
-    
-    if (votes.length === 0) return "None yet";
-    
-    const winnerCounts = new Map<string, number>();
-    votes.forEach(vote => {
-      const count = winnerCounts.get(vote.winnerName) || 0;
-      winnerCounts.set(vote.winnerName, count + 1);
-    });
-    
-    console.log("Winner counts:", Array.from(winnerCounts.entries()));
-    
-    let maxVotes = 0;
-    let favoriteWinner = "None yet";
-    for (const [winner, count] of winnerCounts.entries()) {
-      if (count > maxVotes) {
-        maxVotes = count;
-        favoriteWinner = winner;
-      }
-    }
-    
-    console.log("Favorite winner:", favoriteWinner, "with", maxVotes, "votes");
-    return favoriteWinner;
-  };
-
-  // Merge user's personal votes with community stats
-  const personalStats = {
-    ...stats,
-    totalVotes: userVotes.length,
-    favoriteWinner: calculateFavoriteWinner(userVotes),
-    recentVotes: userVotes.slice(0, 10)
+    recentVotes: [],
+    mostVotedSites: [],
+    averagePointsChanged: 0
   };
 
   return (
@@ -145,7 +78,7 @@ export default function Profile() {
               </p>
             </CardHeader>
             <CardContent>
-              {personalStats.recentVotes.length === 0 ? (
+              {stats.recentVotes.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-slate-600 dark:text-slate-400">
                     No votes yet! Start voting to see your activity here.
@@ -153,7 +86,7 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {personalStats.recentVotes.map((vote) => (
+                  {stats.recentVotes.map((vote: UserVote) => (
                     <div key={vote.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -170,7 +103,7 @@ export default function Profile() {
                             +{vote.pointsChanged} points
                           </Badge>
                           <span>•</span>
-                          <span>{formatDistanceToNow(new Date(vote.timestamp))}</span>
+                          <span>{formatDistanceToNow(new Date(vote.timestamp))} ago</span>
                         </div>
                       </div>
                     </div>
@@ -189,7 +122,7 @@ export default function Profile() {
               <Trophy className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{personalStats.totalVotes}</div>
+              <div className="text-2xl font-bold">{stats.totalVotes}</div>
               <p className="text-xs text-muted-foreground">
                 Dive site comparisons made
               </p>
@@ -198,13 +131,13 @@ export default function Profile() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Voting Impact</CardTitle>
+              <CardTitle className="text-sm font-medium">Average Impact</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Active</div>
+              <div className="text-2xl font-bold">{stats.averagePointsChanged}</div>
               <p className="text-xs text-muted-foreground">
-                Contributing to rankings
+                Points per vote
               </p>
             </CardContent>
           </Card>
@@ -212,17 +145,38 @@ export default function Profile() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Favorite Winner</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-ocean-600 dark:text-ocean-400">
-                {personalStats.favoriteWinner}
+              <div className="text-lg font-bold text-ocean-600 dark:text-ocean-400">
+                {stats.favoriteWinner}
               </div>
               <p className="text-xs text-muted-foreground">
                 Most voted dive site
               </p>
             </CardContent>
           </Card>
+
+          {stats.mostVotedSites.length > 0 && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Top Voted Sites</CardTitle>
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {stats.mostVotedSites.slice(0, 3).map((site, index) => (
+                    <div key={site.name} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{site.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {site.votes} votes
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </main>
