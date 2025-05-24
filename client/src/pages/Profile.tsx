@@ -70,10 +70,33 @@ export default function Profile() {
     recentVotes: []
   };
 
+  // Calculate user's favorite winner from their voting history
+  const calculateFavoriteWinner = (votes: UserVote[]) => {
+    if (votes.length === 0) return "None yet";
+    
+    const winnerCounts = new Map<string, number>();
+    votes.forEach(vote => {
+      const count = winnerCounts.get(vote.winnerName) || 0;
+      winnerCounts.set(vote.winnerName, count + 1);
+    });
+    
+    let maxVotes = 0;
+    let favoriteWinner = "None yet";
+    for (const [winner, count] of winnerCounts.entries()) {
+      if (count > maxVotes) {
+        maxVotes = count;
+        favoriteWinner = winner;
+      }
+    }
+    
+    return favoriteWinner;
+  };
+
   // Merge user's personal votes with community stats
   const personalStats = {
     ...stats,
     totalVotes: userVotes.length,
+    favoriteWinner: calculateFavoriteWinner(userVotes),
     recentVotes: userVotes.slice(0, 10)
   };
 
