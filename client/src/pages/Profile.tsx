@@ -23,31 +23,10 @@ interface UserStats {
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
-  const [userVotes, setUserVotes] = useState<UserVote[]>([]);
-
-  // Load user votes from localStorage and refresh on interval
-  useEffect(() => {
-    const loadUserVotes = () => {
-      const storedVotes = localStorage.getItem('user_votes');
-      if (storedVotes) {
-        try {
-          setUserVotes(JSON.parse(storedVotes));
-        } catch {
-          setUserVotes([]);
-        }
-      }
-    };
-
-    loadUserVotes();
-    
-    // Refresh user votes every 2 seconds to catch new votes
-    const interval = setInterval(loadUserVotes, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   const { data: userStats, isLoading } = useQuery({
     queryKey: ["/api/user/stats"],
+    enabled: isAuthenticated, // Only fetch when user is authenticated
   });
 
   if (!isAuthenticated || !user) {
@@ -73,45 +52,11 @@ export default function Profile() {
     );
   }
 
-  const stats: UserStats = userStats || {
+  // Use database-provided user stats directly
+  const personalStats: UserStats = userStats as UserStats || {
     totalVotes: 0,
     favoriteWinner: "None yet", 
     recentVotes: []
-  };
-
-  // Calculate user's favorite winner from their voting history
-  const calculateFavoriteWinner = (votes: UserVote[]) => {
-    console.log("Calculating favorite winner from votes:", votes);
-    
-    if (votes.length === 0) return "None yet";
-    
-    const winnerCounts = new Map<string, number>();
-    votes.forEach(vote => {
-      const count = winnerCounts.get(vote.winnerName) || 0;
-      winnerCounts.set(vote.winnerName, count + 1);
-    });
-    
-    console.log("Winner counts:", Array.from(winnerCounts.entries()));
-    
-    let maxVotes = 0;
-    let favoriteWinner = "None yet";
-    for (const [winner, count] of winnerCounts.entries()) {
-      if (count > maxVotes) {
-        maxVotes = count;
-        favoriteWinner = winner;
-      }
-    }
-    
-    console.log("Favorite winner:", favoriteWinner, "with", maxVotes, "votes");
-    return favoriteWinner;
-  };
-
-  // Merge user's personal votes with community stats
-  const personalStats = {
-    ...stats,
-    totalVotes: userVotes.length,
-    favoriteWinner: calculateFavoriteWinner(userVotes),
-    recentVotes: userVotes.slice(0, 10)
   };
 
   return (
