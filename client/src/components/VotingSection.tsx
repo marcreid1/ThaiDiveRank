@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DiveSite } from "@shared/schema";
 import DiveSiteCard from "./DiveSiteCard";
@@ -22,237 +21,147 @@ export default function VotingSection() {
       });
     }
   });
-  
-  // Create the final matchup to display
-  let matchup = fetchedMatchup;
-  
-  // If we have a previous winner and the fetched matchup data
-  if (previousWinner && fetchedMatchup && winnerSide) {
-    // Check if our previous winner is in the current matchup
-    const winnerIsInMatchup = 
-      fetchedMatchup.diveSiteA.id === previousWinner.id || 
-      fetchedMatchup.diveSiteB.id === previousWinner.id;
-      
-    if (!winnerIsInMatchup) {
-      // If the winner isn't in the matchup, place it on the appropriate side
-      if (winnerSide === 'left') {
-        matchup = {
-          diveSiteA: previousWinner,
-          diveSiteB: fetchedMatchup.diveSiteB
-        };
-      } else {
-        matchup = {
-          diveSiteA: fetchedMatchup.diveSiteA,
-          diveSiteB: previousWinner
-        };
-      }
-    } else {
-      // The winner is in the matchup, but might be on the wrong side
-      const isOnCorrectSide = 
-        (winnerSide === 'left' && fetchedMatchup.diveSiteA.id === previousWinner.id) ||
-        (winnerSide === 'right' && fetchedMatchup.diveSiteB.id === previousWinner.id);
-        
-      // If the winner is on the wrong side, swap the positions
-      if (!isOnCorrectSide) {
-        matchup = {
-          diveSiteA: fetchedMatchup.diveSiteB,
-          diveSiteB: fetchedMatchup.diveSiteA
-        };
-      }
-    }
-  }
 
   const voteMutation = useMutation({
-    mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      await apiRequest("POST", "/api/vote", { winnerId, loserId });
-    },
-    onSuccess: () => {
+    mutationFn: apiRequest,
+    onSuccess: (data: any) => {
+      // Refetch new matchup and related data
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
-    }
-  });
-
-  const skipMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/skip");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+    onError: (error) => {
+      console.error("Vote failed:", error);
     }
   });
 
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'left' | 'right') => {
-    // Store the winner
-    setPreviousWinner(winner);
-    localStorage.setItem('previousWinner', JSON.stringify(winner));
-    
-    setWinnerSide(side);
-    localStorage.setItem('winnerSide', side);
-    
-    // Track that we've matched this winner against this loser
-    const updatedMatchedSites = new Set(matchedDiveSites);
-    updatedMatchedSites.add(loser.id);
-    setMatchedDiveSites(updatedMatchedSites);
-    localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
-    
-    voteMutation.mutate({ 
-      winnerId: winner.id, 
-      loserId: loser.id 
+    voteMutation.mutate({
+      url: '/api/vote',
+      method: 'POST',
+      body: {
+        winnerId: winner.id,
+        loserId: loser.id
+      }
     });
   };
-  
+
   const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'left');
   const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'right');
 
-  const handleSkip = () => {
-    // Reset all tracking when skipping
-    setPreviousWinner(null);
-    setWinnerSide(null);
-    setMatchedDiveSites(new Set());
-    
-    // Clear localStorage items
-    localStorage.removeItem('previousWinner');
-    localStorage.removeItem('winnerSide');
-    localStorage.removeItem('matchedDiveSites');
-    
-    skipMutation.mutate();
-  };
-
-  if (isLoading) {
+  // Check if all matchups are completed
+  if (matchupData?.completed) {
     return (
-      <div className="mb-12">
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
-              Which dive site would you rather visit?
+      <section className="bg-gradient-to-br from-ocean-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Voting Complete! 🎉
             </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-20 relative">
-              {/* VS Badge for loading state */}
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex">
-                <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
-                  VS
-                </div>
-              </div>
-
-              <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
-                <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
-                  <Skeleton className="w-full h-full" />
-                </div>
-                <div className="p-4">
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2 mb-3" />
-                  <Skeleton className="h-10 w-full mt-6" />
-                </div>
-              </div>
-
-              {/* VS Badge for mobile view */}
-              <div className="flex md:hidden justify-center my-6">
-                <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg">
-                  VS
-                </div>
-              </div>
-
-              <div className="dive-card relative bg-white dark:bg-slate-800 border-2 border-ocean-200 dark:border-slate-700 rounded-xl overflow-hidden card-shadow">
-                <div className="relative h-48 sm:h-64 bg-ocean-100 dark:bg-slate-700">
-                  <Skeleton className="w-full h-full" />
-                </div>
-                <div className="p-4">
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2 mb-3" />
-                  <Skeleton className="h-10 w-full mt-6" />
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-center">
-              <Skeleton className="h-10 w-40" />
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
+              {matchupData.message || "All dive site comparisons have been completed!"}
+            </p>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 shadow-lg max-w-md mx-auto">
+              <p className="text-slate-700 dark:text-slate-300">
+                Thank you for participating in ranking all the dive sites! 
+                Check out the final rankings to see how your votes shaped the results.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <section className="bg-gradient-to-br from-ocean-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Compare Dive Sites
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              Vote for your preferred dive site in each matchup
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <Skeleton className="h-96 w-full" />
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </div>
+      </section>
     );
   }
 
   if (isError) {
     return (
-      <div className="mb-12">
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
-          <div className="p-6 text-center">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
-              Error loading matchup
+      <section className="bg-gradient-to-br from-ocean-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Error Loading Matchup
             </h2>
-            <p className="text-red-500 dark:text-red-400 mb-4">{(error as Error)?.message || "Failed to load dive sites"}</p>
-            <button 
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/matchup"] })}
-              className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
-            >
-              Try Again
-            </button>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              {error instanceof Error ? error.message : "Failed to load dive site matchup"}
+            </p>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
-  const { diveSiteA, diveSiteB } = matchup!;
+  const { diveSiteA, diveSiteB } = matchupData || {};
 
-  return (
-    <div className="mb-12">
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
-        <div className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
-            Which Dive Site is Better?
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-20 relative">
-            {/* VS Badge for desktop view - absolutely positioned */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex">
-              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg shadow-lg">
-                VS
-              </div>
-            </div>
-
-            <div>
-              <DiveSiteCard 
-                diveSite={diveSiteA} 
-                onVote={() => handleVoteLeft(diveSiteA, diveSiteB)}
-                showViewButton={false}
-              />
-            </div>
-
-            {/* VS Badge for mobile view */}
-            <div className="flex md:hidden justify-center my-6">
-              <div className="bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-full h-12 w-12 flex items-center justify-center text-lg shadow-lg">
-                VS
-              </div>
-            </div>
-
-            <div>
-              <DiveSiteCard 
-                diveSite={diveSiteB} 
-                onVote={() => handleVoteRight(diveSiteB, diveSiteA)}
-                showViewButton={false}
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <button 
-              type="button" 
-              className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500 dark:focus:ring-offset-slate-900"
-              onClick={handleSkip}
-              disabled={skipMutation.isPending}
-            >
-              {skipMutation.isPending ? "Skipping..." : "Skip"}
-              <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-              </svg>
-            </button>
+  if (!diveSiteA || !diveSiteB) {
+    return (
+      <section className="bg-gradient-to-br from-ocean-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              No Matchup Available
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              No dive site matchup is currently available
+            </p>
           </div>
         </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="bg-gradient-to-br from-ocean-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            Compare Dive Sites
+          </h2>
+          <p className="text-lg text-slate-600 dark:text-slate-300">
+            Vote for your preferred dive site in this matchup
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <DiveSiteCard 
+            diveSite={diveSiteA} 
+            onVote={() => handleVoteLeft(diveSiteA, diveSiteB)}
+          />
+          <DiveSiteCard 
+            diveSite={diveSiteB} 
+            onVote={() => handleVoteRight(diveSiteB, diveSiteA)}
+          />
+        </div>
+        
+        {voteMutation.isPending && (
+          <div className="text-center mt-8">
+            <p className="text-slate-600 dark:text-slate-300">
+              Processing your vote...
+            </p>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
