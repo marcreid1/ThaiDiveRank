@@ -1,4 +1,4 @@
-import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity, type UserStats, type UserVote } from "@shared/schema";
+import { users, diveSites, votes, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -15,8 +15,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  getUserStats(userId?: number): Promise<UserStats>;
-  getUserVotes(userId: number, limit?: number): Promise<UserVote[]>;
+  getUserStats(userId?: number): Promise<any>;
   
   // Dive site methods
   getAllDiveSites(): Promise<DiveSite[]>;
@@ -33,6 +32,7 @@ export interface IStorage {
   createVote(vote: InsertVote): Promise<Vote>;
   getVotes(limit?: number): Promise<Vote[]>;
   getRecentActivity(limit?: number): Promise<VoteActivity[]>;
+  getUserVotes(userId: number, limit?: number): Promise<VoteActivity[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -155,7 +155,7 @@ export class DatabaseStorage implements IStorage {
     return regions;
   }
 
-  async getRandomMatchup(): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+  async getRandomMatchup(winnerId?: number): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allSites = await this.getAllDiveSites();
     
     if (allSites.length < 2) {
@@ -277,95 +277,50 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getUserStats(userId?: number): Promise<UserStats> {
+  async getUserStats(userId?: number): Promise<any> {
     if (!userId) {
       return {
         totalVotes: 0,
         favoriteWinner: "None yet",
-        recentVotes: [],
-        mostVotedSites: [],
-        averagePointsChanged: 0
+        recentVotes: []
       };
     }
 
-    // Get user's vote count
-    const userVotes = await db.select().from(votes).where(eq(votes.userId, userId));
-    const totalVotes = userVotes.length;
-
-    if (totalVotes === 0) {
-      return {
-        totalVotes: 0,
-        favoriteWinner: "None yet",
-        recentVotes: [],
-        mostVotedSites: [],
-        averagePointsChanged: 0
-      };
-    }
-
-    // Get all dive sites for name mapping
-    const allSites = await db.select().from(diveSites);
-    const siteMap = new Map(allSites.map(site => [site.id, site.name]));
-
-    // Calculate favorite winner (most voted for)
-    const winnerCounts = new Map<number, number>();
+    // Get user's voting activity from database
+    const userVotes = await this.getUserVotes(userId, 50);
+    
+    // Calculate favorite winner from user's voting history
+    const winnerCounts = new Map<string, number>();
     userVotes.forEach(vote => {
-      winnerCounts.set(vote.winnerId, (winnerCounts.get(vote.winnerId) || 0) + 1);
+      const count = winnerCounts.get(vote.winnerName) || 0;
+      winnerCounts.set(vote.winnerName, count + 1);
     });
     
-    let favoriteWinnerId = 0;
-    let maxWins = 0;
-    winnerCounts.forEach((count, siteId) => {
-      if (count > maxWins) {
-        maxWins = count;
-        favoriteWinnerId = siteId;
+    let favoriteWinner = "None yet";
+    let maxVotes = 0;
+    for (const [winner, count] of winnerCounts.entries()) {
+      if (count > maxVotes) {
+        maxVotes = count;
+        favoriteWinner = winner;
       }
-    });
-
-    const favoriteWinner = siteMap.get(favoriteWinnerId) || "None yet";
-
-    // Get recent votes (last 10)
-    const recentVotes = userVotes
-      .slice(-10)
-      .reverse()
-      .map(vote => ({
-        id: vote.id,
-        winnerName: siteMap.get(vote.winnerId) || "Unknown",
-        loserName: siteMap.get(vote.loserId) || "Unknown",
-        pointsChanged: vote.pointsChanged,
-        timestamp: vote.timestamp.toISOString(),
-      }));
-
-    // Calculate most voted sites (winners + losers)
-    const siteVoteCounts = new Map<number, number>();
-    userVotes.forEach(vote => {
-      siteVoteCounts.set(vote.winnerId, (siteVoteCounts.get(vote.winnerId) || 0) + 1);
-      siteVoteCounts.set(vote.loserId, (siteVoteCounts.get(vote.loserId) || 0) + 1);
-    });
-
-    const mostVotedSites = Array.from(siteVoteCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([siteId, count]) => ({
-        name: siteMap.get(siteId) || "Unknown",
-        votes: count
-      }));
-
-    // Calculate average points changed
-    const totalPointsChanged = userVotes.reduce((sum, vote) => sum + vote.pointsChanged, 0);
-    const averagePointsChanged = Math.round(totalPointsChanged / totalVotes);
+    }
 
     return {
-      totalVotes,
+      totalVotes: userVotes.length,
       favoriteWinner,
-      recentVotes,
-      mostVotedSites,
-      averagePointsChanged
+      recentVotes: userVotes.slice(0, 10)
     };
   }
 
-  async getUserVotes(userId: number, limit = 20): Promise<UserVote[]> {
+  async getUserVotes(userId: number, limit = 20): Promise<VoteActivity[]> {
     const userVotes = await db
-      .select()
+      .select({
+        id: votes.id,
+        winnerId: votes.winnerId,
+        loserId: votes.loserId,
+        pointsChanged: votes.pointsChanged,
+        timestamp: votes.timestamp,
+      })
       .from(votes)
       .where(eq(votes.userId, userId))
       .orderBy(desc(votes.timestamp))
@@ -375,9 +330,12 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
 
-    // Get all dive sites for name mapping
-    const allSites = await db.select().from(diveSites);
-    const siteMap = new Map(allSites.map(site => [site.id, site.name]));
+    // Get all unique site IDs and fetch their names
+    const siteIds = [...new Set([...userVotes.map(v => v.winnerId), ...userVotes.map(v => v.loserId)])];
+    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
+    
+    // Create a map for quick lookup
+    const siteMap = new Map(sites.map(site => [site.id, site.name]));
 
     return userVotes.map(vote => ({
       id: vote.id,

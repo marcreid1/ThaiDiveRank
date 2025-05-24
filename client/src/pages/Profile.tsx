@@ -3,25 +3,30 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Trophy, Calendar, TrendingUp, Target, Star } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { UserStats, UserVote } from "@shared/schema";
+import { Trophy, Calendar, TrendingUp } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils/formatDate";
+import { useState, useEffect } from "react";
+
+interface UserVote {
+  id: number;
+  winnerName: string;
+  loserName: string;
+  pointsChanged: number;
+  timestamp: string;
+}
+
+interface UserStats {
+  totalVotes: number;
+  favoriteWinner: string;
+  recentVotes: UserVote[];
+}
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
 
-  // Fetch user-specific statistics from the API
   const { data: userStats, isLoading } = useQuery({
-    queryKey: ["/api/user/stats", user?.id],
-    queryFn: () => fetch(`/api/user/stats?userId=${user?.id}`).then(res => res.json()),
-    enabled: !!user?.id,
-  });
-
-  // Fetch user-specific votes from the API
-  const { data: userVotes } = useQuery({
-    queryKey: ["/api/user/votes", user?.id],
-    queryFn: () => fetch(`/api/user/votes?userId=${user?.id}&limit=20`).then(res => res.json()),
-    enabled: !!user?.id,
+    queryKey: ["/api/user/stats"],
+    enabled: isAuthenticated, // Only fetch when user is authenticated
   });
 
   if (!isAuthenticated || !user) {
@@ -47,12 +52,11 @@ export default function Profile() {
     );
   }
 
-  const stats: UserStats = userStats || {
+  // Use database-provided user stats directly
+  const personalStats: UserStats = userStats as UserStats || {
     totalVotes: 0,
     favoriteWinner: "None yet", 
-    recentVotes: [],
-    mostVotedSites: [],
-    averagePointsChanged: 0
+    recentVotes: []
   };
 
   return (
@@ -78,7 +82,7 @@ export default function Profile() {
               </p>
             </CardHeader>
             <CardContent>
-              {stats.recentVotes.length === 0 ? (
+              {personalStats.recentVotes.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-slate-600 dark:text-slate-400">
                     No votes yet! Start voting to see your activity here.
@@ -86,7 +90,7 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {stats.recentVotes.map((vote: UserVote) => (
+                  {personalStats.recentVotes.map((vote) => (
                     <div key={vote.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -103,7 +107,7 @@ export default function Profile() {
                             +{vote.pointsChanged} points
                           </Badge>
                           <span>•</span>
-                          <span>{formatDistanceToNow(new Date(vote.timestamp))} ago</span>
+                          <span>{formatDistanceToNow(new Date(vote.timestamp))}</span>
                         </div>
                       </div>
                     </div>
@@ -122,7 +126,7 @@ export default function Profile() {
               <Trophy className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalVotes}</div>
+              <div className="text-2xl font-bold">{personalStats.totalVotes}</div>
               <p className="text-xs text-muted-foreground">
                 Dive site comparisons made
               </p>
@@ -131,13 +135,13 @@ export default function Profile() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Impact</CardTitle>
+              <CardTitle className="text-sm font-medium">Voting Impact</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.averagePointsChanged}</div>
+              <div className="text-2xl font-bold">Active</div>
               <p className="text-xs text-muted-foreground">
-                Points per vote
+                Contributing to rankings
               </p>
             </CardContent>
           </Card>
@@ -145,38 +149,17 @@ export default function Profile() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Favorite Winner</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold text-ocean-600 dark:text-ocean-400">
-                {stats.favoriteWinner}
+              <div className="text-2xl font-bold text-ocean-600 dark:text-ocean-400">
+                {personalStats.favoriteWinner}
               </div>
               <p className="text-xs text-muted-foreground">
                 Most voted dive site
               </p>
             </CardContent>
           </Card>
-
-          {stats.mostVotedSites && stats.mostVotedSites.length > 0 && (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Top Voted Sites</CardTitle>
-                <Target className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {stats.mostVotedSites.slice(0, 3).map((site, index) => (
-                    <div key={site.name} className="flex justify-between items-center">
-                      <span className="text-sm font-medium">{site.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {site.votes} votes
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </main>

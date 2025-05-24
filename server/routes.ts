@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if we're requesting a specific winnerId to be included
       const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
       
-      const matchup = await storage.getRandomMatchup();
+      const matchup = await storage.getRandomMatchup(winnerId);
       res.json(matchup);
     } catch (error) {
       res.status(500).json({ 
@@ -93,7 +93,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vote for a dive site
   app.post("/api/vote", async (req, res) => {
     try {
-      const { winnerId, loserId, userId } = req.body;
+      const { winnerId, loserId } = req.body;
+      
+      // Get user ID from session if authenticated
+      const userId = (req as any).session?.user?.id || null;
       
       // Validate the vote data
       try {
@@ -121,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         winnerId,
         loserId,
         pointsChanged,
-        userId: userId || null, // Track user if provided
+        userId: userId, // Track user if authenticated
       });
       
       res.json({ success: true, vote });
@@ -169,6 +172,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user
       const user = await storage.createUser({ username, password });
       
+      // Store user in session
+      (req as any).session.user = user;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -205,6 +211,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
+      // Store user in session
+      (req as any).session.user = user;
+      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -215,29 +224,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User statistics endpoint
-  app.get("/api/user/stats", async (req, res) => {
+  // Check authentication status and sync session
+  app.get("/api/auth/me", async (req, res) => {
     try {
-      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
-      const stats = await storage.getUserStats(userId);
-      res.json(stats);
+      const sessionUser = (req as any).session?.user;
+      if (sessionUser) {
+        const { password: _, ...userResponse } = sessionUser;
+        res.json({ user: userResponse });
+      } else {
+        res.status(401).json({ message: "Not authenticated" });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // User votes endpoint
-  app.get("/api/user/votes", async (req, res) => {
+  // User statistics endpoint
+  app.get("/api/user/stats", async (req, res) => {
     try {
-      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
-      
-      if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
-      }
-      
-      const votes = await storage.getUserVotes(userId, limit);
-      res.json(votes);
+      // Get user ID from session if authenticated
+      const userId = (req as any).session?.user?.id || null;
+      console.log("User stats request - userId:", userId, "session user:", (req as any).session?.user);
+      const stats = await storage.getUserStats(userId);
+      res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
