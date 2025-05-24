@@ -297,57 +297,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
-    const recentVotes = await db
+    // Use a simpler query with JOIN to get all data at once
+    const recentActivity = await db
       .select({
         id: votes.id,
-        winnerId: votes.winnerId,
-        loserId: votes.loserId,
         pointsChanged: votes.pointsChanged,
         timestamp: votes.timestamp,
-        userId: votes.userId,
+        winnerName: sql<string>`winner_site.name`.as('winnerName'),
+        loserName: sql<string>`loser_site.name`.as('loserName'),
+        username: sql<string>`COALESCE(${users.username}, 'Anonymous')`.as('username'),
       })
       .from(votes)
+      .leftJoin(diveSites.as('winner_site'), eq(votes.winnerId, sql`winner_site.id`))
+      .leftJoin(diveSites.as('loser_site'), eq(votes.loserId, sql`loser_site.id`))
+      .leftJoin(users, eq(votes.userId, users.id))
       .orderBy(desc(votes.timestamp))
       .limit(limit);
 
-    console.log("Recent votes with userId:", recentVotes.map(v => ({ id: v.id, userId: v.userId })));
-
-    if (recentVotes.length === 0) {
-      return [];
-    }
-
-    // Get all unique site IDs and fetch their names
-    const siteIds = [...new Set([...recentVotes.map(v => v.winnerId), ...recentVotes.map(v => v.loserId)])];
-    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
-    
-    // Get all unique user IDs and fetch their usernames
-    const userIds = [...new Set(recentVotes.map(v => v.userId).filter(id => id !== null))];
-    console.log("User IDs to fetch:", userIds);
-    
-    const usersList = [];
-    for (const userId of userIds) {
-      const user = await db.select({ id: users.id, username: users.username }).from(users).where(eq(users.id, userId));
-      if (user.length > 0) {
-        usersList.push(user[0]);
-      }
-    }
-    console.log("Fetched users:", usersList);
-    
-    // Create maps for quick lookup
-    const siteMap = new Map(sites.map(site => [site.id, site.name]));
-    const userMap = new Map(usersList.map(user => [user.id, user.username]));
-
-    const result = recentVotes.map(vote => ({
-      id: vote.id,
-      winnerName: siteMap.get(vote.winnerId) || "Unknown",
-      loserName: siteMap.get(vote.loserId) || "Unknown",
-      pointsChanged: vote.pointsChanged,
-      timestamp: vote.timestamp.toISOString(),
-      username: vote.userId ? userMap.get(vote.userId) || "Anonymous" : "Anonymous",
+    return recentActivity.map(activity => ({
+      id: activity.id,
+      winnerName: activity.winnerName || "Unknown",
+      loserName: activity.loserName || "Unknown", 
+      pointsChanged: activity.pointsChanged,
+      timestamp: activity.timestamp.toISOString(),
+      username: activity.username || "Anonymous",
     }));
-    
-    console.log("Final result with usernames:", result.map(r => ({ id: r.id, username: r.username })));
-    return result;
   }
 
 

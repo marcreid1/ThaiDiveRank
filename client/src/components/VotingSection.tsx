@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { User, UserPlus } from "lucide-react";
 
 export default function VotingSection() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
   // Track the current champion and which side they're on
@@ -38,7 +38,6 @@ export default function VotingSection() {
   // Submit vote and update champion
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      const { user } = useAuth();
       await apiRequest("POST", "/api/vote", { winnerId, loserId, userId: user?.id });
     },
     onSuccess: () => {

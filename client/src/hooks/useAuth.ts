@@ -20,32 +20,52 @@ export function useAuth() {
 
 export function useAuthState() {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user data on mount
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    // Check authentication status with server on mount
+    const checkAuth = async () => {
       try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("user");
+        const response = await fetch('/api/auth/me', { 
+          credentials: 'include' 
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.log("Auth check failed:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
+
+    checkAuth();
   }, []);
 
   const login = (user: User) => {
     setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/signout', { 
+        method: 'POST', 
+        credentials: 'include' 
+      });
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
     setUser(null);
-    localStorage.removeItem("user");
   };
 
   return {
     user,
     isAuthenticated: !!user,
+    isLoading,
     login,
     logout,
   };

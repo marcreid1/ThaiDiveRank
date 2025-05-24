@@ -15,6 +15,29 @@ declare module 'express-serve-static-core' {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Check authentication status
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      if (req.session?.userId) {
+        const user = await storage.getUser(req.session.userId);
+        if (user) {
+          res.json({ user: { id: user.id, username: user.username } });
+        } else {
+          res.status(401).json({ message: "User not found" });
+        }
+      } else {
+        res.status(401).json({ message: "Not authenticated" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Sign out
+  app.post("/api/auth/signout", (req, res) => {
+    req.session.userId = undefined;
+    res.json({ success: true });
+  });
   // Get a random matchup
   app.get("/api/matchup", async (req, res) => {
     try {
@@ -237,20 +260,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-  // Create a vote with authentication and duplicate prevention
+  // Create a vote with authentication
   app.post("/api/vote", async (req, res) => {
     try {
-      const { winnerId, loserId, userId } = req.body;
+      const { winnerId, loserId } = req.body;
       
-      // Check if user is authenticated (accept userId from frontend)
-      console.log("Vote request - userId from body:", userId);
-      if (!userId) {
+      // Check if user is authenticated through session
+      if (!req.session.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
       
       // Validate input
       try {
-        insertVoteSchema.parse({ winnerId, loserId, userId });
+        insertVoteSchema.parse({ winnerId, loserId, userId: req.session.userId });
       } catch (error) {
         if (error instanceof ZodError) {
           return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
