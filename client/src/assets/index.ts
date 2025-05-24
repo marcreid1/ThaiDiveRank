@@ -8,7 +8,7 @@ import birdRock from './images/dive-sites/6. Bird Rock.png';
 import stonehenge from './images/dive-sites/7. Stonehenge.png';
 import hideawayBay from './images/dive-sites/8. Hideaway Bay.png';
 import anitasReef from './images/dive-sites/9. Anita\'s Reef.png';
-import deepSix from './images/dive-sites/10. Deep Six.png';
+import deepSix from './images/dive-sites/10. Deep Six.jpg';
 import eastOfEden from './images/dive-sites/11. East of Eden.png';
 import westOfEden from './images/dive-sites/12. West of Eden.png';
 import turtleRock from './images/dive-sites/13. Turtle Rock.png';
