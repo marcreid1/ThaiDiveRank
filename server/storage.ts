@@ -94,8 +94,13 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async authenticateUser(usernameOrEmail: string, password: string): Promise<User | null> {
-    const user = await this.getUserByUsernameOrEmail(usernameOrEmail);
+  async authenticateUser(email: string, password: string): Promise<User | null> {
+    // Only allow authentication with email address
+    if (!email.includes('@')) {
+      return null;
+    }
+    
+    const user = await this.getUserByEmail(email);
     if (!user) {
       return null;
     }

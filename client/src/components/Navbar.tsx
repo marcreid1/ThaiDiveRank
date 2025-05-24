@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
 const signInSchema = z.object({
-  username: z.string().min(1, "Username or email is required"),
+  email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
   captcha: z.string().min(1, "Security challenge required"),
 });
@@ -48,7 +48,7 @@ export default function Navbar() {
   const signInForm = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
       captcha: "",
     },
@@ -78,7 +78,7 @@ export default function Navbar() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          username: data.username, 
+          email: data.email, 
           password: data.password 
         }),
       });
@@ -242,12 +242,12 @@ export default function Navbar() {
                   <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
                     <FormField
                       control={signInForm.control}
-                      name="username"
+                      name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username or Email</FormLabel>
+                          <FormLabel>Email Address</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter your username or email" {...field} />
+                            <Input type="email" placeholder="Enter your email address" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

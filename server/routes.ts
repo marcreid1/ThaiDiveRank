@@ -218,25 +218,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signin
   app.post("/api/auth/signin", authLimit, async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
       
-      // Validate input
-      try {
-        insertUserSchema.parse({ username, password });
-      } catch (error) {
-        if (error instanceof ZodError) {
-          return res.status(400).json({ message: "Invalid credentials" });
-        }
-        throw error;
+      // Basic validation
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password required" });
+      }
+      
+      if (!email.includes('@')) {
+        return res.status(400).json({ message: "Please enter a valid email address" });
       }
       
       // Authenticate user with secure password checking
-      const user = await storage.authenticateUser(username, password);
+      const user = await storage.authenticateUser(email, password);
       if (!user) {
         // Log failed login attempt
         securityLogger.failedLogin(
           req.ip || 'unknown',
-          username,
+          email,
           req.get('User-Agent')
         );
         return res.status(401).json({ message: "Invalid credentials" });
@@ -245,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log successful login
       securityLogger.successfulLogin(
         req.ip || 'unknown',
-        username,
+        email,
         user.id,
         req.get('User-Agent')
       );
