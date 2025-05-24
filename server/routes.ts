@@ -159,50 +159,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Vote for a dive site
-  app.post("/api/vote", async (req, res) => {
-    try {
-      const { winnerId, loserId, userId } = req.body;
-      
-      // Validate the vote data
-      try {
-        insertVoteSchema.parse({ winnerId, loserId, pointsChanged: 0 });
-      } catch (error) {
-        if (error instanceof ZodError) {
-          return res.status(400).json({ message: "Invalid vote data", errors: error.errors });
-        }
-        throw error;
-      }
-      
-      // Get the dive sites
-      const winner = await storage.getDiveSite(winnerId);
-      const loser = await storage.getDiveSite(loserId);
-      
-      if (!winner || !loser) {
-        return res.status(404).json({ message: "One or both dive sites not found" });
-      }
-      
-      // Calculate ELO change
-      const pointsChanged = calculateEloChange(winner.rating, loser.rating);
-      
-      // Create the vote with session user ID
-      const vote = await storage.createVote({
-        winnerId,
-        loserId,
-        pointsChanged,
-        userId: req.session.userId,
-      });
-      
-      res.json({ success: true, vote });
-    } catch (error) {
-      res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to process vote" 
-      });
-    }
-  });
+
   
   // Skip current matchup
-  app.post("/api/skip", async (req, res) => {
+  app.post("/api/skip", readLimit, async (req, res) => {
     try {
       // No actual processing needed, just return success
       // The client will fetch a new matchup
@@ -215,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User signup
-  app.post("/api/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
       const { username, password } = req.body;
       
@@ -249,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User signin
-  app.post("/api/auth/signin", async (req, res) => {
+  app.post("/api/auth/signin", authLimit, async (req, res) => {
     try {
       const { username, password } = req.body;
       
@@ -284,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User logout
-  app.post("/api/auth/logout", async (req, res) => {
+  app.post("/api/auth/logout", readLimit, async (req, res) => {
     try {
       req.session.userId = undefined;
       res.json({ success: true, message: "Logged out successfully" });
@@ -298,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Create a vote with authentication
-  app.post("/api/vote", async (req, res) => {
+  app.post("/api/vote", voteLimit, async (req, res) => {
     try {
       const { winnerId, loserId } = req.body;
       
