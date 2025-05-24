@@ -166,17 +166,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
       const { username, email, password } = req.body;
-      console.log("Signup request data:", { username, email, password: "***" });
       
-      // Validate input
-      try {
-        insertUserSchema.parse({ username, email, password });
-      } catch (error) {
-        if (error instanceof ZodError) {
-          console.log("Validation errors:", JSON.stringify(error.errors, null, 2));
-          return res.status(400).json({ message: "Invalid user data", errors: error.errors });
-        }
-        throw error;
+      // Simple validation without Drizzle schema
+      if (!username || username.length < 3) {
+        return res.status(400).json({ message: "Username must be at least 3 characters" });
+      }
+      
+      if (!email || !email.includes('@')) {
+        return res.status(400).json({ message: "Please enter a valid email address" });
+      }
+      
+      if (!password || password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
       }
       
       // Check if user already exists
