@@ -80,16 +80,12 @@ export class DatabaseStorage implements IStorage {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(insertUser.password, saltRounds);
     
-    // Ensure email has a default value if not provided
-    const userToInsert = {
-      username: insertUser.username,
-      email: insertUser.email || `${insertUser.username}@temp.com`,
-      password: hashedPassword,
-    };
-    
     const [user] = await db
       .insert(users)
-      .values(userToInsert)
+      .values({
+        ...insertUser,
+        password: hashedPassword,
+      })
       .returning();
     return user;
   }
