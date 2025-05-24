@@ -28,21 +28,13 @@ export default function Profile() {
   // Load user votes from localStorage and refresh on interval
   useEffect(() => {
     const loadUserVotes = () => {
-      if (!user?.id) {
-        setUserVotes([]);
-        return;
-      }
-      
-      const userSpecificKey = `user_votes_${user.id}`;
-      const storedVotes = localStorage.getItem(userSpecificKey);
+      const storedVotes = localStorage.getItem('user_votes');
       if (storedVotes) {
         try {
           setUserVotes(JSON.parse(storedVotes));
         } catch {
           setUserVotes([]);
         }
-      } else {
-        setUserVotes([]);
       }
     };
 
@@ -52,7 +44,7 @@ export default function Profile() {
     const interval = setInterval(loadUserVotes, 2000);
     
     return () => clearInterval(interval);
-  }, [user?.id]);
+  }, []);
 
   const { data: userStats, isLoading } = useQuery({
     queryKey: ["/api/user/stats"],
