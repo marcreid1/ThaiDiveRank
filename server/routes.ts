@@ -253,7 +253,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/vote", async (req, res) => {
     try {
       // Check if user is authenticated
-      if (!req.session.userId) {
+      console.log("Vote request - session userId:", req.session?.userId);
+      if (!req.session?.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
