@@ -2,17 +2,18 @@ import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, User, UserPlus } from "lucide-react";
+import { Moon, Sun, User, UserPlus, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const signInSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -54,6 +55,8 @@ export default function Navbar() {
     },
   });
 
+  const { login, logout, isAuthenticated, user } = useAuth();
+
   const signInMutation = useMutation({
     mutationFn: async (data: z.infer<typeof signInSchema>) => {
       const response = await fetch("/api/auth/signin", {
@@ -69,7 +72,8 @@ export default function Navbar() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      login(data.user);
       toast({
         title: "Success",
         description: "Signed in successfully!",
@@ -101,7 +105,8 @@ export default function Navbar() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      login(data.user);
       toast({
         title: "Success",
         description: "Account created successfully!",
