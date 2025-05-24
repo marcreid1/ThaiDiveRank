@@ -1,7 +1,7 @@
 import { users, diveSites, votes, userSessions, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type UserSession, type InsertUserSession, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc, sql, inArray, gt } from "drizzle-orm";
+import { eq, desc, sql, inArray, gt, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
@@ -85,6 +85,36 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, user.id));
     
     return user;
+  }
+
+  async createUserSession(sessionId: string, userId: number): Promise<UserSession> {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+
+    const [session] = await db.insert(userSessions).values({
+      sessionId,
+      userId,
+      expiresAt,
+    }).returning();
+
+    return session;
+  }
+
+  async getUserFromSession(sessionId: string): Promise<User | null> {
+    const [session] = await db
+      .select({
+        user: users,
+      })
+      .from(userSessions)
+      .innerJoin(users, eq(userSessions.userId, users.id))
+      .where(eq(userSessions.sessionId, sessionId))
+      .limit(1);
+
+    return session?.user || null;
+  }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    await db.delete(userSessions).where(eq(userSessions.sessionId, sessionId));
   }
 
   async getAllDiveSites(): Promise<DiveSite[]> {

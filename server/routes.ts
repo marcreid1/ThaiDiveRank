@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { calculateEloChange } from "./utils/elo";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
+import crypto from "crypto";
 
 // Extend Express Request interface to include session
 declare module 'express-serve-static-core' {
@@ -264,10 +265,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/vote", async (req, res) => {
     try {
       const { winnerId, loserId } = req.body;
-      
-      // Debug session
-      console.log("Session data:", req.session);
-      console.log("Session userId:", req.session.userId);
       
       // Check if user is authenticated through session
       if (!req.session.userId) {
