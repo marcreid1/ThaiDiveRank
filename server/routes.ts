@@ -165,27 +165,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
-      // Debug the incoming request
-      console.log("Full request body:", JSON.stringify(req.body, null, 2));
-      console.log("Body keys:", Object.keys(req.body));
+      console.log("SIGNUP DEBUG - Full request body:", JSON.stringify(req.body, null, 2));
+      console.log("SIGNUP DEBUG - Body keys:", Object.keys(req.body));
+      console.log("SIGNUP DEBUG - Content-Type:", req.headers['content-type']);
       
       // Ensure we have the required fields
       const username = req.body.username;
       const email = req.body.email;
       const password = req.body.password;
       
-      console.log("Extracted values:", { username, email, password: password ? "***" : null });
+      console.log("SIGNUP DEBUG - Extracted values:", { username, email, password: password ? "***" : null });
       
       // Basic validation
-      if (!username || !email || !password) {
+      if (!username || !password) {
         return res.status(400).json({ 
-          message: `Missing required fields. Received: username=${username}, email=${email}, password=${password ? 'present' : 'missing'}` 
+          message: `Missing required fields. Username and password are required.` 
         });
       }
       
-      if (!email.includes('@')) {
-        return res.status(400).json({ message: "Invalid email format" });
-      }
+      // Provide a fallback email if none provided (for now)
+      const finalEmail = email && email.trim() ? email.trim() : `${username}@temp.com`;
+      
+      console.log("SIGNUP DEBUG - Final email to use:", finalEmail);
       
       // Check if user already exists
       const existingUser = await storage.getUserByUsername(username);
@@ -193,14 +194,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username already exists" });
       }
       
-      // Check if email already exists
-      const existingEmail = await storage.getUserByEmail(email);
-      if (existingEmail) {
-        return res.status(400).json({ message: "Email already exists" });
+      // Check if email already exists (only if it's not a temp email)
+      if (finalEmail && !finalEmail.includes('@temp.com')) {
+        const existingEmail = await storage.getUserByEmail(finalEmail);
+        if (existingEmail) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
       }
       
       // Create new user
-      const user = await storage.createUser({ username, email, password });
+      const user = await storage.createUser({ username, email: finalEmail, password });
       
       // Don't return password in response
       const { password: _, ...userResponse } = user;
