@@ -166,17 +166,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/signup", authLimit, async (req, res) => {
     try {
       const { username, email, password } = req.body;
+      console.log("Received signup data:", { username, email: email ? "present" : "missing", password: password ? "present" : "missing" });
       
       // Simple validation without Drizzle schema
       if (!username || username.length < 3) {
+        console.log("Username validation failed");
         return res.status(400).json({ message: "Username must be at least 3 characters" });
       }
       
       if (!email || !email.includes('@')) {
+        console.log("Email validation failed");
         return res.status(400).json({ message: "Please enter a valid email address" });
       }
       
       if (!password || password.length < 6) {
+        console.log("Password validation failed");
         return res.status(400).json({ message: "Password must be at least 6 characters" });
       }
       
@@ -193,6 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
     } catch (error) {
+      console.log("Signup error:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to create account" 
       });
