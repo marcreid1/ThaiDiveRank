@@ -89,29 +89,25 @@ export default function VotingSection() {
   }
 
   const voteMutation = useMutation({
-    mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      return await apiRequest("POST", "/api/vote", { winnerId, loserId });
+    mutationFn: async ({ winnerId, loserId, winner, loser }: { winnerId: number, loserId: number, winner: DiveSite, loser: DiveSite }) => {
+      const response = await apiRequest("POST", "/api/vote", { winnerId, loserId });
+      return { response, winner, loser };
     },
-    onSuccess: (data: any, variables) => {
-      // Update localStorage with the actual ELO points from server response
-      if (user?.id && data?.vote) {
-        const winner = matchup?.diveSiteA?.id === variables.winnerId ? matchup.diveSiteA : matchup?.diveSiteB;
-        const loser = matchup?.diveSiteA?.id === variables.loserId ? matchup.diveSiteA : matchup?.diveSiteB;
+    onSuccess: (data: any) => {
+      // Store user vote with actual ELO points from server
+      if (user?.id && data?.response?.vote) {
+        const userVote = {
+          id: Date.now(),
+          winnerName: data.winner.name,
+          loserName: data.loser.name,
+          pointsChanged: data.response.vote.pointsChanged,
+          timestamp: new Date().toISOString(),
+        };
         
-        if (winner && loser) {
-          const userVote = {
-            id: Date.now(),
-            winnerName: winner.name,
-            loserName: loser.name,
-            pointsChanged: data.vote.pointsChanged, // Use actual ELO points from server
-            timestamp: new Date().toISOString(),
-          };
-          
-          const userSpecificKey = `user_votes_${user.id}`;
-          const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
-          const updatedVotes = [userVote, ...existingVotes].slice(0, 50);
-          localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
-        }
+        const userSpecificKey = `user_votes_${user.id}`;
+        const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+        const updatedVotes = [userVote, ...existingVotes].slice(0, 50);
+        localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
       }
       
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
@@ -151,7 +147,9 @@ export default function VotingSection() {
     
     voteMutation.mutate({ 
       winnerId: winner.id, 
-      loserId: loser.id 
+      loserId: loser.id,
+      winner: winner,
+      loser: loser
     });
   };
   
