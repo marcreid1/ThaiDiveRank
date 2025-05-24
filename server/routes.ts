@@ -93,10 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vote for a dive site
   app.post("/api/vote", async (req, res) => {
     try {
-      const { winnerId, loserId } = req.body;
-      
-      // Get user ID from session if authenticated
-      const userId = (req as any).session?.user?.id || null;
+      const { winnerId, loserId, userId } = req.body;
       
       // Validate the vote data
       try {
@@ -123,8 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const vote = await storage.createVote({
         winnerId,
         loserId,
-        pointsChanged,
-        userId: userId, // Track user if authenticated
+        userId: userId || null, // Track user if provided
       });
       
       res.json({ success: true, vote });
@@ -172,9 +168,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user
       const user = await storage.createUser({ username, password });
       
-      // Store user in session
-      (req as any).session.user = user;
-      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -211,9 +204,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // Store user in session
-      (req as any).session.user = user;
-      
       // Don't return password in response
       const { password: _, ...userResponse } = user;
       res.json({ success: true, user: userResponse });
@@ -224,28 +214,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check authentication status and sync session
-  app.get("/api/auth/me", async (req, res) => {
-    try {
-      const sessionUser = (req as any).session?.user;
-      if (sessionUser) {
-        const { password: _, ...userResponse } = sessionUser;
-        res.json({ user: userResponse });
-      } else {
-        res.status(401).json({ message: "Not authenticated" });
-      }
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
   // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
-      // Get user ID from session if authenticated
-      const userId = (req as any).session?.user?.id || null;
-      console.log("User stats request - userId:", userId, "session user:", (req as any).session?.user);
-      const stats = await storage.getUserStats(userId);
+      const stats = await storage.getUserStats();
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });

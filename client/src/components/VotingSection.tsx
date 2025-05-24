@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { User, UserPlus } from "lucide-react";
 
 export default function VotingSection() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // State to track the currently winning dive site and which side it was on
@@ -89,10 +89,31 @@ export default function VotingSection() {
   }
 
   const voteMutation = useMutation({
-    mutationFn: async ({ winnerId, loserId }: { winnerId: number, loserId: number }) => {
-      await apiRequest("POST", "/api/vote", { winnerId, loserId });
+    mutationFn: async ({ winnerId, loserId, winner, loser }: { winnerId: number, loserId: number, winner: DiveSite, loser: DiveSite }) => {
+      const response = await apiRequest("POST", "/api/vote", { winnerId, loserId });
+      return { response, winner, loser };
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      // Store user vote with actual ELO points from server
+      if (user?.id && data?.response?.vote) {
+        console.log("Storing vote:", data);
+        const userVote = {
+          id: Date.now(),
+          winnerName: data.winner.name,
+          loserName: data.loser.name,
+          pointsChanged: data.response.vote.pointsChanged,
+          timestamp: new Date().toISOString(),
+        };
+        
+        const userSpecificKey = `user_votes_${user.id}`;
+        const existingVotes = JSON.parse(localStorage.getItem(userSpecificKey) || '[]');
+        const updatedVotes = [userVote, ...existingVotes].slice(0, 50);
+        localStorage.setItem(userSpecificKey, JSON.stringify(updatedVotes));
+        console.log("Stored votes:", updatedVotes);
+      } else {
+        console.log("Vote storage failed - missing data:", { user: user?.id, response: data?.response, vote: data?.response?.vote });
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
@@ -128,22 +149,11 @@ export default function VotingSection() {
     setMatchedDiveSites(updatedMatchedSites);
     localStorage.setItem('matchedDiveSites', JSON.stringify([...updatedMatchedSites]));
     
-    // Store user vote locally for profile tracking
-    const userVote = {
-      id: Date.now(),
-      winnerName: winner.name,
-      loserName: loser.name,
-      pointsChanged: 32, // Default ELO change
-      timestamp: new Date().toISOString(),
-    };
-    
-    const existingVotes = JSON.parse(localStorage.getItem('user_votes') || '[]');
-    const updatedVotes = [userVote, ...existingVotes].slice(0, 50); // Keep last 50 votes
-    localStorage.setItem('user_votes', JSON.stringify(updatedVotes));
-
     voteMutation.mutate({ 
       winnerId: winner.id, 
-      loserId: loser.id 
+      loserId: loser.id,
+      winner: winner,
+      loser: loser
     });
   };
   
