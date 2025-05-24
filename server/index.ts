@@ -1,6 +1,18 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Extend Express Request interface to include session
+declare global {
+  namespace Express {
+    interface Request {
+      session: session.Session & {
+        userId?: number;
+      };
+    }
+  }
+}
 
 const app = express();
 app.use(express.json());
