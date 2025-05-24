@@ -293,12 +293,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pointsChanged = calculateEloChange(winner.rating, loser.rating);
 
       // Create vote with authenticated user ID
+      console.log("Creating vote with userId:", req.session.userId);
       const vote = await storage.createVote({
         winnerId,
         loserId,
         pointsChanged,
         userId: req.session.userId,
       });
+      console.log("Vote created:", vote);
 
       // Update dive site ratings
       await storage.updateDiveSite(winnerId, { 

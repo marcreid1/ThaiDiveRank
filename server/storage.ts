@@ -289,7 +289,7 @@ export class DatabaseStorage implements IStorage {
         winnerId: insertVote.winnerId,
         loserId: insertVote.loserId,
         pointsChanged: eloChange,
-        userId: insertVote.userId || null,
+        userId: insertVote.userId,
       })
       .returning();
 
