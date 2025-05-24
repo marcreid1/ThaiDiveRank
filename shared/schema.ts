@@ -82,3 +82,20 @@ export interface VoteActivity {
   pointsChanged: number;
   timestamp: string;
 }
+
+// User-specific statistics and voting data
+export interface UserStats {
+  totalVotes: number;
+  favoriteWinner: string;
+  recentVotes: UserVote[];
+  mostVotedSites: Array<{ name: string; votes: number }>;
+  averagePointsChanged: number;
+}
+
+export interface UserVote {
+  id: number;
+  winnerName: string;
+  loserName: string;
+  pointsChanged: number;
+  timestamp: string;
+}

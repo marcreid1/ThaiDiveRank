@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if we're requesting a specific winnerId to be included
       const winnerId = req.query.winnerId ? parseInt(req.query.winnerId as string) : undefined;
       
-      const matchup = await storage.getRandomMatchup(winnerId);
+      const matchup = await storage.getRandomMatchup();
       res.json(matchup);
     } catch (error) {
       res.status(500).json({ 
@@ -120,6 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const vote = await storage.createVote({
         winnerId,
         loserId,
+        pointsChanged,
         userId: userId || null, // Track user if provided
       });
       
@@ -217,8 +218,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User statistics endpoint
   app.get("/api/user/stats", async (req, res) => {
     try {
-      const stats = await storage.getUserStats();
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      const stats = await storage.getUserStats(userId);
       res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User votes endpoint
+  app.get("/api/user/votes", async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      const votes = await storage.getUserVotes(userId, limit);
+      res.json(votes);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
