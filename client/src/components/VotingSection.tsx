@@ -343,7 +343,7 @@ export default function VotingSection() {
                 }}
               >
                 <UserPlus className="h-4 w-4 mr-2" />
-                Create Account
+                Sign Up
               </Button>
             </div>
           </div>
