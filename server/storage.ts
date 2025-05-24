@@ -17,7 +17,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   authenticateUser(username: string, password: string): Promise<User | null>;
-  getUserStats(userId?: number): Promise<any>;
+
   
   // Dive site methods
   getAllDiveSites(): Promise<DiveSite[]>;
@@ -329,73 +329,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getUserStats(userId?: number): Promise<any> {
-    if (!userId) {
-      return {
-        totalVotes: 0,
-        favoriteWinner: "None yet",
-        recentVotes: []
-      };
-    }
 
-    // Get actual user voting statistics from the database
-    const userVotes = await db
-      .select({
-        id: votes.id,
-        pointsChanged: votes.pointsChanged,
-        timestamp: votes.timestamp,
-        winnerId: votes.winnerId,
-        loserId: votes.loserId
-      })
-      .from(votes)
-      .where(eq(votes.userId, userId))
-      .orderBy(desc(votes.timestamp))
-      .limit(50);
-
-    if (userVotes.length === 0) {
-      return {
-        totalVotes: 0,
-        favoriteWinner: "None yet",
-        recentVotes: []
-      };
-    }
-
-    // Get dive site names for the votes
-    const siteIds = [...new Set([...userVotes.map(v => v.winnerId), ...userVotes.map(v => v.loserId)])];
-    const sites = await db.select({ id: diveSites.id, name: diveSites.name }).from(diveSites);
-    const siteMap = new Map(sites.map(site => [site.id, site.name]));
-
-    // Calculate favorite winner
-    const winnerCounts = new Map<string, number>();
-    userVotes.forEach(vote => {
-      const winnerName = siteMap.get(vote.winnerId) || "Unknown";
-      winnerCounts.set(winnerName, (winnerCounts.get(winnerName) || 0) + 1);
-    });
-
-    let favoriteWinner = "None yet";
-    let maxVotes = 0;
-    for (const [winner, count] of winnerCounts.entries()) {
-      if (count > maxVotes) {
-        maxVotes = count;
-        favoriteWinner = winner;
-      }
-    }
-
-    // Format recent votes
-    const recentVotes = userVotes.slice(0, 10).map(vote => ({
-      id: vote.id,
-      winnerName: siteMap.get(vote.winnerId) || "Unknown",
-      loserName: siteMap.get(vote.loserId) || "Unknown",
-      pointsChanged: vote.pointsChanged,
-      timestamp: vote.timestamp.toISOString(),
-    }));
-
-    return {
-      totalVotes: userVotes.length,
-      favoriteWinner,
-      recentVotes
-    };
-  }
 }
 
 export const storage = new DatabaseStorage();

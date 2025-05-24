@@ -44,7 +44,6 @@ export default function VotingSection() {
       // Invalidate other queries but not matchup yet - we'll handle that manually
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
     }
   });
 

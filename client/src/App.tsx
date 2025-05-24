@@ -11,7 +11,7 @@ import DiveSites from "@/pages/DiveSites";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Contact from "@/pages/Contact";
-import Profile from "@/pages/Profile";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthContext, useAuthState } from "@/hooks/useAuth";
@@ -42,7 +42,6 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/rankings" component={Rankings} />
             <Route path="/dive-sites" component={DiveSites} />
-            <Route path="/profile" component={Profile} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route path="/contact" component={Contact} />

@@ -192,12 +192,6 @@ export default function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center">
-                      <User className="h-4 w-4 mr-2" />
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={logout} className="flex items-center">
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out

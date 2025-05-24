@@ -235,20 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User statistics endpoint
-  app.get("/api/user/stats", async (req, res) => {
-    try {
-      // Get stats for the authenticated user (accept userId from query parameter)
-      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
-      console.log("Getting user stats for userId:", userId);
-      const stats = await storage.getUserStats(userId);
-      console.log("User stats result:", stats);
-      res.json(stats);
-    } catch (error: any) {
-      console.error("Error getting user stats:", error);
-      res.status(500).json({ message: error.message });
-    }
-  });
+
 
   // Create a vote with authentication and duplicate prevention
   app.post("/api/vote", async (req, res) => {
