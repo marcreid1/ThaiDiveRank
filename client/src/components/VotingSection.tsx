@@ -90,7 +90,11 @@ export default function VotingSection() {
 
   const voteMutation = useMutation({
     mutationFn: async ({ winnerId, loserId, winner, loser }: { winnerId: number, loserId: number, winner: DiveSite, loser: DiveSite }) => {
-      const response = await apiRequest("POST", "/api/vote", { winnerId, loserId });
+      const response = await apiRequest("POST", "/api/vote", { 
+        winnerId, 
+        loserId, 
+        userId: user?.id 
+      });
       return { response, winner, loser };
     },
     onSuccess: (data: any) => {
@@ -117,6 +121,8 @@ export default function VotingSection() {
       queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/votes"] });
     }
   });
 
