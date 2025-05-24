@@ -113,17 +113,7 @@ export default function Privacy() {
           We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date.
         </p>
 
-        <hr className="my-8 border-slate-200 dark:border-slate-700" />
 
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Contact Us</h2>
-
-        <p className="text-slate-700 dark:text-slate-300">
-          If you have any questions or concerns about this Privacy Policy, feel free to contact us at:
-        </p>
-        <p className="text-slate-700 dark:text-slate-300">
-          📧 privacy@diverank.com<br />
-          🌐 www.diverank.com
-        </p>
       </div>
     </main>
   );

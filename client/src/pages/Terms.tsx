@@ -58,16 +58,7 @@ export default function Terms() {
           We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to the website. Your continued use of DiveRank constitutes acceptance of the updated terms.
         </p>
 
-        <hr className="my-8 border-slate-200 dark:border-slate-700" />
 
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Contact Us</h2>
-        <p className="text-slate-700 dark:text-slate-300">
-          If you have any questions about these Terms, please contact us at:
-        </p>
-        <p className="text-slate-700 dark:text-slate-300">
-          📧 terms@diverank.com<br />
-          🌐 www.diverank.com
-        </p>
       </div>
     </main>
   );
