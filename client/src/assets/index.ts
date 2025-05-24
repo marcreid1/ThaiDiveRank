@@ -6,7 +6,7 @@ import princessBay from './images/dive-sites/4. Princess Bay.png';
 import honeymoonBay from './images/dive-sites/5. Honeymoon Bay.png';
 import birdRock from './images/dive-sites/6. Bird Rock.png';
 import stonehenge from './images/dive-sites/7. Stonehenge.png';
-import hideawayBay from './images/dive-sites/8. Hideaway Bay.png';
+import hideawayBay from './images/dive-sites/8. Hideaway Bay.jpg';
 import anitasReef from './images/dive-sites/9. Anita\'s Reef.png';
 import deepSix from './images/dive-sites/10. Deep Six.jpg';
 import eastOfEden from './images/dive-sites/11. East of Eden.png';
