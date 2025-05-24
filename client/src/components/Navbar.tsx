@@ -119,7 +119,8 @@ export default function Navbar() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          username: data.username, 
+          username: data.username,
+          email: data.email,
           password: data.password 
         }),
       });
@@ -312,6 +313,19 @@ export default function Navbar() {
                           <FormLabel>Username</FormLabel>
                           <FormControl>
                             <Input placeholder="Choose a username" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signUpForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email address" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
