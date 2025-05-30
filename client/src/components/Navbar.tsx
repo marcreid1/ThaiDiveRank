@@ -191,10 +191,10 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
                 <Logo />
+                <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
               </Link>
-              <span className="ml-2 text-xl font-bold text-ocean-600">DiveRank</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8 sm:justify-center">
               {navLinks.map(link => (
