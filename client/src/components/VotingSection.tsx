@@ -13,10 +13,10 @@ import { User, UserPlus } from "lucide-react";
 export default function VotingSection() {
   const { isAuthenticated, user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  
+
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
-  
+
   // Get matchup data with champion preferences
   const { data: matchup, isLoading, isError, error, refetch } = useQuery<{
     diveSiteA: DiveSite;
@@ -28,7 +28,7 @@ export default function VotingSection() {
       if (champion) {
         url += `?winnerId=${champion.diveSite.id}&winnerSide=${champion.side}`;
       }
-      
+
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch matchup');
       return response.json();
@@ -75,7 +75,7 @@ export default function VotingSection() {
     setChampion({ diveSite: winner, side });
     refetch();
   };
-  
+
   const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'A');
   const handleVoteRight = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'B');
 
@@ -168,7 +168,7 @@ export default function VotingSection() {
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
-            Which Dive Site is Better?
+            Pick Your Dream Dive Sites!
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-20 relative">
