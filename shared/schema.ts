@@ -64,6 +64,7 @@ export const votes = pgTable("votes", {
 export const insertVoteSchema = createInsertSchema(votes).omit({
   id: true,
   timestamp: true,
+  userId: true, // userId is added by the API endpoint
 });
 
 export type InsertVote = z.infer<typeof insertVoteSchema>;
