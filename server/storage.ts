@@ -243,7 +243,7 @@ export class DatabaseStorage implements IStorage {
       if (northSurinSites.length > 0) {
         surinSubregions.push({
           region: "North",
-          description: "The northern Surin Islands have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
+          description: "The northern Surin Islands (#1, #3, #4, #7) have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
           diveSites: northSurinSites,
         });
       }
@@ -253,7 +253,7 @@ export class DatabaseStorage implements IStorage {
       if (southSurinSites.length > 0) {
         surinSubregions.push({
           region: "South",
-          description: "The southern Surin Islands feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
+          description: "The southern Surin Islands (#2, #5, #6) feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
           diveSites: southSurinSites,
         });
       }
