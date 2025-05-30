@@ -47,15 +47,18 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
       });
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
+      
+      // Dispatch custom event to notify auth state change
+      window.dispatchEvent(new Event('auth_token_changed'));
       
       // Update the user data in cache immediately
       queryClient.setQueryData(["/api/auth/me"], result.user);
       
       // Also invalidate to trigger a fresh fetch
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
         title: "Welcome back!",
