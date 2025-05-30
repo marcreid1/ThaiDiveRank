@@ -5,14 +5,8 @@ import DiveSiteCard from "./DiveSiteCard";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuth } from "@/hooks/useAuth";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { User, UserPlus } from "lucide-react";
 
 export default function VotingSection() {
-  const { isAuthenticated, user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
@@ -60,11 +54,6 @@ export default function VotingSection() {
 
   // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
-    if (!isAuthenticated) {
-      setShowAuthDialog(true);
-      return;
-    }
-
     // Submit vote
     voteMutation.mutate({ 
       winnerId: winner.id, 
@@ -219,56 +208,7 @@ export default function VotingSection() {
         </div>
       </div>
 
-      {/* Authentication Required Dialog */}
-      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Sign In Required</DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-6">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-ocean-100 dark:bg-ocean-900/20 mb-4">
-              <User className="h-6 w-6 text-ocean-600 dark:text-ocean-400" />
-            </div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
-              Please sign in to vote
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-              You need to be signed in to participate in dive site voting and help build the community rankings.
-            </p>
-            <div className="flex flex-col gap-3">
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => {
-                  setShowAuthDialog(false);
-                  // Small delay to ensure dialog closes before triggering navbar dialog
-                  setTimeout(() => {
-                    const signInButton = document.querySelector('[data-sign-in-trigger]') as HTMLElement;
-                    if (signInButton) signInButton.click();
-                  }, 100);
-                }}
-              >
-                <User className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-              <Button 
-                className="w-full" 
-                onClick={() => {
-                  setShowAuthDialog(false);
-                  // Small delay to ensure dialog closes before triggering navbar dialog
-                  setTimeout(() => {
-                    const signUpButton = document.querySelector('[data-sign-up-trigger]') as HTMLElement;
-                    if (signUpButton) signUpButton.click();
-                  }, 100);
-                }}
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Sign Up
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

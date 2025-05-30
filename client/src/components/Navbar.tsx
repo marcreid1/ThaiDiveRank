@@ -2,161 +2,19 @@ import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, User, UserPlus, LogOut } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Captcha } from "@/components/ui/captcha";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-
-const signInSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-  captcha: z.string().min(1, "Security challenge required"),
-});
-
-const signUpSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  captcha: z.string().min(1, "Security challenge required"),
-});
 
 export default function Navbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [signInOpen, setSignInOpen] = useState(false);
-  const [signUpOpen, setSignUpOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [signInCaptchaValid, setSignInCaptchaValid] = useState(false);
-  const [signUpCaptchaValid, setSignUpCaptchaValid] = useState(false);
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const signInForm = useForm({
-    resolver: zodResolver(signInSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      captcha: "",
-    },
-  });
-
-  const signUpForm = useForm({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      captcha: "",
-    },
-  });
-
-  const { login, logout, isAuthenticated, user } = useAuth();
-
-  const signInMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof signInSchema>) => {
-      if (!signInCaptchaValid) {
-        throw new Error("Please solve the security challenge correctly");
-      }
-      
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          username: data.username, 
-          password: data.password 
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to sign in");
-      }
-      return response.json();
-    },
-    onSuccess: (data) => {
-      login(data.user);
-      toast({
-        title: "Success",
-        description: "Signed in successfully!",
-      });
-      setSignInOpen(false);
-      signInForm.reset();
-      setSignInCaptchaValid(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to sign in",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const signUpMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof signUpSchema>) => {
-      if (!signUpCaptchaValid) {
-        throw new Error("Please solve the security challenge correctly");
-      }
-      
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          username: data.username,
-          email: data.email,
-          password: data.password 
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create account");
-      }
-      return response.json();
-    },
-    onSuccess: (data) => {
-      login(data.user);
-      toast({
-        title: "Success",
-        description: "Account created successfully!",
-      });
-      setSignUpOpen(false);
-      signUpForm.reset();
-      setSignUpCaptchaValid(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create account",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSignIn = (data: z.infer<typeof signInSchema>) => {
-    signInMutation.mutate(data);
-  };
-
-  const onSignUp = (data: z.infer<typeof signUpSchema>) => {
-    signUpMutation.mutate(data);
-  };
-  
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -208,169 +66,6 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {isAuthenticated ? (
-              /* User Menu */
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                    <User className="h-4 w-4 mr-1" />
-                    {user?.username}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={logout} className="flex items-center">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                {/* Sign In Dialog */}
-                <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex" data-sign-in-trigger>
-                      <User className="h-4 w-4 mr-1" />
-                      Sign In
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Sign In</DialogTitle>
-                </DialogHeader>
-                <Form {...signInForm}>
-                  <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
-                    <FormField
-                      control={signInForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signInForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Enter your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signInForm.control}
-                      name="captcha"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Captcha
-                              value={field.value}
-                              onChange={field.onChange}
-                              onVerify={setSignInCaptchaValid}
-                              error={signInForm.formState.errors.captcha?.message}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={signInMutation.isPending || !signInCaptchaValid}>
-                      {signInMutation.isPending ? "Signing In..." : "Sign In"}
-                    </Button>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-
-            {/* Sign Up Dialog */}
-            <Dialog open={signUpOpen} onOpenChange={setSignUpOpen}>
-              <DialogTrigger asChild>
-                <Button variant="default" size="sm" className="hidden sm:inline-flex" data-sign-up-trigger>
-                  <UserPlus className="h-4 w-4 mr-1" />
-                  Sign Up
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Create Account</DialogTitle>
-                </DialogHeader>
-                <Form {...signUpForm}>
-                  <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
-                    <FormField
-                      control={signUpForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Choose a username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signUpForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Enter your email address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signUpForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Create a password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signUpForm.control}
-                      name="captcha"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Captcha
-                              value={field.value}
-                              onChange={field.onChange}
-                              onVerify={setSignUpCaptchaValid}
-                              error={signUpForm.formState.errors.captcha?.message}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={signUpMutation.isPending || !signUpCaptchaValid}>
-                      {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-              </>
-            )}
-            
             {/* Dark mode toggle - always visible */}
             {mounted && (
               <Button
@@ -408,13 +103,13 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
-          <div className="pt-2 pb-3 space-y-1 bg-background">
+          <div className="pt-2 pb-3 space-y-1 bg-background border-t border-border">
             {navLinks.map(link => (
               <Link 
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={getMobileLinkClass(link.href)}>
+                className={getMobileLinkClass(link.href)}
+                onClick={() => setMobileMenuOpen(false)}>
                 {link.label}
               </Link>
             ))}
