@@ -7,6 +7,7 @@ import { createRateLimiter } from "./middleware/logging";
 import { requestAnalytics } from "./logger";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyJWT } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rate limiting for voting
@@ -147,6 +148,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: error instanceof Error ? error.message : "Failed to sign in" 
         });
       }
+    }
+  });
+
+  // Protected route to test JWT middleware
+  app.get("/api/profile", verifyJWT, async (req, res) => {
+    try {
+      // Get user from database using the verified userId
+      const user = await storage.getUserById(req.userId!);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        message: "Profile retrieved successfully",
+        user: {
+          id: user.id,
+          email: user.email,
+          createdAt: user.createdAt
+        }
+      });
+    } catch (error) {
+      console.error("Profile retrieval error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to retrieve profile" 
+      });
     }
   });
 
