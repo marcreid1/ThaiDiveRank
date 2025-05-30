@@ -11,6 +11,8 @@ import DiveSites from "@/pages/DiveSites";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

@@ -1,9 +1,12 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { createContext, useContext } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@shared/schema";
+import { getQueryFn } from "@/lib/queryClient";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (user: User) => void;
   logout: () => void;
 }
@@ -19,52 +22,35 @@ export function useAuth() {
 }
 
 export function useAuthState() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const token = localStorage.getItem("auth_token");
 
-  useEffect(() => {
-    // Check authentication status with server on mount
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/me', { 
-          credentials: 'include' 
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.log("Auth check failed:", error);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Query to get current user from server using JWT token
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: getQueryFn<User>({ on401: "returnNull" }),
+    enabled: !!token, // Only run if token exists
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-    checkAuth();
-  }, []);
+  const isAuthenticated = !!token && !!user && !error;
 
   const login = (user: User) => {
-    setUser(user);
+    // Update the cache with the new user data
+    queryClient.setQueryData(["/api/auth/me"], user);
   };
 
-  const logout = async () => {
-    try {
-      await fetch('/api/auth/signout', { 
-        method: 'POST', 
-        credentials: 'include' 
-      });
-    } catch (error) {
-      console.log("Logout error:", error);
-    }
-    setUser(null);
+  const logout = () => {
+    localStorage.removeItem("auth_token");
+    // Clear user data from cache
+    queryClient.setQueryData(["/api/auth/me"], null);
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
   };
 
   return {
-    user,
-    isAuthenticated: !!user,
+    user: user || null,
+    isAuthenticated,
     isLoading,
     login,
     logout,
