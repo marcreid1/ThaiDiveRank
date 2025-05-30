@@ -1,6 +1,29 @@
-# Authentication Flow Example
+# Centralized Authentication System
 
-## Current Implementation Analysis
+## Auth Helper Functions (/lib/auth.ts)
+
+```typescript
+// Token Management
+getToken(): string | null              // Get JWT from localStorage
+setToken(token: string): void          // Store JWT in localStorage  
+removeToken(): void                    // Remove JWT from localStorage
+
+// Authentication Status
+isLoggedIn(): boolean                  // Check if user has valid, non-expired token
+getCurrentUser(): User | null          // Get current user data from token
+getUserFromToken(): TokenData | null   // Decode JWT payload (userId, email, exp, iat)
+
+// Token Validation
+isTokenExpiringSoon(): boolean         // Check if token expires within 5 minutes
+getTokenTimeToExpiry(): number         // Get seconds until token expires
+
+// API Integration
+getAuthHeader(): object                // Get Authorization header for requests
+login(token: string): void             // Store token for user login
+logout(): void                         // Remove token and redirect to home
+```
+
+## Implementation Analysis
 
 ### ✅ JWT Token Storage
 After successful sign-in, the JWT token is properly saved:
