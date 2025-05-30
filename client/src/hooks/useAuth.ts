@@ -31,7 +31,8 @@ export function useAuthState() {
     queryFn: getQueryFn<User>({ on401: "returnNull" }),
     enabled: !!token, // Only run if token exists
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 
   const isAuthenticated = !!token && !!user && !error;

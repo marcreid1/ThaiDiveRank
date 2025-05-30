@@ -51,7 +51,10 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
       
-      // Refetch user state
+      // Update the user data in cache immediately
+      queryClient.setQueryData(["/api/auth/me"], result.user);
+      
+      // Also invalidate to trigger a fresh fetch
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
