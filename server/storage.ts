@@ -239,6 +239,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createVote(insertVote: InsertVote): Promise<Vote> {
+    console.log(`[STORAGE] createVote called with data:`, insertVote);
+    console.log(`[STORAGE] User ID from insertVote: ${insertVote.userId}`);
+    
     // Get current ratings for ELO calculation
     const winner = await this.getDiveSite(insertVote.winnerId);
     const loser = await this.getDiveSite(insertVote.loserId);
@@ -247,21 +250,33 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Invalid dive site IDs");
     }
 
+    console.log(`[STORAGE] Winner: ${winner.name} (Rating: ${winner.rating})`);
+    console.log(`[STORAGE] Loser: ${loser.name} (Rating: ${loser.rating})`);
+
     // Use database transaction for atomic operations
     return await db.transaction(async (tx) => {
       // Calculate ELO change
       const eloChange = calculateEloChange(winner.rating, loser.rating);
+      console.log(`[STORAGE] Calculated ELO change: ${eloChange} points`);
+
+      const insertData = {
+        winnerId: insertVote.winnerId,
+        loserId: insertVote.loserId,
+        pointsChanged: eloChange,
+        userId: insertVote.userId,
+      };
+      
+      console.log(`[STORAGE] Full SQL INSERT data:`, insertData);
+      console.log(`[STORAGE] Executing INSERT INTO votes...`);
 
       // Create vote and update ratings atomically
       const [vote] = await tx
         .insert(votes)
-        .values({
-          winnerId: insertVote.winnerId,
-          loserId: insertVote.loserId,
-          pointsChanged: eloChange,
-          userId: insertVote.userId,
-        })
+        .values(insertData)
         .returning();
+
+      console.log(`[STORAGE] Successfully inserted vote with ID ${vote.id}`);
+      console.log(`[STORAGE] Inserted vote userId: ${vote.userId}`);
 
       // Update dive site ratings
       await Promise.all([
@@ -281,6 +296,8 @@ export class DatabaseStorage implements IStorage {
           })
           .where(eq(diveSites.id, insertVote.loserId))
       ]);
+
+      console.log(`[STORAGE] Updated ratings - Winner: ${winner.rating + eloChange}, Loser: ${loser.rating - eloChange}`);
 
       return vote;
     });

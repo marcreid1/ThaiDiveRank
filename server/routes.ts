@@ -182,20 +182,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const voteData = insertVoteSchema.parse(req.body);
       
+      // Log authenticated user details
+      console.log(`[VOTE] Authenticated user: ${req.user?.email} (ID: ${req.userId})`);
+      console.log(`[VOTE] Request body:`, req.body);
+      
       // Add the authenticated user's ID to the vote data
       const voteWithUser = {
         ...voteData,
         userId: req.userId! // userId is guaranteed to exist because of verifyJWT middleware
       };
       
+      console.log(`[VOTE] Full vote data for insert:`, voteWithUser);
+      
       requestAnalytics.trackVote(req, voteData.winnerId, voteData.loserId, 32);
       const vote = await storage.createVote(voteWithUser);
+      
+      console.log(`[VOTE] Successfully inserted vote with ID: ${vote.id}`);
+      console.log(`[VOTE] Vote details: Winner=${vote.winnerId}, Loser=${vote.loserId}, Points=${vote.pointsChanged}, User=${vote.userId}`);
       
       res.json({ 
         message: "Vote recorded successfully",
         vote 
       });
     } catch (error) {
+      console.log(`[VOTE] Error occurred for user ${req.userId}:`, error);
       if (error instanceof ZodError) {
         res.status(400).json({ 
           message: "Invalid vote data",
