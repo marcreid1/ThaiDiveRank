@@ -55,18 +55,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hashedPassword
       });
       
-      // Generate JWT token
-      const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-      const token = jwt.sign(
-        { 
-          userId: user.id, 
-          email: user.email 
-        },
-        jwtSecret,
-        { 
-          expiresIn: '7d' 
-        }
-      );
+      // Generate JWT token using middleware function
+      const token = generateJWT({ id: user.id, email: user.email });
       
       // Return success response with token
       res.status(201).json({
@@ -89,6 +79,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Signup error:", error);
         res.status(500).json({ 
           message: error instanceof Error ? error.message : "Failed to create user" 
+        });
+      }
+    }
+  });
+
+  // JWT generation middleware function
+  const generateJWT = (user: { id: string; email: string }) => {
+    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+    return jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email 
+      },
+      jwtSecret,
+      { 
+        expiresIn: '7d' 
+      }
+    );
+  };
+
+  // User signin
+  app.post("/api/signin", authLimit, async (req, res) => {
+    try {
+      // Validate input with Zod
+      const { email, hashedPassword: password } = insertUserSchema.parse(req.body);
+      
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ 
+          message: "Invalid email or password" 
+        });
+      }
+      
+      // Verify password using bcrypt
+      const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+      if (!isPasswordValid) {
+        return res.status(401).json({ 
+          message: "Invalid email or password" 
+        });
+      }
+      
+      // Generate JWT token using middleware function
+      const token = generateJWT({ id: user.id, email: user.email });
+      
+      // Return success response with token
+      res.json({
+        message: "Sign in successful",
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          createdAt: user.createdAt
+        }
+      });
+      
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ 
+          message: "Invalid input data",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Signin error:", error);
+        res.status(500).json({ 
+          message: error instanceof Error ? error.message : "Failed to sign in" 
         });
       }
     }
