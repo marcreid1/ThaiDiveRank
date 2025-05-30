@@ -10,6 +10,7 @@ import Rankings from "@/pages/Rankings";
 import DiveSites from "@/pages/DiveSites";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
+import Auth from "@/pages/Auth";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -41,6 +42,7 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/rankings" component={Rankings} />
             <Route path="/dive-sites" component={DiveSites} />
+            <Route path="/auth" component={Auth} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route component={NotFound} />
