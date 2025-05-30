@@ -1,9 +1,7 @@
-import { users, diveSites, votes, userSessions, type User, type InsertUser, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type UserSession, type InsertUserSession, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
+import { diveSites, votes, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
-import { eq, desc, sql, inArray, gt, and } from "drizzle-orm";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
+import { eq, desc, sql } from "drizzle-orm";
 
 export interface RegionDiveSites {
   region: string;
@@ -13,17 +11,6 @@ export interface RegionDiveSites {
 }
 
 export interface IStorage {
-  // User methods
-  getUser(id: number, requestingUserId?: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  authenticateUser(username: string, password: string): Promise<User | null>;
-
-  // Session methods
-  createUserSession(sessionId: string, userId: number): Promise<UserSession>;
-  getUserFromSession(sessionId: string): Promise<User | null>;
-  deleteSession(sessionId: string, userId?: number): Promise<void>;
-  
   // Dive site methods (public data)
   getAllDiveSites(): Promise<DiveSite[]>;
   getDiveSite(id: number): Promise<DiveSite | undefined>;
@@ -35,136 +22,35 @@ export interface IStorage {
   // Matchup methods
   getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
   
-  // Vote methods with user authorization
-  createVote(vote: InsertVote, requestingUserId: number): Promise<Vote>;
-  getUserVotes(userId: number, requestingUserId: number, limit?: number): Promise<Vote[]>;
-  getVotes(limit?: number): Promise<Vote[]>; // Admin only - returns anonymized data
-  getRecentActivity(limit?: number): Promise<VoteActivity[]>; // Public activity without user details
+  // Vote methods (no user authentication required)
+  createVote(vote: InsertVote): Promise<Vote>;
+  getVotes(limit?: number): Promise<Vote[]>;
+  getRecentActivity(limit?: number): Promise<VoteActivity[]>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: number, requestingUserId?: number): Promise<User | undefined> {
-    // Users can only access their own profile data
-    if (requestingUserId && requestingUserId !== id) {
-      throw new Error("Unauthorized: Users can only access their own data");
-    }
-    
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    // Hash the password before storing
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(insertUser.password, saltRounds);
-    
-    const [user] = await db
-      .insert(users)
-      .values({
-        ...insertUser,
-        password: hashedPassword,
-      })
-      .returning();
-    return user;
-  }
-
-  async authenticateUser(username: string, password: string): Promise<User | null> {
-    const user = await this.getUserByUsername(username);
-    if (!user) {
-      return null;
-    }
-    
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return null;
-    }
-    
-    // Update last login timestamp
-    await db
-      .update(users)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(users.id, user.id));
-    
-    return user;
-  }
-
-  async createUserSession(sessionId: string, userId: number): Promise<UserSession> {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
-
-    const [session] = await db.insert(userSessions).values({
-      sessionId,
-      userId,
-      expiresAt,
-    }).returning();
-
-    return session;
-  }
-
-  async getUserFromSession(sessionId: string): Promise<User | null> {
-    const [session] = await db
-      .select({
-        user: users,
-      })
-      .from(userSessions)
-      .innerJoin(users, eq(userSessions.userId, users.id))
-      .where(eq(userSessions.sessionId, sessionId))
-      .limit(1);
-
-    return session?.user || null;
-  }
-
-  async deleteSession(sessionId: string, userId?: number): Promise<void> {
-    if (userId) {
-      // User can only delete their own sessions
-      await db.delete(userSessions)
-        .where(and(
-          eq(userSessions.sessionId, sessionId),
-          eq(userSessions.userId, userId)
-        ));
-    } else {
-      // Admin or system can delete any session
-      await db.delete(userSessions).where(eq(userSessions.sessionId, sessionId));
-    }
-  }
-
   async getAllDiveSites(): Promise<DiveSite[]> {
-    return await db.select().from(diveSites).orderBy(desc(diveSites.rating));
+    return await db.select().from(diveSites).orderBy(diveSites.name);
   }
 
   async getDiveSite(id: number): Promise<DiveSite | undefined> {
     const [diveSite] = await db.select().from(diveSites).where(eq(diveSites.id, id));
-    return diveSite || undefined;
+    return diveSite;
   }
 
   async createDiveSite(insertDiveSite: InsertDiveSite): Promise<DiveSite> {
-    const [diveSite] = await db
-      .insert(diveSites)
-      .values({
-        ...insertDiveSite,
-        rating: 1500,
-        wins: 0,
-        losses: 0,
-        depthMin: 0,
-        depthMax: 0,
-        difficulty: "Intermediate",
-      })
-      .returning();
+    const [diveSite] = await db.insert(diveSites).values(insertDiveSite).returning();
     return diveSite;
   }
 
   async updateDiveSite(id: number, diveSiteUpdate: Partial<DiveSite>): Promise<DiveSite | undefined> {
-    const [diveSite] = await db
+    const [updatedDiveSite] = await db
       .update(diveSites)
       .set(diveSiteUpdate)
       .where(eq(diveSites.id, id))
       .returning();
-    return diveSite || undefined;
+    
+    return updatedDiveSite;
   }
 
   async getDiveSiteRankings(): Promise<{ rankings: DiveSiteRanking[], lastUpdated: string }> {
@@ -330,11 +216,7 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async createVote(insertVote: InsertVote, requestingUserId: number): Promise<Vote> {
-    // Ensure the vote is being created by the authenticated user
-    if (insertVote.userId && insertVote.userId !== requestingUserId) {
-      throw new Error("Unauthorized: Users can only create votes for themselves");
-    }
+  async createVote(insertVote: InsertVote): Promise<Vote> {
     // Get current ratings for ELO calculation
     const winner = await this.getDiveSite(insertVote.winnerId);
     const loser = await this.getDiveSite(insertVote.loserId);
@@ -355,7 +237,6 @@ export class DatabaseStorage implements IStorage {
           winnerId: insertVote.winnerId,
           loserId: insertVote.loserId,
           pointsChanged: eloChange,
-          userId: requestingUserId, // Always use the authenticated user
         })
         .returning();
 
@@ -382,37 +263,11 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  async getUserVotes(userId: number, requestingUserId: number, limit = 20): Promise<Vote[]> {
-    // Users can only access their own votes
-    if (userId !== requestingUserId) {
-      throw new Error("Unauthorized: Users can only access their own votes");
-    }
-    
+  async getVotes(limit = 20): Promise<Vote[]> {
     return await db.select()
       .from(votes)
-      .where(eq(votes.userId, userId))
       .orderBy(desc(votes.timestamp))
       .limit(limit);
-  }
-
-  async getVotes(limit = 20): Promise<Vote[]> {
-    // Return votes without exposing user IDs - for admin/analytics only
-    const results = await db.select({
-      id: votes.id,
-      winnerId: votes.winnerId,
-      loserId: votes.loserId,
-      pointsChanged: votes.pointsChanged,
-      timestamp: votes.timestamp,
-    }).from(votes)
-      .orderBy(desc(votes.timestamp))
-      .limit(limit);
-    
-    // Map to Vote type with null userId and sessionId
-    return results.map(vote => ({
-      ...vote,
-      userId: null,
-      sessionId: null
-    }));
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
@@ -437,11 +292,8 @@ export class DatabaseStorage implements IStorage {
       loserName: activity.loserName || "Unknown",
       pointsChanged: activity.pointsChanged,
       timestamp: activity.timestamp.toISOString(),
-      username: "Anonymous User",
     }));
   }
-
-
 }
 
 export const storage = new DatabaseStorage();
