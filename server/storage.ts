@@ -27,9 +27,10 @@ export interface IStorage {
   // Matchup methods
   getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
   
-  // Vote methods (no user authentication required)
+  // Vote methods
   createVote(vote: InsertVote): Promise<Vote>;
   getVotes(limit?: number): Promise<Vote[]>;
+  getUserVotes(userId: string): Promise<Vote[]>;
   getRecentActivity(limit?: number): Promise<VoteActivity[]>;
 }
 
@@ -258,6 +259,7 @@ export class DatabaseStorage implements IStorage {
           winnerId: insertVote.winnerId,
           loserId: insertVote.loserId,
           pointsChanged: eloChange,
+          userId: insertVote.userId,
         })
         .returning();
 
@@ -289,6 +291,13 @@ export class DatabaseStorage implements IStorage {
       .from(votes)
       .orderBy(desc(votes.timestamp))
       .limit(limit);
+  }
+
+  async getUserVotes(userId: string): Promise<Vote[]> {
+    return await db.select()
+      .from(votes)
+      .where(eq(votes.userId, userId))
+      .orderBy(desc(votes.timestamp));
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {

@@ -210,6 +210,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's votes (requires authentication)
+  app.get("/api/my-votes", readLimit, verifyJWT, async (req, res) => {
+    try {
+      const userVotes = await storage.getUserVotes(req.userId!);
+      res.json({
+        message: "User votes retrieved successfully",
+        votes: userVotes
+      });
+    } catch (error) {
+      console.error("User votes fetch error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to fetch user votes" 
+      });
+    }
+  });
+
   // Get dive site rankings
   app.get("/api/rankings", readLimit, async (req, res) => {
     try {
