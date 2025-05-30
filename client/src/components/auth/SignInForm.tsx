@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -29,7 +28,6 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-  const { login } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -53,8 +51,8 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
       
-      // Call the login function to update auth state
-      login(result.user);
+      // Refetch user state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
         title: "Welcome back!",

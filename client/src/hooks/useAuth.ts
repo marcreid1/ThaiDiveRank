@@ -23,25 +23,22 @@ export function useAuth() {
 
 export function useAuthState() {
   const queryClient = useQueryClient();
-  const token = typeof window !== 'undefined' ? localStorage.getItem("auth_token") : null;
+  const token = localStorage.getItem("auth_token");
 
   // Query to get current user from server using JWT token
-  const { data: user, isLoading, error, refetch } = useQuery({
+  const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: getQueryFn<User>({ on401: "returnNull" }),
     enabled: !!token, // Only run if token exists
     retry: false,
-    staleTime: 0, // Always fresh
-    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const isAuthenticated = !!token && !!user && !error;
 
   const login = (user: User) => {
-    // Update the cache with the new user data immediately
+    // Update the cache with the new user data
     queryClient.setQueryData(["/api/auth/me"], user);
-    // Force a refetch to ensure consistency
-    refetch();
   };
 
   const logout = () => {

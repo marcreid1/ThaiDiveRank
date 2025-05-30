@@ -17,8 +17,6 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
-
-
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -146,7 +144,35 @@ export default function Navbar() {
               </Link>
             ))}
             
-
+            {/* Mobile authentication controls */}
+            <div className="border-t border-border pt-3 mt-3">
+              {isAuthenticated ? (
+                <div className="px-3 py-2">
+                  <div className="text-sm text-slate-600 dark:text-slate-300 mb-2">
+                    {user?.email}
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/auth"
+                  className="flex items-center px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
