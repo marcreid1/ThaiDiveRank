@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { getQueryFn } from "@/lib/queryClient";
@@ -23,44 +23,25 @@ export function useAuth() {
 
 export function useAuthState() {
   const queryClient = useQueryClient();
-  const [token, setToken] = useState<string | null>(null);
-
-  // Listen for localStorage changes
-  useEffect(() => {
-    const updateToken = () => {
-      setToken(localStorage.getItem("auth_token"));
-    };
-    
-    // Set initial token
-    updateToken();
-    
-    // Listen for storage events
-    window.addEventListener('storage', updateToken);
-    
-    // Custom event for local changes
-    window.addEventListener('auth_token_changed', updateToken);
-    
-    return () => {
-      window.removeEventListener('storage', updateToken);
-      window.removeEventListener('auth_token_changed', updateToken);
-    };
-  }, []);
+  const token = typeof window !== 'undefined' ? localStorage.getItem("auth_token") : null;
 
   // Query to get current user from server using JWT token
-  const { data: user, isLoading, error } = useQuery({
+  const { data: user, isLoading, error, refetch } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: getQueryFn<User>({ on401: "returnNull" }),
     enabled: !!token, // Only run if token exists
     retry: false,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 0, // Always fresh
     refetchOnWindowFocus: false,
   });
 
   const isAuthenticated = !!token && !!user && !error;
 
   const login = (user: User) => {
-    // Update the cache with the new user data
+    // Update the cache with the new user data immediately
     queryClient.setQueryData(["/api/auth/me"], user);
+    // Force a refetch to ensure consistency
+    refetch();
   };
 
   const logout = () => {

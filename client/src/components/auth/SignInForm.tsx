@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -28,6 +29,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const { login } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -47,18 +49,12 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
       });
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
-    onSuccess: async (result) => {
+    onSuccess: (result) => {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
       
-      // Dispatch custom event to notify auth state change
-      window.dispatchEvent(new Event('auth_token_changed'));
-      
-      // Update the user data in cache immediately
-      queryClient.setQueryData(["/api/auth/me"], result.user);
-      
-      // Also invalidate to trigger a fresh fetch
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      // Call the login function to update auth state
+      login(result.user);
       
       toast({
         title: "Welcome back!",
