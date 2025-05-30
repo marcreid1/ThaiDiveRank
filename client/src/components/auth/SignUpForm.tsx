@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,8 +32,8 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -43,18 +44,20 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignUpFormData) => {
-    setIsLoading(true);
-    try {
+  const signUpMutation = useMutation({
+    mutationFn: async (data: SignUpFormData) => {
       const response = await apiRequest("POST", "/api/signup", {
         email: data.email,
         hashedPassword: data.password,
       });
-
-      const result = await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
-
+      return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
+    },
+    onSuccess: (result) => {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
+      
+      // Refetch user state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
         title: "Account created successfully!",
@@ -69,15 +72,18 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
         // Redirect to home page
         setLocation("/");
       }
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Sign up failed",
         description: error.message || "Something went wrong. Please try again.",
       });
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: SignUpFormData) => {
+    signUpMutation.mutate(data);
   };
 
   return (
@@ -158,8 +164,8 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={signUpMutation.isPending}>
+            {signUpMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating Account...

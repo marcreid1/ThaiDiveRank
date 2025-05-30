@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,8 +27,8 @@ interface SignInFormProps {
 export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -38,18 +39,20 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit = async (data: SignInFormData) => {
-    setIsLoading(true);
-    try {
+  const signInMutation = useMutation({
+    mutationFn: async (data: SignInFormData) => {
       const response = await apiRequest("POST", "/api/signin", {
         email: data.email,
         hashedPassword: data.password,
       });
-
-      const result = await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
-
+      return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
+    },
+    onSuccess: (result) => {
       // Store JWT in localStorage
       localStorage.setItem("auth_token", result.token);
+      
+      // Refetch user state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
         title: "Welcome back!",
@@ -64,15 +67,18 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
         // Redirect to home page
         setLocation("/");
       }
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Sign in failed",
         description: error.message || "Invalid email or password.",
       });
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: SignInFormData) => {
+    signInMutation.mutate(data);
   };
 
   return (
@@ -126,8 +132,8 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={signInMutation.isPending}>
+            {signInMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
