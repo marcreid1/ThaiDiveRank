@@ -2,14 +2,16 @@ import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -19,11 +21,12 @@ export default function Navbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // Navigation links
+  // Navigation links - dashboard only shown when authenticated
   const navLinks = [
     { href: "/", label: "Vote" },
     { href: "/rankings", label: "Rankings" },
     { href: "/dive-sites", label: "Directory" },
+    ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/about", label: "About" }
   ];
 
@@ -66,6 +69,33 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Authentication controls */}
+            {isAuthenticated ? (
+              <div className="hidden sm:flex items-center space-x-2">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
+                  {user?.email}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={logout}
+                  className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center space-x-2">
+                <Link href="/auth">
+                  <Button variant="ghost" size="sm">
+                    <LogIn className="h-4 w-4 mr-1" />
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            )}
+
             {/* Dark mode toggle - always visible */}
             {mounted && (
               <Button
@@ -113,6 +143,36 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            
+            {/* Mobile authentication controls */}
+            <div className="border-t border-border pt-3 mt-3">
+              {isAuthenticated ? (
+                <div className="px-3 py-2">
+                  <div className="text-sm text-slate-600 dark:text-slate-300 mb-2">
+                    {user?.email}
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/auth"
+                  className="flex items-center px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
