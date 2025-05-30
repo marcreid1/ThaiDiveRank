@@ -187,51 +187,108 @@ export class DatabaseStorage implements IStorage {
   async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
     const allSites = await this.getAllDiveSites();
     
-    // Group dive sites by region (based on location patterns)
-    const regionMap = new Map<string, DiveSite[]>();
-    
-    allSites.forEach(site => {
-      let region = "Other";
-      
-      if (site.location.includes("Similan")) {
-        region = "Similan Islands";
-      } else if (site.location.includes("Surin")) {
-        region = "Surin Islands";
-      } else if (site.location.includes("Richelieu")) {
-        region = "Richelieu Rock Area";
-      }
-      
-      if (!regionMap.has(region)) {
-        regionMap.set(region, []);
-      }
-      regionMap.get(region)!.push(site);
-    });
-
+    // Create organized structure with geographic subregions
     const regions: RegionDiveSites[] = [];
     
-    regionMap.forEach((sites, regionName) => {
-      let description = "";
+    // Similan Islands with geographic subregions
+    const similanSites = allSites.filter(site => site.location.includes("Similan"));
+    if (similanSites.length > 0) {
+      const similanSubregions: RegionDiveSites[] = [];
       
-      switch (regionName) {
-        case "Similan Islands":
-          description = "A pristine archipelago known for its crystal-clear waters and diverse marine life.";
-          break;
-        case "Surin Islands":
-          description = "Remote islands offering untouched coral reefs and excellent visibility.";
-          break;
-        case "Richelieu Rock Area":
-          description = "Famous seamount diving with whale shark encounters and macro life.";
-          break;
-        default:
-          description = "Additional diving locations in the region.";
+      // South Similan Islands (Islands #1-3)
+      const southSites = similanSites.filter(site => site.location.includes("South, Similan"));
+      if (southSites.length > 0) {
+        similanSubregions.push({
+          region: "South",
+          description: "The southern islands (#1-3) feature more protected reefs and better conditions for beginners, with shallow coral gardens and diverse marine life.",
+          diveSites: southSites,
+        });
+      }
+      
+      // Central Similan Islands (Islands #4-7)
+      const centralSites = similanSites.filter(site => site.location.includes("Central, Similan"));
+      if (centralSites.length > 0) {
+        similanSubregions.push({
+          region: "Central",
+          description: "The central islands (#4-7) offer a mix of dive conditions suitable for all levels, with boulder formations and rich coral gardens.",
+          diveSites: centralSites,
+        });
+      }
+      
+      // North Similan Islands (Islands #8-11)
+      const northSites = similanSites.filter(site => site.location.includes("North, Similan"));
+      if (northSites.length > 0) {
+        similanSubregions.push({
+          region: "North",
+          description: "The northern islands (#8-11) have the archipelago's most dramatic underwater topography, with massive boulders, swim-throughs, and the best chance to see larger pelagic species.",
+          diveSites: northSites,
+        });
       }
       
       regions.push({
-        region: regionName,
-        description,
-        diveSites: sites,
+        region: "Similan Islands",
+        description: "The Similan Islands are an archipelago of nine islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
+        diveSites: [],
+        subregions: similanSubregions,
       });
-    });
+    }
+    
+    // Surin Islands with geographic subregions
+    const surinSites = allSites.filter(site => site.location.includes("Surin"));
+    if (surinSites.length > 0) {
+      const surinSubregions: RegionDiveSites[] = [];
+      
+      // North Surin Islands
+      const northSurinSites = surinSites.filter(site => site.location.includes("North, Surin"));
+      if (northSurinSites.length > 0) {
+        surinSubregions.push({
+          region: "North",
+          description: "The northern Surin Islands have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
+          diveSites: northSurinSites,
+        });
+      }
+      
+      // South Surin Islands
+      const southSurinSites = surinSites.filter(site => site.location.includes("South, Surin"));
+      if (southSurinSites.length > 0) {
+        surinSubregions.push({
+          region: "South",
+          description: "The southern Surin Islands feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
+          diveSites: southSurinSites,
+        });
+      }
+      
+      regions.push({
+        region: "Surin Islands",
+        description: "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. These protected waters host an incredible diversity of marine life, with shallow reef systems in the north and more varied dive conditions in the south.",
+        diveSites: [],
+        subregions: surinSubregions,
+      });
+    }
+    
+    // Richelieu Rock Area (no subregions)
+    const richelieuSites = allSites.filter(site => site.location.includes("Richelieu"));
+    if (richelieuSites.length > 0) {
+      regions.push({
+        region: "Richelieu Rock Area",
+        description: "Famous seamount diving with whale shark encounters and macro life.",
+        diveSites: richelieuSites,
+      });
+    }
+    
+    // Other sites (fallback for any sites not matching the above patterns)
+    const otherSites = allSites.filter(site => 
+      !site.location.includes("Similan") && 
+      !site.location.includes("Surin") && 
+      !site.location.includes("Richelieu")
+    );
+    if (otherSites.length > 0) {
+      regions.push({
+        region: "Other",
+        description: "Additional diving locations in the region.",
+        diveSites: otherSites,
+      });
+    }
 
     return regions;
   }
