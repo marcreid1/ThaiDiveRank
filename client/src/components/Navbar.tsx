@@ -2,10 +2,11 @@ import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, User, LogIn, LogOut, UserPlus } from "lucide-react";
+import { Moon, Sun, User, LogIn, LogOut, UserPlus, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/auth/AuthDialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -89,18 +90,25 @@ export default function Navbar() {
             {/* Authentication controls */}
             {isAuthenticated ? (
               <div className="hidden sm:flex items-center space-x-2">
-                <span className="text-sm text-slate-600 dark:text-slate-300">
-                  {user?.email}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={logout}
-                  className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                >
-                  <LogOut className="h-4 w-4 mr-1" />
-                  Sign Out
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {user?.email}
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
@@ -167,7 +175,8 @@ export default function Navbar() {
             <div className="border-t border-border pt-3 mt-3">
               {isAuthenticated ? (
                 <div className="px-3 py-2">
-                  <div className="text-sm text-slate-600 dark:text-slate-300 mb-2">
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-300 mb-2 px-3 py-2">
+                    <User className="h-4 w-4 mr-2" />
                     {user?.email}
                   </div>
                   <button
