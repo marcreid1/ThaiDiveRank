@@ -1,4 +1,4 @@
-import { diveSites, votes, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity } from "@shared/schema";
+import { diveSites, votes, users, type DiveSite, type InsertDiveSite, type Vote, type InsertVote, type DiveSiteRanking, type VoteActivity, type User, type InsertUser } from "@shared/schema";
 import { calculateEloChange } from "./utils/elo";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
@@ -11,6 +11,11 @@ export interface RegionDiveSites {
 }
 
 export interface IStorage {
+  // User methods
+  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
+  
   // Dive site methods (public data)
   getAllDiveSites(): Promise<DiveSite[]>;
   getDiveSite(id: number): Promise<DiveSite | undefined>;
@@ -29,6 +34,22 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // User methods
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
   async getAllDiveSites(): Promise<DiveSite[]> {
     return await db.select().from(diveSites).orderBy(diveSites.name);
   }

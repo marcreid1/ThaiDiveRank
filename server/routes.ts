@@ -1,10 +1,12 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertVoteSchema } from "@shared/schema";
+import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { createRateLimiter } from "./middleware/logging";
 import { requestAnalytics } from "./logger";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rate limiting for voting
@@ -22,12 +24,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     name: "read"
   });
 
+  const authLimit = createRateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // limit signup attempts
+    message: "Too many signup attempts, please try again later.",
+    name: "auth"
+  });
+
+  // User signup
+  app.post("/api/signup", authLimit, async (req, res) => {
+    try {
+      // Validate input with Zod
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "User with this email already exists" 
+        });
+      }
+      
+      // Hash the password using bcrypt
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(userData.hashedPassword, saltRounds);
+      
+      // Store user in database
+      const user = await storage.createUser({
+        email: userData.email,
+        hashedPassword
+      });
+      
+      // Generate JWT token
+      const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+      const token = jwt.sign(
+        { 
+          userId: user.id, 
+          email: user.email 
+        },
+        jwtSecret,
+        { 
+          expiresIn: '7d' 
+        }
+      );
+      
+      // Return success response with token
+      res.status(201).json({
+        message: "User created successfully",
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          createdAt: user.createdAt
+        }
+      });
+      
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ 
+          message: "Invalid input data",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Signup error:", error);
+        res.status(500).json({ 
+          message: error instanceof Error ? error.message : "Failed to create user" 
+        });
+      }
+    }
+  });
+
   // Vote on dive sites
   app.post("/api/vote", voteLimit, async (req, res) => {
     try {
       const voteData = insertVoteSchema.parse(req.body);
       
-      requestAnalytics.recordVote(req.ip || 'unknown');
+      requestAnalytics.trackVote(req, voteData.winnerId, voteData.loserId, 32);
       const vote = await storage.createVote(voteData);
       
       res.json(vote);
