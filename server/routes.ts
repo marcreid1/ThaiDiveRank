@@ -177,15 +177,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Vote on dive sites
-  app.post("/api/vote", voteLimit, async (req, res) => {
+  // Vote on dive sites (requires authentication)
+  app.post("/api/vote", voteLimit, verifyJWT, async (req, res) => {
     try {
       const voteData = insertVoteSchema.parse(req.body);
       
-      requestAnalytics.trackVote(req, voteData.winnerId, voteData.loserId, 32);
-      const vote = await storage.createVote(voteData);
+      // Add the authenticated user's ID to the vote data
+      const voteWithUser = {
+        ...voteData,
+        userId: req.userId! // userId is guaranteed to exist because of verifyJWT middleware
+      };
       
-      res.json(vote);
+      requestAnalytics.trackVote(req, voteData.winnerId, voteData.loserId, 32);
+      const vote = await storage.createVote(voteWithUser);
+      
+      res.json({ 
+        message: "Vote recorded successfully",
+        vote 
+      });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ 

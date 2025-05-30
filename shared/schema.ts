@@ -51,12 +51,13 @@ export const insertDiveSiteSchema = createInsertSchema(diveSites).omit({
 export type InsertDiveSite = z.infer<typeof insertDiveSiteSchema>;
 export type DiveSite = typeof diveSites.$inferSelect;
 
-// Votes schema (no user authentication)
+// Votes schema (with user authentication)
 export const votes = pgTable("votes", {
   id: serial("id").primaryKey(),
   winnerId: integer("winner_id").notNull().references(() => diveSites.id),
   loserId: integer("loser_id").notNull().references(() => diveSites.id),
   pointsChanged: integer("points_changed").notNull(),
+  userId: uuid("user_id").notNull().references(() => users.id),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
