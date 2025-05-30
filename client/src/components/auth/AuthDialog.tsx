@@ -7,15 +7,17 @@ interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultMode?: "signin" | "signup";
+  onSuccess?: () => void;
 }
 
-export function AuthDialog({ open, onOpenChange, defaultMode = "signin" }: AuthDialogProps) {
+export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSuccess }: AuthDialogProps) {
   const [mode, setMode] = useState<"signin" | "signup">(defaultMode);
 
   const handleSuccess = () => {
     onOpenChange(false);
-    // Reload the page to refresh authentication state
-    window.location.reload();
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (

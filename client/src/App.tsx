@@ -44,7 +44,7 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/rankings" component={Rankings} />
             <Route path="/dive-sites" component={DiveSites} />
-            <Route path="/auth" component={Auth} />
+
             <Route path="/dashboard">
               <ProtectedRoute>
                 <Dashboard />

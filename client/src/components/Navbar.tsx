@@ -2,9 +2,10 @@ import { Link, useLocation } from "wouter";
 import { Logo } from "@/assets/svg/logo";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, User, LogIn, LogOut } from "lucide-react";
+import { Moon, Sun, User, LogIn, LogOut, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -12,6 +13,8 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
     setMounted(true);
@@ -19,6 +22,20 @@ export default function Navbar() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const openSignInDialog = () => {
+    setAuthDialogMode("signin");
+    setAuthDialogOpen(true);
+  };
+
+  const openSignUpDialog = () => {
+    setAuthDialogMode("signup");
+    setAuthDialogOpen(true);
+  };
+
+  const handleAuthSuccess = () => {
+    setAuthDialogOpen(false);
   };
 
   // Navigation links - dashboard only shown when authenticated
@@ -87,12 +104,14 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
-                <Link href="/auth">
-                  <Button variant="ghost" size="sm">
-                    <LogIn className="h-4 w-4 mr-1" />
-                    Sign In
-                  </Button>
-                </Link>
+                <Button variant="ghost" size="sm" onClick={openSignInDialog}>
+                  <LogIn className="h-4 w-4 mr-1" />
+                  Sign In
+                </Button>
+                <Button variant="outline" size="sm" onClick={openSignUpDialog}>
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Sign Up
+                </Button>
               </div>
             )}
 
@@ -163,19 +182,41 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link 
-                  href="/auth"
-                  className="flex items-center px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
-                </Link>
+                <div className="px-3 py-2 space-y-2">
+                  <button
+                    onClick={() => {
+                      openSignInDialog();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      openSignUpDialog();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 rounded-md"
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Sign Up
+                  </button>
+                </div>
               )}
             </div>
           </div>
         </div>
       )}
+      
+      {/* Auth Dialog */}
+      <AuthDialog 
+        open={authDialogOpen} 
+        onOpenChange={setAuthDialogOpen}
+        defaultMode={authDialogMode}
+        onSuccess={handleAuthSuccess}
+      />
     </nav>
   );
 }
