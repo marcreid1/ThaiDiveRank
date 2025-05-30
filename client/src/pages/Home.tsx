@@ -1,6 +1,5 @@
 import VotingSection from "@/components/VotingSection";
 import RankingsTable from "@/components/RankingsTable";
-import RecentActivity from "@/components/RecentActivity";
 
 export default function Home() {
   return (
@@ -18,13 +17,8 @@ export default function Home() {
       {/* Voting Section */}
       <VotingSection />
       
-      <div className="flex flex-col gap-8">
-        {/* Rankings Table */}
-        <RankingsTable />
-        
-        {/* Recent Activity */}
-        <RecentActivity />
-      </div>
+      {/* Rankings Table */}
+      <RankingsTable />
     </main>
   );
 }
