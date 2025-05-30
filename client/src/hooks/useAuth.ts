@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { getQueryFn } from "@/lib/queryClient";
+import { getToken, removeToken, isLoggedIn, getCurrentUser } from "@/lib/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -23,18 +24,18 @@ export function useAuth() {
 
 export function useAuthState() {
   const queryClient = useQueryClient();
-  const token = localStorage.getItem("auth_token");
+  const token = getToken();
 
   // Query to get current user from server using JWT token
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: getQueryFn<User>({ on401: "returnNull" }),
-    enabled: !!token, // Only run if token exists
+    enabled: !!token && isLoggedIn(), // Only run if token exists and is valid
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isAuthenticated = !!token && !!user && !error;
+  const isAuthenticated = isLoggedIn() && !!user && !error;
 
   const login = (user: User) => {
     // Update the cache with the new user data
@@ -42,7 +43,7 @@ export function useAuthState() {
   };
 
   const logout = () => {
-    localStorage.removeItem("auth_token");
+    removeToken();
     // Clear user data from cache
     queryClient.setQueryData(["/api/auth/me"], null);
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });

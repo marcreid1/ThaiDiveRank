@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import { setToken } from "@/lib/auth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const signInSchema = z.object({
@@ -48,8 +49,8 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
     onSuccess: (result) => {
-      // Store JWT in localStorage
-      localStorage.setItem("auth_token", result.token);
+      // Store JWT using auth helper
+      setToken(result.token);
       
       // Refetch user state
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
