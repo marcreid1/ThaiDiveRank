@@ -4,6 +4,11 @@ import { setupVite, serveStatic, log } from "./vite";
 import { httpLogger, securityMonitor, spikeDetection, errorLogger } from "./middleware/logging";
 import { appLogger } from "./logger";
 
+// Ensure JWT_SECRET is set for authentication
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = "Qf5F0wLUb9ntCelZgRNvw2jlfX+6lm3ZE74sKg4XaVg=";
+}
+
 const app = express();
 
 // Trust proxy for accurate IP addresses (fixes rate limiting issues)
