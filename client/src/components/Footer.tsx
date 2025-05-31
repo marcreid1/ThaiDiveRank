@@ -4,7 +4,8 @@ export default function Footer() {
   const footerLinks = [
     { href: "/about", label: "About" },
     { href: "/privacy", label: "Privacy" },
-    { href: "/terms", label: "Terms" }
+    { href: "/terms", label: "Terms" },
+    { href: "/contact", label: "Contact" }
   ];
   
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
