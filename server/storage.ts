@@ -208,13 +208,25 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Not enough dive sites for matchup");
     }
 
-    // If we have a winner from previous vote, keep them on the same side
+    // If we have a winner from previous vote, check if they should continue as champion
     if (winnerId && winnerSide) {
       const winner = allSites.find(site => site.id === winnerId);
       if (winner) {
-        // Get a random opponent (excluding the winner)
-        const opponents = allSites.filter(site => site.id !== winnerId);
-        const randomOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+        // Get opponents this champion hasn't faced yet
+        const unfacedOpponents = await this.getUnfacedOpponents(winnerId, allSites);
+        
+        // If champion has faced all opponents, retire them and start fresh
+        if (unfacedOpponents.length === 0) {
+          // Champion retired - start new random matchup
+          const shuffled = allSites.sort(() => 0.5 - Math.random());
+          return {
+            diveSiteA: shuffled[0],
+            diveSiteB: shuffled[1],
+          };
+        }
+        
+        // Champion continues with a random unfaced opponent
+        const randomOpponent = unfacedOpponents[Math.floor(Math.random() * unfacedOpponents.length)];
         
         if (winnerSide === 'A') {
           return {
@@ -236,6 +248,23 @@ export class DatabaseStorage implements IStorage {
       diveSiteA: shuffled[0],
       diveSiteB: shuffled[1],
     };
+  }
+
+  // Helper method to find opponents a champion hasn't faced
+  private async getUnfacedOpponents(championId: number, allSites: DiveSite[]): Promise<DiveSite[]> {
+    // Get all votes where this site was the winner
+    const championWins = await this.db
+      .select({ loserId: votes.loserId })
+      .from(votes)
+      .where(eq(votes.winnerId, championId));
+    
+    // Extract IDs of sites this champion has already beaten
+    const facedOpponentIds = new Set(championWins.map(vote => vote.loserId));
+    
+    // Return sites this champion hasn't faced yet (excluding itself)
+    return allSites.filter(site => 
+      site.id !== championId && !facedOpponentIds.has(site.id)
+    );
   }
 
   async createVote(insertVote: InsertVote): Promise<Vote> {
