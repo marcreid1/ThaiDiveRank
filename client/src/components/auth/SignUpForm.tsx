@@ -179,10 +179,10 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
             {signUpMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Account...
+                Signing Up...
               </>
             ) : (
-              "Create Account"
+              "Sign Up"
             )}
           </Button>
         </form>
