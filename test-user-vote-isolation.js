@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 // Test configuration
 const BASE_URL = 'http://localhost:5000';
@@ -7,13 +7,11 @@ const BASE_URL = 'http://localhost:5000';
 const testUsers = [
   {
     email: 'testuser1@example.com',
-    password: 'password123',
-    name: 'Test User 1'
+    password: 'password123'
   },
   {
     email: 'testuser2@example.com', 
-    password: 'password456',
-    name: 'Test User 2'
+    password: 'password456'
   }
 ];
 
@@ -55,10 +53,12 @@ async function testUserVoteIsolation() {
     const user2Signup = await makeRequest('POST', `${BASE_URL}/api/signup`, testUsers[1]);
     
     if (user1Signup.status !== 201 && user1Signup.status !== 409) {
+      console.log('User 1 signup response:', JSON.stringify(user1Signup.data, null, 2));
       throw new Error(`User 1 signup failed: ${user1Signup.data.message}`);
     }
     
     if (user2Signup.status !== 201 && user2Signup.status !== 409) {
+      console.log('User 2 signup response:', JSON.stringify(user2Signup.data, null, 2));
       throw new Error(`User 2 signup failed: ${user2Signup.data.message}`);
     }
     
