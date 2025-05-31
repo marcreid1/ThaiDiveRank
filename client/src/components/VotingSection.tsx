@@ -5,8 +5,10 @@ import DiveSiteCard from "./DiveSiteCard";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function VotingSection() {
+  const { isAuthenticated } = useAuth();
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
@@ -55,6 +57,11 @@ export default function VotingSection() {
 
   // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
+    // Only allow voting if user is authenticated
+    if (!isAuthenticated) {
+      return; // Silently prevent unauthorized voting
+    }
+
     // Submit vote
     voteMutation.mutate({ 
       winnerId: winner.id, 
