@@ -95,25 +95,31 @@ export class VoteStorage implements IVoteStorage {
         loserId: votes.loserId,
         pointsChanged: votes.pointsChanged,
         createdAt: votes.timestamp,
+        userId: votes.userId,
       })
       .from(votes)
       .orderBy(desc(votes.timestamp))
       .limit(limit);
 
-    // Get dive site names for each vote
+    // Get dive site names and user information for each vote
     const activities: VoteActivity[] = [];
     
     for (const vote of recentVotes) {
       const [winner] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.winnerId));
       const [loser] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.loserId));
+      const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, vote.userId));
       
-      if (winner && loser) {
+      if (winner && loser && user) {
+        // Extract username from email (part before @)
+        const username = user.email.split('@')[0];
+        
         activities.push({
           id: vote.id,
           winnerName: winner.name,
           loserName: loser.name,
           pointsChanged: vote.pointsChanged,
           timestamp: vote.createdAt.toISOString(),
+          username: username,
         });
       }
     }
