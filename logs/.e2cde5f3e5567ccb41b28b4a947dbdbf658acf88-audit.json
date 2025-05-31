@@ -29,6 +29,11 @@
             "date": 1748636471359,
             "name": "logs/access-2025-05-30.log.1",
             "hash": "0d4c7507b3c1de1acdb06583e8301cfb13e1c8060f912071860ba440579959ae"
+        },
+        {
+            "date": 1748653688821,
+            "name": "logs/access-2025-05-31.log",
+            "hash": "a0883610983f64611b357ad10d24dafe2a509d1f0f40fada6fea7c78ea532de3"
         }
     ],
     "hashType": "sha256"
