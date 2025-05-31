@@ -69,6 +69,11 @@ export class DiveSiteStorage implements IDiveSiteStorage {
         diveSites: [],
         subregions: [
           {
+            region: "North",
+            description: "The northern islands (#8-11) have the archipelago's most dramatic underwater topography, with massive boulders, swim-throughs, and the best chance to see larger pelagic species.",
+            diveSites: []
+          },
+          {
             region: "South",
             description: "The southern islands (#1-3) feature more protected reefs and better conditions for beginners, with shallow coral gardens and diverse marine life.",
             diveSites: []
@@ -76,11 +81,6 @@ export class DiveSiteStorage implements IDiveSiteStorage {
           {
             region: "Central", 
             description: "The central islands (#4-7) offer a mix of dive conditions suitable for all levels, with boulder formations and rich coral gardens.",
-            diveSites: []
-          },
-          {
-            region: "North",
-            description: "The northern islands (#8-11) have the archipelago's most dramatic underwater topography, with massive boulders, swim-throughs, and the best chance to see larger pelagic species.",
             diveSites: []
           }
         ]
@@ -92,12 +92,12 @@ export class DiveSiteStorage implements IDiveSiteStorage {
         subregions: [
           {
             region: "North",
-            description: "The northern Surin Islands have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
+            description: "The northern Surin Islands (#1) have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
             diveSites: []
           },
           {
             region: "South", 
-            description: "The southern Surin Islands feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
+            description: "The southern Surin Islands (#2) feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
             diveSites: []
           }
         ]
@@ -116,11 +116,11 @@ export class DiveSiteStorage implements IDiveSiteStorage {
       if (location.includes('similan')) {
         const similanRegion = regionStructure[0];
         
-        if (location.includes('south')) {
+        if (location.includes('north')) {
           similanRegion.subregions![0].diveSites.push(site);
-        } else if (location.includes('central')) {
+        } else if (location.includes('south')) {
           similanRegion.subregions![1].diveSites.push(site);
-        } else if (location.includes('north')) {
+        } else if (location.includes('central')) {
           similanRegion.subregions![2].diveSites.push(site);
         } else {
           // Fallback for sites without clear sub-region
