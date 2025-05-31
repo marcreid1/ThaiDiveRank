@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 interface MyVotesResponse {
   message: string;
@@ -20,7 +20,14 @@ interface VoteWithSites extends Vote {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Redirect if not authenticated
+  if (!isAuthenticated) {
+    setLocation('/');
+    return null;
+  }
   
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/votes/me"],
