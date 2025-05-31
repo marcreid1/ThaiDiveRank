@@ -6,11 +6,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function VotingSection() {
   const { isAuthenticated } = useAuth();
-  const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
