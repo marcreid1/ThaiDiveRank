@@ -35,7 +35,7 @@ export function useAuthState() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isAuthenticated = isLoggedIn() && !!user && !error;
+  const isAuthenticated = !!token && !!user && !error;
 
   const login = (user: User) => {
     // Update the cache with the new user data
