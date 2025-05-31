@@ -67,7 +67,7 @@ export default function Dashboard() {
   const totalPointsInfluenced = votes.reduce((sum, vote) => sum + Math.abs(vote.pointsChanged), 0);
   const averageImpact = totalVotes > 0 ? Math.round(totalPointsInfluenced / totalVotes) : 0;
   const memberSince = user?.createdAt ? new Date(user.createdAt) : new Date();
-  const lastVoteDate = votes.length > 0 ? new Date(votes[0].createdAt) : null;
+  const lastVoteDate = votes.length > 0 ? new Date(votes[0].timestamp) : null;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -171,7 +171,7 @@ export default function Dashboard() {
                           defeated {vote.loserName}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-                          {formatDistanceToNow(new Date(vote.createdAt), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(vote.timestamp), { addSuffix: true })}
                         </div>
                       </div>
                       <Badge variant={vote.pointsChanged > 0 ? "default" : "secondary"} className="ml-2 flex-shrink-0">
