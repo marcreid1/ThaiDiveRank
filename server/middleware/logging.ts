@@ -48,6 +48,20 @@ export function createRateLimiter(options: {
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: options.skipSuccessfulRequests || false,
+    // Use a secure key generator that combines multiple factors
+    keyGenerator: (req: Request): string => {
+      // Get the real IP, fallback to connection IP if needed
+      const forwardedFor = req.get('X-Forwarded-For');
+      const realIp = req.get('X-Real-IP');
+      const ip = req.ip || req.connection.remoteAddress;
+      
+      // Use the most reliable IP source available
+      const clientIp = realIp || (forwardedFor ? forwardedFor.split(',')[0].trim() : ip) || 'unknown';
+      
+      // Combine IP with User-Agent for more accurate rate limiting
+      const userAgent = req.get('User-Agent') || 'unknown';
+      return `${clientIp}:${userAgent.substring(0, 50)}`;
+    },
     handler: (req: Request, res: Response) => {
       // Log rate limit exceeded
       securityLogger.rateLimitExceeded(

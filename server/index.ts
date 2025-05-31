@@ -32,8 +32,19 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      
+      // Only log response data in development, and exclude sensitive endpoints
+      if (process.env.NODE_ENV === 'development' && 
+          !path.includes('/auth/') && 
+          !path.includes('/signin') && 
+          !path.includes('/signup') && 
+          capturedJsonResponse) {
+        const responseLog = JSON.stringify(capturedJsonResponse);
+        if (responseLog.length > 200) {
+          logLine += ` :: ${responseLog.slice(0, 200)}...`;
+        } else {
+          logLine += ` :: ${responseLog}`;
+        }
       }
 
       if (logLine.length > 80) {

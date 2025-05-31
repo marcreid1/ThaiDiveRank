@@ -47,7 +47,11 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     }
     
     // Verify JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('[AUTH] JWT_SECRET environment variable not set');
+      return res.status(500).json({ message: "Server configuration error" });
+    }
     const decoded = jwt.verify(token, jwtSecret) as { userId: string; email: string };
     
     // Validate decoded payload
@@ -60,7 +64,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     req.userId = decoded.userId;
     req.user = { userId: decoded.userId, email: decoded.email };
     
-    console.log(`[AUTH] Successfully authenticated user: ${decoded.email} (${decoded.userId})`);
+    console.log(`[AUTH] Successfully authenticated user: ${decoded.userId}`);
     next();
   } catch (error) {
     securityLogger.unauthorizedAccess(
@@ -117,7 +121,12 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
       const token = authHeader.substring(7);
       
       if (token) {
-        const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+        const jwtSecret = process.env.JWT_SECRET;
+        if (!jwtSecret) {
+          // Silently fail for optional auth when JWT_SECRET not configured
+          next();
+          return;
+        }
         const decoded = jwt.verify(token, jwtSecret) as { userId: string; email: string };
         
         req.userId = decoded.userId;
