@@ -75,7 +75,7 @@ export class VoteStorage implements IVoteStorage {
     return await db
       .select()
       .from(votes)
-      .orderBy(desc(votes.createdAt))
+      .orderBy(desc(votes.timestamp))
       .limit(limit);
   }
 
@@ -84,7 +84,7 @@ export class VoteStorage implements IVoteStorage {
       .select()
       .from(votes)
       .where(eq(votes.userId, userId))
-      .orderBy(desc(votes.createdAt));
+      .orderBy(desc(votes.timestamp));
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
@@ -97,7 +97,7 @@ export class VoteStorage implements IVoteStorage {
         createdAt: votes.timestamp,
       })
       .from(votes)
-      .orderBy(desc(votes.createdAt))
+      .orderBy(desc(votes.timestamp))
       .limit(limit);
 
     // Get dive site names for each vote
