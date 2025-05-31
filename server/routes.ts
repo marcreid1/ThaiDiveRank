@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 import { createRateLimiter } from "./middleware/logging";
 import { requestAnalytics } from "./logger";
 import bcrypt from "bcryptjs";
@@ -35,8 +35,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signup
   app.post("/api/signup", authLimit, async (req, res) => {
     try {
+      // Create signup schema that accepts password instead of hashedPassword
+      const signupSchema = insertUserSchema.omit({ hashedPassword: true }).extend({
+        password: z.string().min(6, "Password must be at least 6 characters")
+      });
+      
       // Validate input with Zod
-      const userData = insertUserSchema.parse(req.body);
+      const userData = signupSchema.parse(req.body);
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
@@ -48,7 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Hash the password using bcrypt
       const saltRounds = 12;
-      const hashedPassword = await bcrypt.hash(userData.hashedPassword, saltRounds);
+      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
       
       // Store user in database
       const user = await storage.createUser({
@@ -103,8 +108,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signin
   app.post("/api/signin", authLimit, async (req, res) => {
     try {
+      // Create signin schema that accepts password instead of hashedPassword
+      const signinSchema = z.object({
+        email: z.string().email(),
+        password: z.string().min(1, "Password is required")
+      });
+      
       // Validate input with Zod
-      const { email, hashedPassword: password } = insertUserSchema.parse(req.body);
+      const { email, password } = signinSchema.parse(req.body);
       
       // Find user by email
       const user = await storage.getUserByEmail(email);
