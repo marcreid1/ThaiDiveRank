@@ -100,7 +100,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
         <CardDescription className="text-center">
           Join DiveRank to vote on your favorite dive sites
         </CardDescription>
