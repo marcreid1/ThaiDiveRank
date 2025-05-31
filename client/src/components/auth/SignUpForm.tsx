@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { setToken } from "@/lib/auth";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -34,6 +36,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { login } = useAuth();
 
   const {
     register,
@@ -53,10 +56,17 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
     onSuccess: (result) => {
-      // Store JWT in localStorage
-      localStorage.setItem("auth_token", result.token);
+      // Store JWT using auth helper
+      setToken(result.token);
       
-      // Refetch user state
+      // Immediately update auth context with user data
+      login({
+        ...result.user,
+        hashedPassword: '', // Not needed for client-side user object
+        createdAt: new Date(result.user.createdAt)
+      });
+      
+      // Also refetch user state for consistency
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({

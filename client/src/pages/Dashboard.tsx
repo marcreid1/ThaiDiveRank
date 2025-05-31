@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 
 interface MyVotesResponse {
   message: string;
@@ -35,9 +36,15 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  // Redirect if not authenticated - after all hooks are called
+  // Redirect if not authenticated using useEffect to avoid render issues
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLocation('/');
+    }
+  }, [isAuthenticated, setLocation]);
+
+  // Return early if not authenticated
   if (!isAuthenticated) {
-    setLocation('/');
     return null;
   }
 

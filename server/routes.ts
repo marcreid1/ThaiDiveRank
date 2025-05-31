@@ -27,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const authLimit = createRateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 50, // temporarily increased for testing
+    max: 5, // restored to original security limit
     message: "Too many signup attempts, please try again later.",
     name: "auth"
   });
