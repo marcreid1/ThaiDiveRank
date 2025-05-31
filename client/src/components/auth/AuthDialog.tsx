@@ -44,11 +44,13 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSucce
           <SignInForm
             onSuccess={handleSuccess}
             onSwitchToSignUp={() => setMode("signup")}
+            onClose={() => onOpenChange(false)}
           />
         ) : (
           <SignUpForm
             onSuccess={handleSuccess}
             onSwitchToSignIn={() => setMode("signin")}
+            onClose={() => onOpenChange(false)}
           />
         )}
       </DialogContent>

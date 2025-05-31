@@ -24,9 +24,10 @@ type SignInFormData = z.infer<typeof signInSchema>;
 interface SignInFormProps {
   onSuccess?: () => void;
   onSwitchToSignUp?: () => void;
+  onClose?: () => void;
 }
 
-export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
+export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
@@ -168,7 +169,11 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-500">
             Experiencing issues?{" "}
-            <Link href="/contact" className="text-primary hover:underline">
+            <Link 
+              href="/contact" 
+              className="text-primary hover:underline"
+              onClick={onClose}
+            >
               Contact us
             </Link>
           </p>
