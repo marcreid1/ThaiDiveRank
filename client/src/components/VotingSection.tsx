@@ -7,10 +7,12 @@ import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/auth/AuthDialog";
+import { useToast } from "@/hooks/use-toast";
 
 export default function VotingSection() {
   const { isAuthenticated, login } = useAuth();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
@@ -43,6 +45,18 @@ export default function VotingSection() {
       queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
       queryClient.invalidateQueries({ queryKey: ["/api/my-votes"] });
+      
+      toast({
+        title: "Vote recorded!",
+        description: "Your vote has been successfully counted.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Vote failed",
+        description: error.message || "Unable to record your vote. Please try again.",
+      });
     }
   });
 
@@ -54,6 +68,13 @@ export default function VotingSection() {
     onSuccess: () => {
       setChampion(null);
       refetch();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Skip failed",
+        description: error.message || "Unable to skip this matchup. Please try again.",
+      });
     }
   });
 
