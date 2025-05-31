@@ -63,7 +63,8 @@ export default function Navbar() {
     { href: "/", label: "Vote" },
     { href: "/rankings", label: "Rankings" },
     { href: "/dive-sites", label: "Directory" },
-    { href: "/about", label: "About" }
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" }
   ];
 
   const getDesktopLinkClass = (path: string) => {

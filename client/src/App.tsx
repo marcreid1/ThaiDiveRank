@@ -10,6 +10,7 @@ import Rankings from "@/pages/Rankings";
 import DiveSites from "@/pages/DiveSites";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
+import Contact from "@/pages/Contact";
 
 import Dashboard from "@/pages/Dashboard";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -48,6 +49,7 @@ function AppRouter() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
+            <Route path="/contact" component={Contact} />
             <Route component={NotFound} />
           </Switch>
         </div>
