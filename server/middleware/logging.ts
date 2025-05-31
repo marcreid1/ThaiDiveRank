@@ -107,7 +107,9 @@ export const securityMonitor = (req: Request, res: Response, next: NextFunction)
   // Log unauthorized access attempts to protected routes
   if (req.originalUrl.startsWith('/api/') && req.originalUrl !== '/api/auth/me' && 
       req.originalUrl !== '/api/auth/signin' && req.originalUrl !== '/api/auth/signup') {
-    if (!req.session?.userId && req.method !== 'GET') {
+    // Check for JWT token in Authorization header instead of session
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ') && req.method !== 'GET') {
       securityLogger.unauthorizedAccess(ip, req.originalUrl, userAgent);
     }
   }
@@ -157,7 +159,7 @@ export const errorLogger = (err: Error, req: Request, res: Response, next: NextF
     url: req.originalUrl,
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    userId: req.session?.userId
+    userId: (req as any).userId // Use JWT-based userId instead of session
   });
 
   if (!res.headersSent) {

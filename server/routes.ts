@@ -37,7 +37,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Create signup schema that accepts password instead of hashedPassword
       const signupSchema = insertUserSchema.omit({ hashedPassword: true }).extend({
-        password: z.string().min(6, "Password must be at least 6 characters")
+        password: z.string()
+          .min(8, "Password must be at least 8 characters")
+          .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one lowercase letter, one uppercase letter, and one number")
       });
       
       // Validate input with Zod
