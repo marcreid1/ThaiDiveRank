@@ -30,7 +30,7 @@ export default function Dashboard() {
   }
   
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
-    queryKey: ["/api/votes/me"],
+    queryKey: ["/api/my-votes"],
     queryFn: getQueryFn<MyVotesResponse>({ on401: "returnNull" }),
   });
 
