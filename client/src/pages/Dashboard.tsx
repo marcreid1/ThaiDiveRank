@@ -77,7 +77,7 @@ export default function Dashboard() {
   const lastVoteDate = votes.length > 0 ? new Date(votes[0].timestamp) : null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
