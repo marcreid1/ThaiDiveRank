@@ -127,7 +127,7 @@ export default function Navbar() {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
+                    <DropdownMenuItem onSelect={handleLogout}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </DropdownMenuItem>
