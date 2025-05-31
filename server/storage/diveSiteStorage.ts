@@ -92,12 +92,12 @@ export class DiveSiteStorage implements IDiveSiteStorage {
         subregions: [
           {
             region: "North",
-            description: "The northern Surin Islands (#1) have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
+            description: "The northern Surin Islands (#1, #5) have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
             diveSites: []
           },
           {
             region: "South", 
-            description: "The southern Surin Islands (#2) feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
+            description: "The southern Surin Islands (#2, #3, #4) feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
             diveSites: []
           }
         ]
