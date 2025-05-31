@@ -6,11 +6,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 
 export default function VotingSection() {
-  const { isAuthenticated } = useAuth();
-  const { toast } = useToast();
+  const { isAuthenticated, login } = useAuth();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
@@ -59,13 +59,9 @@ export default function VotingSection() {
 
   // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
-    // Show toast and prevent voting if user is not authenticated
+    // Open sign-in dialog if user is not authenticated
     if (!isAuthenticated) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to vote on dive sites. Click the Sign In button in the top navigation.",
-        variant: "destructive",
-      });
+      setAuthDialogOpen(true);
       return;
     }
 
@@ -78,6 +74,10 @@ export default function VotingSection() {
     // Update champion state and refetch with new parameters
     setChampion({ diveSite: winner, side });
     refetch();
+  };
+
+  const handleAuthSuccess = () => {
+    setAuthDialogOpen(false);
   };
 
   const handleVoteLeft = (winner: DiveSite, loser: DiveSite) => handleVote(winner, loser, 'A');
@@ -223,7 +223,12 @@ export default function VotingSection() {
         </div>
       </div>
 
-
+      <AuthDialog 
+        open={authDialogOpen} 
+        onOpenChange={setAuthDialogOpen}
+        defaultMode="signin"
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }
