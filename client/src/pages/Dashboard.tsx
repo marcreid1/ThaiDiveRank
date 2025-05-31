@@ -23,21 +23,23 @@ export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Redirect if not authenticated
-  if (!isAuthenticated) {
-    setLocation('/');
-    return null;
-  }
-  
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/my-votes"],
     queryFn: getQueryFn<MyVotesResponse>({ on401: "returnNull" }),
+    enabled: isAuthenticated,
   });
 
   const { data: diveSites, isLoading: sitesLoading } = useQuery({
     queryKey: ["/api/dive-sites"],
     queryFn: getQueryFn<DiveSite[]>({ on401: "returnNull" }),
+    enabled: isAuthenticated,
   });
+
+  // Redirect if not authenticated - after all hooks are called
+  if (!isAuthenticated) {
+    setLocation('/');
+    return null;
+  }
 
   if (votesLoading || sitesLoading) {
     return (
