@@ -181,16 +181,14 @@ export default function Navbar() {
             <div className="border-t border-border pt-3 mt-3">
               {isAuthenticated ? (
                 <div className="px-3 py-2">
-                  <button
-                    onClick={() => {
-                      window.location.href = '/dashboard';
-                      setMobileMenuOpen(false);
-                    }}
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center text-sm text-slate-600 dark:text-slate-300 mb-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-md transition-colors w-full text-left"
                   >
                     <User className="h-4 w-4 mr-2" />
                     {user?.email}
-                  </button>
+                  </Link>
                   <button
                     onClick={() => {
                       logout();
