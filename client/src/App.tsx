@@ -45,11 +45,11 @@ function AppRouter() {
             <Route path="/rankings" component={Rankings} />
             <Route path="/dive-sites" component={DiveSites} />
 
-            <Route path="/dashboard">
+            <Route path="/dashboard" component={() => (
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            </Route>
+            )} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route component={NotFound} />
