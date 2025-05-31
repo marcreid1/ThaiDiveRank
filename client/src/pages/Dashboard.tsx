@@ -57,6 +57,11 @@ export default function Dashboard() {
   const votes = myVotesData?.votes || [];
   const sites = diveSites || [];
   
+  // Debug logging
+  console.log('Dashboard - myVotesData:', myVotesData);
+  console.log('Dashboard - votes array:', votes);
+  console.log('Dashboard - votes length:', votes.length);
+  
   // Create a map of site IDs to names for quick lookup
   const siteMap = sites.reduce((acc, site) => {
     acc[site.id] = site.name;
