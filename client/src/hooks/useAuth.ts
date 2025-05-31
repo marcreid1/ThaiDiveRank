@@ -43,9 +43,12 @@ export function useAuthState() {
   };
 
   const logout = () => {
+    console.log('[AUTH] Starting logout process');
     removeToken();
+    console.log('[AUTH] Token removed');
     // Clear all cached data to prevent data leakage between users
     queryClient.clear();
+    console.log('[AUTH] Query cache cleared');
   };
 
   return {

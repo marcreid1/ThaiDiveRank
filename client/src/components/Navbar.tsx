@@ -38,8 +38,15 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    logout();
-    setLocation('/');
+    console.log('[NAVBAR] Logout clicked');
+    try {
+      logout();
+      console.log('[NAVBAR] Logout function called');
+      setLocation('/');
+      console.log('[NAVBAR] Navigation to / complete');
+    } catch (error) {
+      console.error('[NAVBAR] Error during logout:', error);
+    }
   };
 
   const handleAuthSuccess = () => {
