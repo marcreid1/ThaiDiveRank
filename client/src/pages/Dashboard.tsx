@@ -1,156 +1,257 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
 import { getQueryFn } from "@/lib/queryClient";
-import { Vote } from "@shared/schema";
+import { Vote, DiveSite } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Trophy, User, Vote as VoteIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target } from "lucide-react";
+import { Link } from "wouter";
 
 interface MyVotesResponse {
   message: string;
   votes: Vote[];
 }
 
-export default function Dashboard() {
-  const { user, logout } = useAuth();
+interface VoteWithSites extends Vote {
+  winnerName: string;
+  loserName: string;
+}
 
-  // Fetch user's votes
-  const { data: votesData, isLoading: votesLoading } = useQuery({
-    queryKey: ["/api/my-votes"],
-    queryFn: getQueryFn<MyVotesResponse>({ on401: "throw" }),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+export default function Dashboard() {
+  const { user } = useAuth();
+  
+  const { data: myVotesData, isLoading: votesLoading } = useQuery({
+    queryKey: ["/api/votes/me"],
+    queryFn: getQueryFn<MyVotesResponse>({ on401: "returnNull" }),
   });
 
-  const votes = votesData?.votes || [];
+  const { data: diveSites, isLoading: sitesLoading } = useQuery({
+    queryKey: ["/api/dive-sites"],
+    queryFn: getQueryFn<DiveSite[]>({ on401: "returnNull" }),
+  });
 
-  const handleLogout = () => {
-    logout();
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Dashboard
-              </h1>
-              <p className="mt-2 text-gray-600 dark:text-gray-300">
-                Welcome back, {user?.email}
-              </p>
-            </div>
-            <Button onClick={handleLogout} variant="outline">
-              Sign Out
-            </Button>
+  if (votesLoading || sitesLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="h-8 bg-slate-200 animate-pulse rounded mb-8 w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-48 bg-slate-200 animate-pulse rounded-lg" />
+            ))}
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Votes</CardTitle>
-              <VoteIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{votes.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Your voting activity
-              </p>
-            </CardContent>
-          </Card>
+  const votes = myVotesData?.votes || [];
+  const sites = diveSites || [];
+  
+  // Create a map of site IDs to names for quick lookup
+  const siteMap = sites.reduce((acc, site) => {
+    acc[site.id] = site.name;
+    return acc;
+  }, {} as Record<number, string>);
 
+  // Enhance votes with site names
+  const votesWithSites: VoteWithSites[] = votes.map(vote => ({
+    ...vote,
+    winnerName: siteMap[vote.winnerId] || `Site #${vote.winnerId}`,
+    loserName: siteMap[vote.loserId] || `Site #${vote.loserId}`
+  }));
+
+  const totalVotes = votes.length;
+  const totalPointsInfluenced = votes.reduce((sum, vote) => sum + Math.abs(vote.pointsChanged), 0);
+  const averageImpact = totalVotes > 0 ? Math.round(totalPointsInfluenced / totalVotes) : 0;
+  const memberSince = user?.createdAt ? new Date(user.createdAt) : new Date();
+  const lastVoteDate = votes.length > 0 ? new Date(votes[0].createdAt) : null;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            Welcome to Your Dashboard
+          </h1>
+          <p className="text-slate-600 dark:text-slate-300">
+            Track your voting activity and impact on dive site rankings
+          </p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Member Since</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Votes</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalVotes}</p>
+                </div>
+                <VoteIcon className="h-8 w-8 text-ocean-500" />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Account creation date
-              </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Account Type</CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Standard</div>
-              <p className="text-xs text-muted-foreground">
-                Voting member
-              </p>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Points Influenced</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalPointsInfluenced}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-green-500" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{averageImpact}</p>
+                </div>
+                <Target className="h-8 w-8 text-purple-500" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Member Since</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">
+                    {memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+                <Calendar className="h-8 w-8 text-blue-500" />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Votes */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Recent Votes</CardTitle>
-            <CardDescription>
-              History of your dive site preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {votesLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : votes.length === 0 ? (
-              <div className="text-center py-8">
-                <VoteIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  No votes yet
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  Start voting on dive sites to see your activity here.
-                </p>
-                <Button>
-                  <a href="/">Start Voting</a>
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {votes.slice(0, 10).map((vote) => (
-                  <div
-                    key={vote.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <Trophy className="h-5 w-5 text-yellow-500" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Voting Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-ocean-500" />
+                Recent Voting Activity
+              </CardTitle>
+              <CardDescription>
+                Your latest votes and their impact on rankings
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {votesWithSites.length === 0 ? (
+                <div className="text-center py-8">
+                  <VoteIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    You haven't cast any votes yet
+                  </p>
+                  <Button asChild>
+                    <Link href="/">Start Voting</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {votesWithSites.slice(0, 8).map((vote) => (
+                    <div key={vote.id} className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Trophy className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                          <span className="font-medium text-sm truncate">{vote.winnerName}</span>
+                        </div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                          defeated {vote.loserName}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                          {formatDistanceToNow(new Date(vote.createdAt), { addSuffix: true })}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          Vote #{vote.id}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Winner: Site #{vote.winnerId} | Loser: Site #{vote.loserId}
-                        </p>
-                      </div>
+                      <Badge variant={vote.pointsChanged > 0 ? "default" : "secondary"} className="ml-2 flex-shrink-0">
+                        {vote.pointsChanged > 0 ? '+' : ''}{vote.pointsChanged} pts
+                      </Badge>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        +{vote.pointsChanged} points
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
-                        {new Date(vote.timestamp).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Account Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-ocean-500" />
+                Account Information
+              </CardTitle>
+              <CardDescription>
+                Your account details and preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between py-3 border-b border-slate-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Email</span>
+                <span className="text-sm text-slate-900 dark:text-white">{user?.email}</span>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              
+              <div className="flex items-center justify-between py-3 border-b border-slate-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Member Since</span>
+                <span className="text-sm text-slate-900 dark:text-white">
+                  {memberSince.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-3 border-b border-slate-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Last Vote</span>
+                <span className="text-sm text-slate-900 dark:text-white">
+                  {lastVoteDate 
+                    ? lastVoteDate.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })
+                    : 'No votes yet'
+                  }
+                </span>
+              </div>
+
+              <div className="pt-4">
+                <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Quick Actions</h4>
+                <div className="space-y-2">
+                  <Button asChild variant="outline" className="w-full justify-start">
+                    <Link href="/">
+                      <VoteIcon className="h-4 w-4 mr-2" />
+                      Continue Voting
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start">
+                    <Link href="/rankings">
+                      <Trophy className="h-4 w-4 mr-2" />
+                      View Rankings
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start">
+                    <Link href="/dive-sites">
+                      <Target className="h-4 w-4 mr-2" />
+                      Browse Dive Sites
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

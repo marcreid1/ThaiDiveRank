@@ -40,12 +40,11 @@ export default function Navbar() {
     setAuthDialogOpen(false);
   };
 
-  // Navigation links - dashboard only shown when authenticated
+  // Navigation links - dashboard removed from main navigation
   const navLinks = [
     { href: "/", label: "Vote" },
     { href: "/rankings", label: "Rankings" },
     { href: "/dive-sites", label: "Directory" },
-    ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/about", label: "About" }
   ];
 
@@ -104,6 +103,12 @@ export default function Navbar() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="flex items-center w-full">
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={logout}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
@@ -176,10 +181,14 @@ export default function Navbar() {
             <div className="border-t border-border pt-3 mt-3">
               {isAuthenticated ? (
                 <div className="px-3 py-2">
-                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-300 mb-2 px-3 py-2">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center text-sm text-slate-600 dark:text-slate-300 mb-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-md transition-colors"
+                  >
                     <User className="h-4 w-4 mr-2" />
                     {user?.email}
-                  </div>
+                  </Link>
                   <button
                     onClick={() => {
                       logout();
