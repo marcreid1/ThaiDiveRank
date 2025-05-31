@@ -11,7 +11,7 @@ import { getToken } from "@/lib/auth";
 import { AuthDialogContext } from "@/hooks/useAuthDialog";
 
 export default function Navbar() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -35,6 +35,11 @@ export default function Navbar() {
   const openSignUpDialog = () => {
     setAuthDialogMode("signup");
     setAuthDialogOpen(true);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setLocation('/');
   };
 
   const handleAuthSuccess = () => {
@@ -115,7 +120,7 @@ export default function Navbar() {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </DropdownMenuItem>
