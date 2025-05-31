@@ -48,7 +48,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
     mutationFn: async (data: SignUpFormData) => {
       const response = await apiRequest("POST", "/api/signup", {
         email: data.email,
-        hashedPassword: data.password,
+        password: data.password,
       });
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
