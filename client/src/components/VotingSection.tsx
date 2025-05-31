@@ -6,9 +6,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function VotingSection() {
   const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   // Track the current champion and which side they're on
   const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
@@ -57,9 +59,10 @@ export default function VotingSection() {
 
   // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
-    // Only allow voting if user is authenticated
+    // Redirect to auth page if user is not authenticated
     if (!isAuthenticated) {
-      return; // Silently prevent unauthorized voting
+      setLocation('/auth');
+      return;
     }
 
     // Submit vote
