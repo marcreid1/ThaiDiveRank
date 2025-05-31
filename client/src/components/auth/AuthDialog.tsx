@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { SignUpForm } from "./SignUpForm";
 import { SignInForm } from "./SignInForm";
 
@@ -32,6 +32,12 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSucce
           <DialogTitle className="sr-only">
             {mode === "signin" ? "Sign In" : "Sign Up"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {mode === "signin" 
+              ? "Enter your credentials to sign in to your account" 
+              : "Create a new account to start voting on dive sites"
+            }
+          </DialogDescription>
         </DialogHeader>
         
         {mode === "signin" ? (
