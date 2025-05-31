@@ -81,6 +81,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Invalid input data",
           errors: error.errors 
         });
+      } else if (error instanceof Error && error.message.includes('duplicate key value violates unique constraint')) {
+        // Handle database constraint violation for duplicate email
+        res.status(409).json({ 
+          message: "User already exists" 
+        });
+      } else if (error instanceof Error && error.message.includes('email')) {
+        // Handle other email-related errors
+        res.status(409).json({ 
+          message: "User already exists" 
+        });
       } else {
         console.error("Signup error:", error);
         res.status(500).json({ 
