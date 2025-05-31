@@ -253,13 +253,13 @@ export class DatabaseStorage implements IStorage {
   // Helper method to find opponents a champion hasn't faced
   private async getUnfacedOpponents(championId: number, allSites: DiveSite[]): Promise<DiveSite[]> {
     // Get all votes where this site was the winner
-    const championWins = await this.db
+    const championWins = await db
       .select({ loserId: votes.loserId })
       .from(votes)
       .where(eq(votes.winnerId, championId));
     
     // Extract IDs of sites this champion has already beaten
-    const facedOpponentIds = new Set(championWins.map(vote => vote.loserId));
+    const facedOpponentIds = new Set(championWins.map((vote: any) => vote.loserId));
     
     // Return sites this champion hasn't faced yet (excluding itself)
     return allSites.filter(site => 
