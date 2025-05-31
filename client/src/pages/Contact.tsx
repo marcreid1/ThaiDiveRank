@@ -17,7 +17,7 @@ export default function Contact() {
           </div>
           
           <p className="text-lg text-slate-700 dark:text-slate-300 mb-8">
-            We welcome feedback, new feature suggestions, and message us here for any issues you may be encountering.
+            We'd love to hear your feedback, feature ideas, and help resolve any issues you're experiencing.
           </p>
         </div>
 

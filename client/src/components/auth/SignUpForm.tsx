@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { setToken } from "@/lib/auth";
@@ -200,6 +200,15 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
             </p>
           </div>
         )}
+        
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-500">
+            Experiencing issues?{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              Contact us
+            </Link>
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
