@@ -1,4 +1,4 @@
-import { votes, diveSites, type Vote, type InsertVote, type VoteActivity } from "@shared/schema";
+import { votes, diveSites, users, type Vote, type InsertVote, type VoteActivity } from "@shared/schema";
 import { db } from "../db";
 import { eq, desc, sql } from "drizzle-orm";
 import { calculateEloChange } from "../utils/elo";
