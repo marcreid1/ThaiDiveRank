@@ -78,6 +78,18 @@ export default function Dashboard() {
   const memberSince = user?.createdAt ? new Date(user.createdAt) : new Date();
   const lastVoteDate = votes.length > 0 ? new Date(votes[0].timestamp) : null;
 
+  // Calculate champion dive site (most voted for)
+  const championData = votes.reduce((acc, vote) => {
+    acc[vote.winnerId] = (acc[vote.winnerId] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  const championSiteId = Object.entries(championData).reduce((maxEntry, current) => 
+    current[1] > maxEntry[1] ? current : maxEntry, ['0', 0])[0];
+  
+  const championSite = sites.find(site => site.id === parseInt(championSiteId));
+  const championVoteCount = championData[parseInt(championSiteId)] || 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12">
       <div className="max-w-6xl mx-auto">
@@ -143,6 +155,56 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Champion Dive Site Section */}
+        {championSite && championVoteCount > 0 && (
+          <Card className="mb-8 border-2 border-yellow-200 dark:border-yellow-800 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                <Trophy className="h-6 w-6" />
+                Your Champion Dive Site
+              </CardTitle>
+              <CardDescription className="text-yellow-700 dark:text-yellow-300">
+                The dive site you've voted for most often - your personal favorite
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-2">
+                    {championSite.name}
+                  </h3>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+                    📍 {championSite.location}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm text-yellow-600 dark:text-yellow-400">
+                    <span className="flex items-center gap-1">
+                      <VoteIcon className="h-4 w-4" />
+                      Voted for {championVoteCount} time{championVoteCount !== 1 ? 's' : ''}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <TrendingUp className="h-4 w-4" />
+                      Current Rating: {Math.round(championSite.rating)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 bg-yellow-200 dark:bg-yellow-700 rounded-full flex items-center justify-center">
+                    <Trophy className="h-8 w-8 text-yellow-600 dark:text-yellow-300" />
+                  </div>
+                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                    Champion
+                  </Badge>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-yellow-200 dark:border-yellow-700">
+                <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                  {championSite.description}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Voting Activity */}
