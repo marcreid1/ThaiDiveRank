@@ -59,9 +59,13 @@ export default function VotingSection() {
 
   // Handle voting for a dive site
   const handleVote = (winner: DiveSite, loser: DiveSite, side: 'A' | 'B') => {
-    // Redirect to auth page if user is not authenticated
+    // Show toast and prevent voting if user is not authenticated
     if (!isAuthenticated) {
-      setLocation('/auth');
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to vote on dive sites. Click the Sign In button in the top navigation.",
+        variant: "destructive",
+      });
       return;
     }
 

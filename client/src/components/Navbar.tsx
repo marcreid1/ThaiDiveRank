@@ -237,6 +237,5 @@ export default function Navbar() {
         onSuccess={handleAuthSuccess}
       />
     </nav>
-    </AuthDialogContext.Provider>
   );
 }
