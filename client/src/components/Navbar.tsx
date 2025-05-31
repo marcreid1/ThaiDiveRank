@@ -174,11 +174,6 @@ export default function Navbar() {
             
             {/* Mobile authentication controls */}
             <div className="border-t border-border pt-3 mt-3">
-              {/* Temporary debug */}
-              <div className="px-3 py-1 text-xs bg-yellow-100 text-black">
-                Debug: Auth={isAuthenticated ? 'YES' : 'NO'}, User={user?.email || 'NONE'}, Token={!!getToken() ? 'EXISTS' : 'MISSING'}
-              </div>
-              
               {isAuthenticated ? (
                 <div className="px-3 py-2">
                   <div className="flex items-center text-sm text-slate-600 dark:text-slate-300 mb-2 px-3 py-2">
