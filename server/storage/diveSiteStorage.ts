@@ -61,24 +61,106 @@ export class DiveSiteStorage implements IDiveSiteStorage {
   async getDiveSitesByRegion(): Promise<RegionDiveSites[]> {
     const allSites = await this.getAllDiveSites();
     
-    // Group sites by location (region)
-    const regionMap = new Map<string, DiveSite[]>();
-    
-    for (const site of allSites) {
-      const region = site.location;
-      if (!regionMap.has(region)) {
-        regionMap.set(region, []);
+    // Define the organized structure for dive site regions
+    const regionStructure: RegionDiveSites[] = [
+      {
+        region: "Similan Islands",
+        description: "The Similan Islands are an archipelago of nine islands in the Andaman Sea, renowned for granite boulder formations, white sandy beaches, and rich marine biodiversity. A protected national park offering world-class diving experiences across southern, central, and northern sections.",
+        diveSites: [],
+        subregions: [
+          {
+            region: "South",
+            description: "The southern islands (#1-3) feature more protected reefs and better conditions for beginners, with shallow coral gardens and diverse marine life.",
+            diveSites: []
+          },
+          {
+            region: "Central", 
+            description: "The central islands (#4-7) offer a mix of dive conditions suitable for all levels, with boulder formations and rich coral gardens.",
+            diveSites: []
+          },
+          {
+            region: "North",
+            description: "The northern islands (#8-11) have the archipelago's most dramatic underwater topography, with massive boulders, swim-throughs, and the best chance to see larger pelagic species.",
+            diveSites: []
+          }
+        ]
+      },
+      {
+        region: "Surin Islands",
+        description: "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. These protected waters host an incredible diversity of marine life, with shallow reef systems in the north and more varied dive conditions in the south.",
+        diveSites: [],
+        subregions: [
+          {
+            region: "North",
+            description: "The northern Surin Islands have excellent shallow reefs with diverse coral species and abundant reef fish, ideal for beginners and underwater photographers.",
+            diveSites: []
+          },
+          {
+            region: "South", 
+            description: "The southern Surin Islands feature more varied underwater landscapes including pinnacles, offering opportunities to see larger marine life.",
+            diveSites: []
+          }
+        ]
+      },
+      {
+        region: "Extended Park",
+        description: "Remote dive sites beyond the main island groups, featuring unique underwater landscapes and exceptional marine biodiversity. These sites offer advanced diving experiences with dramatic topography and rare species sightings.",
+        diveSites: []
       }
-      regionMap.get(region)!.push(site);
+    ];
+
+    // Categorize each dive site into the appropriate region and subregion
+    for (const site of allSites) {
+      const location = site.location.toLowerCase();
+      
+      if (location.includes('similan')) {
+        const similanRegion = regionStructure[0];
+        
+        if (location.includes('south')) {
+          similanRegion.subregions![0].diveSites.push(site);
+        } else if (location.includes('central')) {
+          similanRegion.subregions![1].diveSites.push(site);
+        } else if (location.includes('north')) {
+          similanRegion.subregions![2].diveSites.push(site);
+        } else {
+          // Fallback for sites without clear sub-region
+          similanRegion.diveSites.push(site);
+        }
+      } else if (location.includes('surin')) {
+        const surinRegion = regionStructure[1];
+        
+        if (location.includes('north')) {
+          surinRegion.subregions![0].diveSites.push(site);
+        } else if (location.includes('south')) {
+          surinRegion.subregions![1].diveSites.push(site);
+        } else {
+          // Fallback for sites without clear sub-region
+          surinRegion.diveSites.push(site);
+        }
+      } else {
+        // Extended Park - sites that don't belong to main island groups
+        regionStructure[2].diveSites.push(site);
+      }
     }
 
-    // Convert to RegionDiveSites format
-    const regions: RegionDiveSites[] = Array.from(regionMap.entries()).map(([region, sites]) => ({
-      region,
-      description: `Dive sites in ${region}`,
-      diveSites: sites.sort((a, b) => b.rating - a.rating), // Sort by rating
-    }));
+    // Sort dive sites within each region/subregion by rating (highest first)
+    for (const region of regionStructure) {
+      region.diveSites.sort((a, b) => b.rating - a.rating);
+      
+      if (region.subregions) {
+        for (const subregion of region.subregions) {
+          subregion.diveSites.sort((a, b) => b.rating - a.rating);
+        }
+      }
+    }
 
-    return regions.sort((a, b) => a.region.localeCompare(b.region));
+    // Filter out empty regions and subregions
+    return regionStructure.filter(region => {
+      if (region.subregions) {
+        region.subregions = region.subregions.filter(sub => sub.diveSites.length > 0);
+        return region.diveSites.length > 0 || region.subregions.length > 0;
+      }
+      return region.diveSites.length > 0;
+    });
   }
 }
