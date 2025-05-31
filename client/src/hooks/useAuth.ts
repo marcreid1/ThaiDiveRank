@@ -44,9 +44,8 @@ export function useAuthState() {
 
   const logout = () => {
     removeToken();
-    // Clear user data from cache
-    queryClient.setQueryData(["/api/auth/me"], null);
-    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    // Clear all cached data to prevent data leakage between users
+    queryClient.clear();
   };
 
   return {

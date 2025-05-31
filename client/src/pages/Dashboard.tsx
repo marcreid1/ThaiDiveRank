@@ -25,9 +25,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
-    queryKey: ["/api/my-votes"],
+    queryKey: ["/api/my-votes", user?.id],
     queryFn: getQueryFn<MyVotesResponse>({ on401: "returnNull" }),
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !!user?.id,
   });
 
   const { data: diveSites, isLoading: sitesLoading } = useQuery({
