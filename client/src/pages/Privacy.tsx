@@ -141,7 +141,7 @@ export default function Privacy() {
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          For data access, correction requests, or other privacy-related inquiries, please contact us through the Contact page on this website.
+          For data access, correction requests, or other privacy-related inquiries, please contact us at contactdiverank@gmail.com or through the Contact page on this website. Include "Privacy Request" in your email subject line for faster processing.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">7. Children's Privacy</h2>

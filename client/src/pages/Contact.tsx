@@ -54,9 +54,17 @@ export default function Contact() {
         </div>
 
         <div className="text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
             We typically respond within 24-48 hours
           </p>
+          
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">Privacy & Data Requests</h4>
+            <p className="text-xs text-blue-800 dark:text-blue-300">
+              For data access, correction, or deletion requests as outlined in our Privacy Policy, 
+              please include "Privacy Request" in your email subject line for faster processing.
+            </p>
+          </div>
         </div>
       </div>
     </main>
