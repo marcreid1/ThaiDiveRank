@@ -11,6 +11,7 @@ import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Tr
 import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { TooltipHelp } from "@/components/ui/tooltip-help";
 
 interface MyVotesResponse {
   message: string;
@@ -180,7 +181,13 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Votes</p>
+                  <div className="flex items-center">
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Votes</p>
+                    <TooltipHelp 
+                      title="Total Votes"
+                      description="The total number of votes you've cast. This includes all your voting activity, even if you voted on the same dive site pair multiple times."
+                    />
+                  </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalVotes}</p>
                 </div>
                 <VoteIcon className="h-8 w-8 text-ocean-500" />
@@ -192,7 +199,13 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
+                  <div className="flex items-center">
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
+                    <TooltipHelp 
+                      title="Unique Matchups"
+                      description="The number of different dive site pairs you've voted on out of 903 total possible combinations. Each pair only counts once, regardless of how many times you voted on it."
+                    />
+                  </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">
                     {uniqueMatchups}<span className="text-lg text-slate-500">/{totalPossibleMatchups}</span>
                   </p>
@@ -216,7 +229,13 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Points Influenced</p>
+                  <div className="flex items-center">
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Points Influenced</p>
+                    <TooltipHelp 
+                      title="Points Influenced"
+                      description="The total ELO rating points you've moved between dive sites through your votes. Higher numbers mean you've had more impact on the rankings overall."
+                    />
+                  </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalPointsInfluenced}</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-green-500" />
@@ -228,7 +247,13 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
+                  <div className="flex items-center">
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
+                    <TooltipHelp 
+                      title="Average Impact"
+                      description="The average ELO points that change hands with each of your votes. Higher numbers mean you typically vote on matchups between dive sites with very different ratings."
+                    />
+                  </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{averageImpact}</p>
                 </div>
                 <Trophy className="h-8 w-8 text-yellow-500" />
