@@ -79,7 +79,7 @@ export class EloService {
    * Calculate ELO change for a matchup and return update data
    */
   calculateEloUpdate(winnerRating: number, loserRating: number): EloUpdateResult {
-    const pointsChanged = calculateEloChange(winnerRating, loserRating);
+    const pointsChanged = this.calculateEloChange(winnerRating, loserRating);
     
     return {
       winnerNewRating: winnerRating + pointsChanged,

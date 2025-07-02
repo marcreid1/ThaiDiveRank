@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError, z } from "zod";
 import { createRateLimiter } from "./middleware/logging";
-import { requestAnalytics } from "./logger";
+import { requestAnalytics, appLogger } from "./logger";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyJWT, optionalAuth } from "./middleware/auth";
@@ -250,6 +250,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (correctAnswers < 2) {
+        // Log failed password reset attempt for security monitoring
+        appLogger.security(`Failed password reset attempt for user ${userId} - insufficient correct answers: ${correctAnswers}/3`, {
+          userId,
+          ip: req.ip,
+          userAgent: req.get('user-agent'),
+          correctAnswers
+        });
+        
         return res.status(400).json({ 
           message: "Security answers incorrect. At least 2 out of 3 must be correct." 
         });
@@ -260,10 +268,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const success = await storage.resetPassword(userId, hashedPassword);
       
       if (!success) {
+        appLogger.error(`Failed to reset password for user ${userId}`, {
+          userId,
+          ip: req.ip,
+          userAgent: req.get('user-agent')
+        });
         return res.status(500).json({ 
           message: "Failed to reset password" 
         });
       }
+      
+      // Log successful password reset for security monitoring
+      appLogger.security(`Successful password reset for user ${userId}`, {
+        userId,
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        correctAnswers
+      });
       
       res.json({
         message: "Password reset successful. You can now sign in with your new password."

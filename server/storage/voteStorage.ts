@@ -19,18 +19,12 @@ export class VoteStorage implements IVoteStorage {
       // Check for existing vote on this exact pair by this user (prevents race conditions)
       const [id1, id2] = [insertVote.winnerId, insertVote.loserId].sort((a, b) => a - b);
       
-      // Efficient duplicate check: look for any vote by this user on this pair
-      const duplicateCheck = await tx
-        .select({ winnerId: votes.winnerId, loserId: votes.loserId })
-        .from(votes)
-        .where(eq(votes.userId, insertVote.userId));
-
-      // Check if this specific pair has been voted on by this user
-      for (const vote of duplicateCheck) {
-        const [existingId1, existingId2] = [vote.winnerId, vote.loserId].sort((a, b) => a - b);
-        if (existingId1 === id1 && existingId2 === id2) {
-          throw new Error("You have already voted on this matchup");
-        }
+      // Optimized duplicate check using direct pair lookup
+      const pairKey = `${id1}-${id2}`;
+      const hasDuplicate = await eloService.hasUserVotedOnMatchup(insertVote.userId, id1, id2);
+      
+      if (hasDuplicate) {
+        throw new Error("You have already voted on this matchup");
       }
 
       // Get current ratings for ELO calculation

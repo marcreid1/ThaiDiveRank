@@ -1,7 +1,8 @@
 import { diveSites, votes, type DiveSite } from "@shared/schema";
 import { db } from "../db";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import { IMatchupStorage } from "./interfaces";
+import { eloService } from "../services/eloService";
 
 export class MatchupStorage implements IMatchupStorage {
   async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B', userId?: string): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
@@ -87,31 +88,23 @@ export class MatchupStorage implements IMatchupStorage {
     };
   }
 
-  // New user-specific matchup logic
+  // Optimized user-specific matchup logic using cached statistics
   private async getUniqueMatchupForUser(
     allSites: DiveSite[], 
     userId: string, 
     winnerId?: number, 
     winnerSide?: 'A' | 'B'
   ): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
-    // Get user's voting history
-    const votedPairs = await db
-      .select({ winnerId: votes.winnerId, loserId: votes.loserId })
-      .from(votes)
-      .where(eq(votes.userId, userId));
-
-    // Create set of voted pairs (normalized)
-    const userVotedPairs = new Set<string>();
-    votedPairs.forEach(vote => {
-      const [id1, id2] = [vote.winnerId, vote.loserId].sort((a, b) => a - b);
-      userVotedPairs.add(`${id1}-${id2}`);
-    });
-
-    // Check if user has completed all possible matchups
+    // Use efficient single query to get user vote count and check completion
+    const userVoteCount = await eloService.getUserVoteCount(userId);
     const totalPossibleMatchups = (allSites.length * (allSites.length - 1)) / 2;
-    if (userVotedPairs.size >= totalPossibleMatchups) {
+    
+    if (userVoteCount >= totalPossibleMatchups) {
       throw new Error("COMPLETED_ALL_MATCHUPS");
     }
+
+    // Get user's voted pairs using optimized query
+    const userVotedPairs = await this.getUserVotedPairsOptimized(userId);
 
     // If we have a champion, try to find unvoted opponents
     if (winnerId) {
@@ -145,6 +138,22 @@ export class MatchupStorage implements IMatchupStorage {
 
     // Generate completely new matchup from unvoted pairs
     return this.getRandomUnvotedPairForUser(allSites, userVotedPairs);
+  }
+
+  // Optimized method to get user's voted pairs using a single efficient query
+  private async getUserVotedPairsOptimized(userId: string): Promise<Set<string>> {
+    const votedPairs = await db
+      .select({
+        pair: sql<string>`CASE 
+          WHEN ${votes.winnerId} < ${votes.loserId} 
+          THEN ${votes.winnerId} || '-' || ${votes.loserId}
+          ELSE ${votes.loserId} || '-' || ${votes.winnerId}
+        END`
+      })
+      .from(votes)
+      .where(eq(votes.userId, userId));
+
+    return new Set(votedPairs.map(row => row.pair));
   }
 
   private getRandomUnvotedPairForUser(allSites: DiveSite[], userVotedPairs: Set<string>): { diveSiteA: DiveSite, diveSiteB: DiveSite } {

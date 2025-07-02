@@ -174,6 +174,14 @@ export const appLogger = {
 
   http: (message: string, meta?: any) => {
     logger.http(message, { ...meta, timestamp: new Date().toISOString() });
+  },
+
+  security: (message: string, meta?: any) => {
+    logger.warn(message, { 
+      type: 'SECURITY_EVENT',
+      ...meta, 
+      timestamp: new Date().toISOString() 
+    });
   }
 };
 
