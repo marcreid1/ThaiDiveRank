@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2 } from "lucide-react";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +28,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/my-votes", user?.id],
@@ -41,6 +42,28 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  // Account deactivation mutation
+  const deactivateAccountMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/account/deactivate");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account deactivated successfully",
+        description: "Your account has been deactivated. You can reactivate it by signing in again.",
+      });
+      logout();
+      setLocation('/');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to deactivate account",
+        description: error.message || "Please try again or contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Account deletion mutation
   const deleteAccountMutation = useMutation({
     mutationFn: async () => {
@@ -49,7 +72,7 @@ export default function Dashboard() {
     onSuccess: () => {
       toast({
         title: "Account deleted successfully",
-        description: "Your account and personal data have been removed.",
+        description: "Your account and voting history have been permanently removed.",
       });
       logout();
       setLocation('/');
@@ -62,6 +85,11 @@ export default function Dashboard() {
       });
     },
   });
+
+  const handleDeactivateAccount = () => {
+    deactivateAccountMutation.mutate();
+    setDeactivateDialogOpen(false);
+  };
 
   const handleDeleteAccount = () => {
     deleteAccountMutation.mutate();
@@ -361,34 +389,70 @@ export default function Dashboard() {
                 
                 <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
                   <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Account Management</h4>
-                  <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="w-full justify-start">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Account
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete your account? This action cannot be undone. 
-                          Your personal information will be permanently removed, but your voting data 
-                          may be retained in anonymized form to maintain ranking integrity.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={handleDeleteAccount}
-                          disabled={deleteAccountMutation.isPending}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          {deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <div className="space-y-2">
+                    {/* Deactivate Account */}
+                    <AlertDialog open={deactivateDialogOpen} onOpenChange={setDeactivateDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950">
+                          <UserX className="h-4 w-4 mr-2" />
+                          Deactivate Account
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Deactivate Account</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will temporarily deactivate your account. Your voting history will be preserved, 
+                            and you can reactivate your account at any time by simply signing in again.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeactivateAccount}
+                            disabled={deactivateAccountMutation.isPending}
+                            className="bg-orange-600 hover:bg-orange-700"
+                          >
+                            {deactivateAccountMutation.isPending ? "Deactivating..." : "Deactivate Account"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    {/* Delete Account */}
+                    <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="w-full justify-start">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Permanently Delete Account
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Permanently Delete Account</AlertDialogTitle>
+                          <AlertDialogDescription className="space-y-2">
+                            <p>
+                              <strong>This action cannot be undone.</strong> Your account and all voting history 
+                              will be permanently removed from our system.
+                            </p>
+                            <p className="text-sm">
+                              Consider deactivating your account instead if you might want to return later.
+                            </p>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeleteAccount}
+                            disabled={deleteAccountMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            {deleteAccountMutation.isPending ? "Deleting..." : "Permanently Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </div>
             </CardContent>

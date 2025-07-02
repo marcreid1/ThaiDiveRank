@@ -144,6 +144,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Invalid email or password" 
         });
       }
+
+      // If user is deactivated, reactivate them on successful login
+      if (!user.isActive) {
+        await storage.reactivateUser(user.id);
+        console.log(`[ACCOUNT_REACTIVATION] User account reactivated: ${user.email} (ID: ${user.id})`);
+      }
       
       // Generate JWT token using middleware function
       const token = generateJWT({ id: user.id, email: user.email });
@@ -196,6 +202,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Profile retrieval error:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to retrieve profile" 
+      });
+    }
+  });
+
+  // Deactivate user account (requires authentication)
+  app.post("/api/account/deactivate", verifyJWT, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      
+      // Verify user exists
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Deactivate the user account
+      const success = await storage.deactivateUser(userId);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to deactivate account" 
+        });
+      }
+      
+      // Log account deactivation for security
+      console.log(`[ACCOUNT_DEACTIVATION] User account deactivated: ${user.email} (ID: ${userId})`);
+      
+      res.json({
+        message: "Account deactivated successfully"
+      });
+      
+    } catch (error) {
+      console.error("Account deactivation error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to deactivate account" 
       });
     }
   });

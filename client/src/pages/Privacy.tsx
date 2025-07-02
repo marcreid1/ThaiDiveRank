@@ -120,8 +120,12 @@ export default function Privacy() {
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          When you delete your account through the Dashboard's Account Management section, we will immediately remove your personal information but may retain anonymized voting data for ranking integrity.
+          You have two options for account management:
         </p>
+        <ul className="text-slate-700 dark:text-slate-300">
+          <li><strong>Account Deactivation:</strong> Temporarily disables your account while preserving all voting history. You can reactivate by signing in again.</li>
+          <li><strong>Account Deletion:</strong> Permanently removes your account and all voting history from our system.</li>
+        </ul>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">6. Your Rights</h2>
 
@@ -129,7 +133,8 @@ export default function Privacy() {
           You have the following rights regarding your personal data:
         </p>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li><strong>Account Deletion:</strong> Delete your account instantly through the Dashboard's Account Management section</li>
+          <li><strong>Account Deactivation:</strong> Temporarily disable your account through the Dashboard's Account Management section</li>
+          <li><strong>Account Deletion:</strong> Permanently delete your account and all data through the Dashboard's Account Management section</li>
           <li><strong>Data Access:</strong> Request a copy of your personal data</li>
           <li><strong>Data Correction:</strong> Request correction of inaccurate personal information</li>
           <li><strong>Consent Withdrawal:</strong> Withdraw consent (if previously given)</li>

@@ -112,6 +112,11 @@ DiveRank is a full-stack web application that uses the ELO rating system to rank
 ```
 Changelog:
 - July 02, 2025. Initial setup
+- July 02, 2025. Added account deactivation/reactivation system:
+  * Users can now deactivate accounts (preserves voting history)
+  * Accounts auto-reactivate on successful sign-in
+  * Updated Privacy Policy and Terms of Service
+  * Dashboard UI includes both deactivation and deletion options
 ```
 
 ## User Preferences

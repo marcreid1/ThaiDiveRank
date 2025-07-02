@@ -41,6 +41,14 @@ export class DatabaseStorage implements IStorage {
     return this.userStorage.getUserById(id);
   }
 
+  async deactivateUser(id: string): Promise<boolean> {
+    return this.userStorage.deactivateUser(id);
+  }
+
+  async reactivateUser(id: string): Promise<boolean> {
+    return this.userStorage.reactivateUser(id);
+  }
+
   async deleteUser(id: string): Promise<boolean> {
     return this.userStorage.deleteUser(id);
   }

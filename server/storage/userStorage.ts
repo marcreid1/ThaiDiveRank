@@ -19,10 +19,30 @@ export class UserStorage implements IUserStorage {
     return user;
   }
 
+  async deactivateUser(id: string): Promise<boolean> {
+    try {
+      const result = await db.update(users).set({ isActive: false }).where(eq(users.id, id));
+      return result.rowCount !== null && result.rowCount > 0;
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+      return false;
+    }
+  }
+
+  async reactivateUser(id: string): Promise<boolean> {
+    try {
+      const result = await db.update(users).set({ isActive: true }).where(eq(users.id, id));
+      return result.rowCount !== null && result.rowCount > 0;
+    } catch (error) {
+      console.error("Error reactivating user:", error);
+      return false;
+    }
+  }
+
   async deleteUser(id: string): Promise<boolean> {
     try {
-      // First, anonymize the user's votes by setting userId to null
-      await db.update(votes).set({ userId: null }).where(eq(votes.userId, id));
+      // For complete deletion, remove all the user's voting history
+      await db.delete(votes).where(eq(votes.userId, id));
       
       // Then delete the user account
       const result = await db.delete(users).where(eq(users.id, id));
