@@ -5,34 +5,32 @@ import { securityLogger, appLogger } from '../logger';
 
 // Enhanced Security Headers with Helmet.js
 export const securityHeaders = helmet({
-  // Content Security Policy
+  // Content Security Policy - Relaxed for development
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Needed for Vite dev
-      connectSrc: ["'self'", "ws:", "wss:"],
+      connectSrc: ["'self'", "ws:", "wss:", "http:", "https:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
+      childSrc: ["'self'"],
+      workerSrc: ["'self'", "blob:"],
     },
   },
-  // Prevent clickjacking
-  frameguard: { action: 'deny' },
+  // Prevent clickjacking - Allow for development
+  frameguard: { action: 'sameorigin' },
   // Prevent MIME sniffing
   noSniff: true,
   // XSS Protection
   xssFilter: true,
   // Referrer Policy
   referrerPolicy: { policy: 'same-origin' },
-  // HTTP Strict Transport Security (HTTPS only)
-  hsts: {
-    maxAge: 31536000, // 1 year
-    includeSubDomains: true,
-    preload: true
-  },
+  // HTTP Strict Transport Security - Disabled for development
+  hsts: false,
   // Hide X-Powered-By header
   hidePoweredBy: true,
   // DNS Prefetch Control
