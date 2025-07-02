@@ -188,18 +188,13 @@ export default function RankingsTable() {
           </table>
         </div>
         <div className="bg-slate-50 dark:bg-slate-800/50 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
-          <a 
+          <Link 
             href="/rankings" 
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = "/rankings";
-              window.scrollTo(0, 0);
-            }}
             className="text-sm font-medium text-ocean-600 hover:text-ocean-500 dark:text-ocean-400 dark:hover:text-ocean-300"
           >
             View all rankings
             <span aria-hidden="true"> &rarr;</span>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

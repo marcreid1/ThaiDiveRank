@@ -117,6 +117,18 @@ Changelog:
   * Accounts auto-reactivate on successful sign-in
   * Updated Privacy Policy and Terms of Service
   * Dashboard UI includes both deactivation and deletion options
+- July 02, 2025. Fixed critical voting logic issues:
+  * Resolved duplicate matchup bug causing impossible vote counts (Fantasy Reef: 46→41 votes)
+  * Enhanced matchup generation to prevent duplicate head-to-head comparisons
+  * Cleaned up 35 duplicate votes from database
+  * Fixed About page and "View all rankings" buttons that logged out users by replacing anchor tags with Link components
+- July 02, 2025. Added Total Votes column to rankings:
+  * Shows how many times each dive site has been voted on (wins + losses)
+  * Provides insight into voting activity reliability for each site
+  * Updated both main Rankings page and homepage rankings table
+- July 02, 2025. Enhanced About page with ELO explanation:
+  * Added section explaining why sites with fewer votes can rank higher
+  * Clarifies quality vs quantity principle of ELO rating system
 ```
 
 ## User Preferences
