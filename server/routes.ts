@@ -313,6 +313,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create security questions (initial setup)
+  app.post("/api/auth/security-questions", verifyJWT, async (req, res) => {
+    try {
+      const schema = z.object({
+        question1: z.string().min(1),
+        answer1: z.string().min(2).max(100),
+        question2: z.string().min(1),
+        answer2: z.string().min(2).max(100),
+        question3: z.string().min(1),
+        answer3: z.string().min(2).max(100),
+      });
+      
+      const securityData = schema.parse(req.body);
+      
+      const success = await storage.updateSecurityQuestions(req.userId!, securityData);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to save security questions" 
+        });
+      }
+      
+      res.json({
+        message: "Security questions saved successfully"
+      });
+      
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          message: "Invalid input data",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Save security questions error:", error);
+        res.status(500).json({ 
+          message: "Server error" 
+        });
+      }
+    }
+  });
+
   // Update security questions (for existing users)
   app.put("/api/auth/security-questions", verifyJWT, async (req, res) => {
     try {

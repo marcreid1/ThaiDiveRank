@@ -15,7 +15,7 @@ export default function SetupSecurity() {
 
   const updateSecurityMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/auth/security-questions", { securityData: data });
+      const res = await apiRequest("POST", "/api/auth/security-questions", data);
       return await res.json();
     },
     onSuccess: () => {
