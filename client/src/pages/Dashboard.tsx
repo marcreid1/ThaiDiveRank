@@ -275,7 +275,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Voting Activity */}
-          <Card>
+          <Card className="flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-ocean-500" />
@@ -285,9 +285,9 @@ export default function Dashboard() {
                 Your latest votes and their impact on rankings
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col">
               {votesWithSites.length === 0 ? (
-                <div className="text-center py-8">
+                <div className="text-center py-8 flex-1 flex flex-col items-center justify-center">
                   <VoteIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
                     You haven't cast any votes yet
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-4 max-h-[calc(100vh-24rem)] min-h-96 overflow-y-auto">
+                <div className="space-y-4 flex-1 overflow-y-auto">
                   {votesWithSites.slice(0, 8).map((vote) => (
                     <div key={vote.id} className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                       <div className="flex-1 min-w-0">
