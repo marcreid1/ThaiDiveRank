@@ -5,32 +5,34 @@ import { securityLogger, appLogger } from '../logger';
 
 // Enhanced Security Headers with Helmet.js
 export const securityHeaders = helmet({
-  // Content Security Policy - Relaxed for development
+  // Content Security Policy
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      imgSrc: ["'self'", "data:", "https:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Needed for Vite dev
-      connectSrc: ["'self'", "ws:", "wss:", "http:", "https:"],
+      connectSrc: ["'self'", "ws:", "wss:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
-      childSrc: ["'self'"],
-      workerSrc: ["'self'", "blob:"],
     },
   },
-  // Prevent clickjacking - Allow for development
-  frameguard: { action: 'sameorigin' },
+  // Prevent clickjacking
+  frameguard: { action: 'deny' },
   // Prevent MIME sniffing
   noSniff: true,
   // XSS Protection
   xssFilter: true,
   // Referrer Policy
   referrerPolicy: { policy: 'same-origin' },
-  // HTTP Strict Transport Security - Disabled for development
-  hsts: false,
+  // HTTP Strict Transport Security (HTTPS only)
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
   // Hide X-Powered-By header
   hidePoweredBy: true,
   // DNS Prefetch Control
@@ -41,16 +43,40 @@ export const securityHeaders = helmet({
   permittedCrossDomainPolicies: false
 });
 
-// Enhanced CORS Configuration - Permissive for development
+// Enhanced CORS Configuration
 export const corsConfig = cors({
-  origin: true, // Allow all origins for development
-  // origin: (origin, callback) => {
-  //   // Allow requests with no origin (mobile apps, etc.)
-  //   if (!origin) return callback(null, true);
-  //   
-  //   // For development, allow all origins
-  //   callback(null, true);
-  // },
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5000',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:5000',
+      // Replit domains
+      /\.replit\.dev$/,
+      /\.repl\.co$/,
+      /\.replit\.app$/
+    ];
+    
+    // Check if origin is allowed
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      } else {
+        return allowedOrigin.test(origin);
+      }
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      appLogger.error(`CORS blocked origin: ${origin}`, new Error('CORS_BLOCKED'));
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [

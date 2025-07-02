@@ -22,10 +22,13 @@ const app = express();
 // Trust proxy for accurate IP addresses (fixes rate limiting issues)
 app.set('trust proxy', true);
 
+// Enhanced Security Headers with Helmet.js
+app.use(securityHeaders);
+
 // Enhanced CORS Configuration
 app.use(corsConfig);
 
-// Advanced Security Monitoring (keeping rate limiting and input monitoring)
+// Advanced Security Monitoring
 app.use(inputMonitor);
 app.use(advancedRateLimit);
 
