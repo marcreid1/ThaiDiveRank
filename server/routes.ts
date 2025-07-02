@@ -276,6 +276,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reset all votes for a user (requires authentication)
+  app.delete("/api/votes/reset", verifyJWT, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      
+      // Verify user exists
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Get count of votes before deletion for logging
+      const userVotes = await storage.getUserVotes(userId);
+      const voteCount = userVotes.length;
+      
+      // Delete all votes for this user
+      const success = await storage.resetUserVotes(userId);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to reset votes" 
+        });
+      }
+      
+      // Log vote reset for security
+      console.log(`[VOTE_RESET] User reset all votes: ${user.email} (ID: ${userId}) - ${voteCount} votes deleted`);
+      
+      res.json({
+        message: "All votes reset successfully",
+        deletedCount: voteCount
+      });
+      
+    } catch (error) {
+      console.error("Vote reset error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to reset votes" 
+      });
+    }
+  });
+
   // Vote on dive sites (requires authentication)
   app.post("/api/vote", voteLimit, verifyJWT, async (req, res) => {
     try {

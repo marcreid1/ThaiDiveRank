@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX } from "lucide-react";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX, RotateCcw } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,7 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
+  const [resetVotesDialogOpen, setResetVotesDialogOpen] = useState(false);
 
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/my-votes", user?.id],
@@ -89,6 +90,33 @@ export default function Dashboard() {
     },
   });
 
+  // Reset all votes mutation
+  const resetVotesMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", "/api/votes/reset");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Votes reset successfully",
+        description: "All your voting history has been cleared.",
+      });
+      // Clear champion state from localStorage
+      localStorage.removeItem('diverank-champion');
+      // Invalidate all related queries
+      queryClient.invalidateQueries({ queryKey: ["/api/my-votes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to reset votes",
+        description: error.message || "Please try again or contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDeactivateAccount = () => {
     deactivateAccountMutation.mutate();
     setDeactivateDialogOpen(false);
@@ -97,6 +125,11 @@ export default function Dashboard() {
   const handleDeleteAccount = () => {
     deleteAccountMutation.mutate();
     setDeleteDialogOpen(false);
+  };
+
+  const handleResetVotes = () => {
+    resetVotesMutation.mutate();
+    setResetVotesDialogOpen(false);
   };
 
   // Redirect if not authenticated using useEffect to avoid render issues
@@ -200,7 +233,41 @@ export default function Dashboard() {
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                 {((uniqueMatchups / totalPossibleMatchups) * 100).toFixed(1)}% complete
               </p>
-              <Target className="h-8 w-8 text-blue-500 mx-auto" />
+              <div className="flex items-center justify-center gap-3">
+                <Target className="h-8 w-8 text-blue-500" />
+                <AlertDialog open={resetVotesDialogOpen} onOpenChange={setResetVotesDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                      disabled={uniqueMatchups === 0}
+                    >
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      Reset
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Reset All Votes</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete all your voting history ({uniqueMatchups} unique matchups). 
+                        Your account will remain active, but you'll start fresh with voting. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleResetVotes}
+                        className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                        disabled={resetVotesMutation.isPending}
+                      >
+                        {resetVotesMutation.isPending ? "Resetting..." : "Reset All Votes"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </CardContent>
           </Card>
 

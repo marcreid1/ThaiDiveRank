@@ -148,4 +148,15 @@ export class VoteStorage implements IVoteStorage {
 
     return activities;
   }
+
+  async resetUserVotes(userId: string): Promise<boolean> {
+    try {
+      // Delete all votes for the specified user
+      await db.delete(votes).where(eq(votes.userId, userId));
+      return true;
+    } catch (error) {
+      console.error("Error resetting user votes:", error);
+      return false;
+    }
+  }
 }

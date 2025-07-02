@@ -36,9 +36,11 @@ export interface IVoteStorage {
   getUserUniqueMatchups(userId: string): Promise<number>;
   getUserVotedPairs(userId: string): Promise<Set<string>>;
   getRecentActivity(limit?: number): Promise<VoteActivity[]>;
+  resetUserVotes(userId: string): Promise<boolean>;
 }
 
 export interface IStorage extends IUserStorage, IDiveSiteStorage, IMatchupStorage, IVoteStorage {
   getUserUniqueMatchups(userId: string): Promise<number>;
   getUserVotedPairs(userId: string): Promise<Set<string>>;
+  resetUserVotes(userId: string): Promise<boolean>;
 }

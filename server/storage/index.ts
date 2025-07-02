@@ -107,6 +107,10 @@ export class DatabaseStorage implements IStorage {
   async getRecentActivity(limit?: number): Promise<VoteActivity[]> {
     return this.voteStorage.getRecentActivity(limit);
   }
+
+  async resetUserVotes(userId: string): Promise<boolean> {
+    return this.voteStorage.resetUserVotes(userId);
+  }
 }
 
 export const storage = new DatabaseStorage();
