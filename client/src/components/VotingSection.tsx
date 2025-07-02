@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DiveSite } from "@shared/schema";
 import DiveSiteCard from "./DiveSiteCard";
@@ -14,8 +14,25 @@ export default function VotingSection() {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Track the current champion and which side they're on
-  const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(null);
+  // Track the current champion and which side they're on - persist across navigation
+  const [champion, setChampion] = useState<{ diveSite: DiveSite, side: 'A' | 'B' } | null>(() => {
+    // Initialize from localStorage if available
+    try {
+      const saved = localStorage.getItem('diverank-champion');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Save champion to localStorage whenever it changes
+  useEffect(() => {
+    if (champion) {
+      localStorage.setItem('diverank-champion', JSON.stringify(champion));
+    } else {
+      localStorage.removeItem('diverank-champion');
+    }
+  }, [champion]);
 
   // Get matchup data with champion preferences
   const { data: matchup, isLoading, isError, error, refetch } = useQuery<{
