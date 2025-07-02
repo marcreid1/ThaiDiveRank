@@ -297,7 +297,7 @@ export default function Dashboard() {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-4 max-h-[calc(100vh-24rem)] min-h-96 overflow-y-auto">
+                <div className="space-y-4 max-h-[calc(100vh-24rem)] min-h-96 overflow-y-auto pb-4">
                   {votesWithSites.slice(0, 8).map((vote) => (
                     <div key={vote.id} className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                       <div className="flex-1 min-w-0">
