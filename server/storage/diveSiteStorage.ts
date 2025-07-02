@@ -2,6 +2,7 @@ import { diveSites, votes, type DiveSite, type InsertDiveSite, type DiveSiteRank
 import { db } from "../db";
 import { eq, desc, sql } from "drizzle-orm";
 import { IDiveSiteStorage, RegionDiveSites } from "./interfaces";
+import { eloService } from "../services/eloService";
 
 export class DiveSiteStorage implements IDiveSiteStorage {
   async getAllDiveSites(): Promise<DiveSite[]> {
@@ -29,15 +30,19 @@ export class DiveSiteStorage implements IDiveSiteStorage {
 
   async getDiveSiteRankings(): Promise<{ rankings: DiveSiteRanking[], lastUpdated: string }> {
     const allSites = await this.getAllDiveSites();
+    const statsMap = await eloService.calculateDiveSiteStats();
     
     // Sort by rating (highest first) and assign ranks
     const sortedSites = allSites.sort((a, b) => b.rating - a.rating);
     
-    const rankings: DiveSiteRanking[] = sortedSites.map((site, index) => ({
-      ...site,
-      totalVotes: (site.wins ?? 0) + (site.losses ?? 0), // Total number of votes (wins + losses)
-      rankChange: (site.previousRank ?? 0) > 0 ? (site.previousRank ?? 0) - (index + 1) : 0,
-    }));
+    const rankings: DiveSiteRanking[] = sortedSites.map((site, index) => {
+      const stats = statsMap.get(site.id);
+      return {
+        ...site,
+        totalVotes: stats?.totalVotes ?? 0,
+        rankChange: (site.previousRank ?? 0) > 0 ? (site.previousRank ?? 0) - (index + 1) : 0,
+      };
+    });
 
     // Update current ranks in database
     for (let i = 0; i < rankings.length; i++) {

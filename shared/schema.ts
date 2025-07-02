@@ -35,8 +35,6 @@ export const diveSites = pgTable("dive_sites", {
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
   rating: real("rating").notNull().default(1500),
-  wins: integer("wins").notNull().default(0),
-  losses: integer("losses").notNull().default(0),
   depthMin: integer("depth_min").default(0),
   depthMax: integer("depth_max").default(0),
   difficulty: text("difficulty").default("Intermediate"),
@@ -48,8 +46,6 @@ export const diveSites = pgTable("dive_sites", {
 export const insertDiveSiteSchema = createInsertSchema(diveSites).omit({
   id: true,
   rating: true,
-  wins: true,
-  losses: true,
   depthMin: true,
   depthMax: true,
   difficulty: true,

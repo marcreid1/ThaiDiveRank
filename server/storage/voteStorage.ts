@@ -1,7 +1,7 @@
 import { votes, diveSites, users, type Vote, type InsertVote, type VoteActivity } from "@shared/schema";
 import { db } from "../db";
 import { eq, desc, sql } from "drizzle-orm";
-import { calculateEloChange } from "../utils/elo";
+import { eloService } from "../services/eloService";
 import { IVoteStorage } from "./interfaces";
 
 // Extended vote type that includes userId for storage operations
@@ -44,14 +44,14 @@ export class VoteStorage implements IVoteStorage {
       console.log(`[STORAGE] Winner: ${winner.name} (Rating: ${winner.rating})`);
       console.log(`[STORAGE] Loser: ${loser.name} (Rating: ${loser.rating})`);
     
-      // Calculate ELO change
-      const eloChange = calculateEloChange(winner.rating, loser.rating);
-      console.log(`[STORAGE] Calculated ELO change: ${eloChange} points`);
+      // Calculate ELO change using service
+      const eloUpdate = eloService.calculateEloUpdate(winner.rating, loser.rating);
+      console.log(`[STORAGE] Calculated ELO change: ${eloUpdate.pointsChanged} points`);
 
       const insertData = {
         winnerId: insertVote.winnerId,
         loserId: insertVote.loserId,
-        pointsChanged: eloChange,
+        pointsChanged: eloUpdate.pointsChanged,
         userId: insertVote.userId,
       };
       
@@ -67,27 +67,10 @@ export class VoteStorage implements IVoteStorage {
       console.log(`[STORAGE] Successfully inserted vote with ID ${vote.id}`);
       console.log(`[STORAGE] Inserted vote userId: ${vote.userId}`);
 
-      // Update winner rating (increase)
-      const newWinnerRating = winner.rating + eloChange;
-      await tx
-        .update(diveSites)
-        .set({ 
-          rating: newWinnerRating,
-          wins: winner.wins + 1
-        })
-        .where(eq(diveSites.id, insertVote.winnerId));
+      // Apply ELO rating updates using service
+      await eloService.applyEloUpdate(tx, insertVote.winnerId, insertVote.loserId, eloUpdate);
 
-      // Update loser rating (decrease)  
-      const newLoserRating = loser.rating - eloChange;
-      await tx
-        .update(diveSites)
-        .set({ 
-          rating: newLoserRating,
-          losses: loser.losses + 1
-        })
-        .where(eq(diveSites.id, insertVote.loserId));
-
-      console.log(`[STORAGE] Updated ratings - Winner: ${newWinnerRating}, Loser: ${newLoserRating}`);
+      console.log(`[STORAGE] Updated ratings - Winner: ${eloUpdate.winnerNewRating}, Loser: ${eloUpdate.loserNewRating}`);
       
       return vote;
     });
@@ -151,7 +134,7 @@ export class VoteStorage implements IVoteStorage {
     for (const vote of recentVotes) {
       const [winner] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.winnerId));
       const [loser] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.loserId));
-      const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, vote.userId));
+      const [user] = await db.select({ email: users.email }).from(users).where(sql`${users.id} = ${vote.userId}`);
       
       if (winner && loser && user) {
         // Extract username from email (part before @)

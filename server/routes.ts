@@ -236,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify at least 2 out of 3 security answers
-      const { verifySecurityAnswer } = await import("../utils/security");
+      const { verifySecurityAnswer } = await import("./utils/security");
       let correctAnswers = 0;
       
       if (user.securityAnswer1 && await verifySecurityAnswer(answers[0], user.securityAnswer1)) {
