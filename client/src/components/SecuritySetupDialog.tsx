@@ -18,7 +18,19 @@ export default function SecuritySetupDialog({ open, onComplete }: SecuritySetupD
   const updateSecurityMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/auth/security-questions", data);
-      return await res.json();
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+      const text = await res.text();
+      if (!text) {
+        return { message: "Success" };
+      }
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', text);
+        throw new Error('Invalid server response');
+      }
     },
     onSuccess: () => {
       setError(null);

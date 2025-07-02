@@ -140,6 +140,14 @@ Changelog:
   * Performance optimization with efficient database queries and in-memory caching
   * Anonymous users continue using legacy global duplicate prevention
   * Authenticated users get guaranteed unique matchups throughout their journey
+- July 02, 2025. Implemented comprehensive security questions management:
+  * Added mandatory SecuritySetupDialog that appears after user signup
+  * Created SecurityQuestionsDialog for viewing/editing existing security questions
+  * Added "View Security Questions" button in Dashboard Account Management section
+  * Implemented GET/POST/PUT endpoints for security questions CRUD operations
+  * Security answers properly hidden for security (not displayed in plain text)
+  * Fixed JSON parsing issues with improved error handling in API responses
+  * Both new and existing users can manage their security questions securely
 ```
 
 ## User Preferences
