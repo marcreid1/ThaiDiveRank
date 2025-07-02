@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX, RotateCcw } from "lucide-react";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX, RotateCcw, Shield } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -464,6 +464,21 @@ export default function Dashboard() {
                       Browse Dive Sites
                     </Link>
                   </Button>
+                </div>
+                
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
+                  <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Security</h4>
+                  <div className="space-y-2 mb-4">
+                    <Button asChild variant="outline" className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950">
+                      <Link href="/setup-security">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Set Up Security Questions
+                      </Link>
+                    </Button>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 px-2">
+                      Enable password recovery by setting up 3 security questions
+                    </p>
+                  </div>
                 </div>
                 
                 <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
