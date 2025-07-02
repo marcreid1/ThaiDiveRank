@@ -62,7 +62,7 @@ export default function SecurityQuestions({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-white">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
