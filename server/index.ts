@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { httpLogger, securityMonitor, spikeDetection, errorLogger } from "./middleware/logging";
 import { appLogger } from "./logger";
+import { securityHeaders, corsConfig, inputMonitor, advancedRateLimit } from "./config/security";
 
 // Ensure JWT_SECRET is set for authentication
 if (!process.env.JWT_SECRET) {
@@ -21,59 +22,15 @@ const app = express();
 // Trust proxy for accurate IP addresses (fixes rate limiting issues)
 app.set('trust proxy', true);
 
-// Security headers middleware
-app.use((req, res, next) => {
-  // Prevent clickjacking
-  res.setHeader('X-Frame-Options', 'DENY');
-  
-  // Prevent MIME type sniffing
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-  // Enable XSS protection
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  
-  // Referrer policy
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
-  // Content Security Policy
-  res.setHeader('Content-Security-Policy', 
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-    "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: blob:; " +
-    "font-src 'self'; " +
-    "connect-src 'self'; " +
-    "frame-ancestors 'none';"
-  );
-  
-  next();
-});
+// Enhanced Security Headers with Helmet.js
+app.use(securityHeaders);
 
-// CORS configuration
-app.use((req, res, next) => {
-  const origin = req.get('origin');
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5000'
-  ];
-  
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  
-  next();
-});
+// Enhanced CORS Configuration
+app.use(corsConfig);
+
+// Advanced Security Monitoring
+app.use(inputMonitor);
+app.use(advancedRateLimit);
 
 // Security and logging middleware
 app.use(securityMonitor);

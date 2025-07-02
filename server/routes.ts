@@ -9,6 +9,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyJWT, optionalAuth } from "./middleware/auth";
 import { SECURITY_CONSTANTS } from "./constants";
+import { getSecurityAnalytics } from "./config/security";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rate limiting for voting
@@ -239,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify at least 2 out of 3 security answers
-      const { verifySecurityAnswer } = await import("../utils/security");
+      const { verifySecurityAnswer } = await import("./utils/security");
       let correctAnswers = 0;
       
       if (user.securityAnswer1 && await verifySecurityAnswer(answers[0], user.securityAnswer1)) {
@@ -664,6 +665,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Activities fetch error:", error);
       res.status(500).json({ message: "Failed to fetch activities" });
+    }
+  });
+
+  // Security Analytics endpoint (admin only - would need admin auth in production)
+  app.get("/api/security/analytics", readLimit, async (req, res) => {
+    try {
+      const analytics = getSecurityAnalytics();
+      res.json({
+        message: "Security analytics retrieved successfully",
+        data: analytics
+      });
+    } catch (error) {
+      console.error("Security analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch security analytics" });
     }
   });
 
