@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { securityLogger } from '../logger';
+import { SECURITY_CONSTANTS } from '../constants';
 import jwt from 'jsonwebtoken';
 
 // Extend Request interface to include user info
@@ -52,7 +53,13 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
       console.error('[AUTH] JWT_SECRET environment variable not set');
       return res.status(500).json({ message: "Server configuration error" });
     }
-    const decoded = jwt.verify(token, jwtSecret) as { userId: string; email: string };
+    
+    // Enhanced JWT verification with issuer and audience validation
+    const decoded = jwt.verify(token, jwtSecret, {
+      issuer: SECURITY_CONSTANTS.JWT_ISSUER,
+      audience: SECURITY_CONSTANTS.JWT_AUDIENCE,
+      algorithms: ['HS256']
+    }) as { userId: string; email: string };
     
     // Validate decoded payload
     if (!decoded.userId || !decoded.email) {

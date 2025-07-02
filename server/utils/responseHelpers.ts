@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
+import { SECURITY_CONSTANTS } from "../constants";
 
 interface UserResponse {
   id: string;
@@ -13,7 +14,17 @@ export function generateJWT(payload: { id: string; email: string }): string {
     throw new Error("JWT_SECRET environment variable is required");
   }
   
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+  // Enhanced JWT generation with security parameters
+  return jwt.sign(
+    { userId: payload.id, email: payload.email }, // Use userId for consistency
+    process.env.JWT_SECRET, 
+    { 
+      expiresIn: SECURITY_CONSTANTS.JWT_EXPIRES_IN,
+      issuer: SECURITY_CONSTANTS.JWT_ISSUER,
+      audience: SECURITY_CONSTANTS.JWT_AUDIENCE,
+      algorithm: 'HS256'
+    }
+  );
 }
 
 export function sendAuthSuccess(res: Response, user: UserResponse, message: string = "Success"): void {
