@@ -120,22 +120,23 @@ export default function Privacy() {
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          When you delete your account, we will remove your personal information but may retain anonymized voting data for ranking integrity.
+          When you delete your account through the Dashboard's Account Management section, we will immediately remove your personal information but may retain anonymized voting data for ranking integrity.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">6. Your Rights</h2>
 
         <p className="text-slate-700 dark:text-slate-300">
-          Depending on your location, you may have the right to:
+          You have the following rights regarding your personal data:
         </p>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li>Access or request a copy of your personal data</li>
-          <li>Request deletion or correction of your data</li>
-          <li>Withdraw consent (if previously given)</li>
+          <li><strong>Account Deletion:</strong> Delete your account instantly through the Dashboard's Account Management section</li>
+          <li><strong>Data Access:</strong> Request a copy of your personal data</li>
+          <li><strong>Data Correction:</strong> Request correction of inaccurate personal information</li>
+          <li><strong>Consent Withdrawal:</strong> Withdraw consent (if previously given)</li>
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          To make a request, please contact us through the Contact page on this website.
+          For data access, correction requests, or other privacy-related inquiries, please contact us through the Contact page on this website.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">7. Children's Privacy</h2>

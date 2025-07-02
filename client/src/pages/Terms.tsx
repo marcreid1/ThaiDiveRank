@@ -74,7 +74,7 @@ export default function Terms() {
 
         <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Account Termination:</h3>
         <p className="text-slate-700 dark:text-slate-300">
-          Users may delete their accounts at any time. We reserve the right to suspend or terminate accounts for violations of these terms. Upon account deletion, personal information will be removed, but anonymized voting data may be retained for ranking integrity as described in our Privacy Policy.
+          Users may delete their accounts at any time through the Account Management section of their Dashboard. Account deletion is immediate and cannot be undone. We reserve the right to suspend or terminate accounts for violations of these terms. Upon account deletion, personal information will be removed, but anonymized voting data may be retained for ranking integrity as described in our Privacy Policy.
         </p>
 
         <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Data and Authentication:</h3>

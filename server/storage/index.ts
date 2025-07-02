@@ -41,6 +41,10 @@ export class DatabaseStorage implements IStorage {
     return this.userStorage.getUserById(id);
   }
 
+  async deleteUser(id: string): Promise<boolean> {
+    return this.userStorage.deleteUser(id);
+  }
+
   // Dive site methods
   async getAllDiveSites(): Promise<DiveSite[]> {
     return this.diveSiteStorage.getAllDiveSites();

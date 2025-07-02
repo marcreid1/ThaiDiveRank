@@ -200,6 +200,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete user account (requires authentication)
+  app.delete("/api/account", verifyJWT, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      
+      // Verify user exists
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Delete the user account
+      const success = await storage.deleteUser(userId);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to delete account" 
+        });
+      }
+      
+      // Log account deletion for security
+      console.log(`[ACCOUNT_DELETION] User account deleted: ${user.email} (ID: ${userId})`);
+      
+      res.json({
+        message: "Account deleted successfully"
+      });
+      
+    } catch (error) {
+      console.error("Account deletion error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to delete account" 
+      });
+    }
+  });
+
   // Vote on dive sites (requires authentication)
   app.post("/api/vote", voteLimit, verifyJWT, async (req, res) => {
     try {

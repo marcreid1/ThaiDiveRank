@@ -18,4 +18,14 @@ export class UserStorage implements IUserStorage {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
+
+  async deleteUser(id: string): Promise<boolean> {
+    try {
+      const result = await db.delete(users).where(eq(users.id, id));
+      return result.rowCount !== null && result.rowCount > 0;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return false;
+    }
+  }
 }

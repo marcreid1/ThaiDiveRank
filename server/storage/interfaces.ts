@@ -11,6 +11,7 @@ export interface IUserStorage {
   createUser(user: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: string): Promise<User | undefined>;
+  deleteUser(id: string): Promise<boolean>;
 }
 
 export interface IDiveSiteStorage {

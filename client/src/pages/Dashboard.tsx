@@ -1,14 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getQueryFn, apiRequest } from "@/lib/queryClient";
 import { Vote, DiveSite } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target } from "lucide-react";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface MyVotesResponse {
   message: string;
@@ -21,8 +23,11 @@ interface VoteWithSites extends Vote {
 }
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/my-votes", user?.id],
@@ -35,6 +40,33 @@ export default function Dashboard() {
     queryFn: getQueryFn<DiveSite[]>({ on401: "returnNull" }),
     enabled: isAuthenticated,
   });
+
+  // Account deletion mutation
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("DELETE", "/api/account");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account deleted successfully",
+        description: "Your account and personal data have been removed.",
+      });
+      logout();
+      setLocation('/');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to delete account",
+        description: error.message || "Please try again or contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate();
+    setDeleteDialogOpen(false);
+  };
 
   // Redirect if not authenticated using useEffect to avoid render issues
   useEffect(() => {
@@ -325,6 +357,38 @@ export default function Dashboard() {
                       Browse Dive Sites
                     </Link>
                   </Button>
+                </div>
+                
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
+                  <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Account Management</h4>
+                  <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="w-full justify-start">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete your account? This action cannot be undone. 
+                          Your personal information will be permanently removed, but your voting data 
+                          may be retained in anonymized form to maintain ranking integrity.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          disabled={deleteAccountMutation.isPending}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          {deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </CardContent>
