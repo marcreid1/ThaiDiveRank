@@ -13,6 +13,7 @@ import { useLocation, Link } from "wouter";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { setToken } from "@/lib/auth";
+import SecuritySetupDialog from "@/components/SecuritySetupDialog";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -37,6 +38,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSecurityDialog, setShowSecurityDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { login } = useAuth();
@@ -66,6 +68,13 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
       login({
         ...result.user,
         hashedPassword: '', // Not needed for client-side user object
+        isActive: true, // New accounts are active by default
+        securityQuestion1: null,
+        securityAnswer1: null,
+        securityQuestion2: null,
+        securityAnswer2: null,
+        securityQuestion3: null,
+        securityAnswer3: null,
         createdAt: new Date(result.user.createdAt)
       });
       
@@ -74,17 +83,13 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
       
       toast({
         title: "Account created successfully!",
-        description: "Welcome to DiveRank. You can now vote on dive sites.",
+        description: "Please set up your security questions to secure your account.",
       });
 
       reset();
       
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        // Redirect to home page
-        setLocation("/");
-      }
+      // Show security dialog instead of finishing signup
+      setShowSecurityDialog(true);
     },
     onError: (error: any) => {
       toast({
@@ -99,7 +104,24 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
     signUpMutation.mutate(data);
   };
 
+  const handleSecuritySetupComplete = () => {
+    setShowSecurityDialog(false);
+    
+    toast({
+      title: "Security questions saved!",
+      description: "Your account is now secure. Welcome to DiveRank!",
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      // Redirect to home page
+      setLocation("/");
+    }
+  };
+
   return (
+    <>
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
@@ -218,5 +240,11 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
         </div>
       </CardContent>
     </Card>
+    
+    <SecuritySetupDialog 
+      open={showSecurityDialog} 
+      onComplete={handleSecuritySetupComplete}
+    />
+    </>
   );
 }
