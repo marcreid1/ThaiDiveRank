@@ -35,6 +35,7 @@ export class DiveSiteStorage implements IDiveSiteStorage {
     
     const rankings: DiveSiteRanking[] = sortedSites.map((site, index) => ({
       ...site,
+      totalVotes: (site.wins ?? 0) + (site.losses ?? 0), // Total number of votes (wins + losses)
       rankChange: (site.previousRank ?? 0) > 0 ? (site.previousRank ?? 0) - (index + 1) : 0,
     }));
 

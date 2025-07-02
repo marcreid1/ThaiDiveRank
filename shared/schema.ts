@@ -76,6 +76,7 @@ export type Vote = typeof votes.$inferSelect;
 // Additional types for the API responses
 export interface DiveSiteRanking extends DiveSite {
   rankChange: number;
+  totalVotes: number;
 }
 
 export interface VoteActivity {
