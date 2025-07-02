@@ -190,7 +190,7 @@ export default function Dashboard() {
 
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">
@@ -199,6 +199,16 @@ export default function Dashboard() {
                 </div>
                 <Target className="h-8 w-8 text-blue-500" />
               </div>
+              {/* Progress bar */}
+              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${(uniqueMatchups / totalPossibleMatchups) * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {((uniqueMatchups / totalPossibleMatchups) * 100).toFixed(1)}% complete
+              </p>
             </CardContent>
           </Card>
 

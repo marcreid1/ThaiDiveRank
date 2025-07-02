@@ -79,8 +79,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Matchup methods
-  async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
-    return this.matchupStorage.getRandomMatchup(winnerId, winnerSide);
+  async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B', userId?: string): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+    return this.matchupStorage.getRandomMatchup(winnerId, winnerSide, userId);
   }
 
   // Vote methods
@@ -98,6 +98,10 @@ export class DatabaseStorage implements IStorage {
 
   async getUserUniqueMatchups(userId: string): Promise<number> {
     return this.voteStorage.getUserUniqueMatchups(userId);
+  }
+
+  async getUserVotedPairs(userId: string): Promise<Set<string>> {
+    return this.voteStorage.getUserVotedPairs(userId);
   }
 
   async getRecentActivity(limit?: number): Promise<VoteActivity[]> {

@@ -26,7 +26,7 @@ export interface IDiveSiteStorage {
 }
 
 export interface IMatchupStorage {
-  getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
+  getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B', userId?: string): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }>;
 }
 
 export interface IVoteStorage {
@@ -34,9 +34,11 @@ export interface IVoteStorage {
   getVotes(limit?: number): Promise<Vote[]>;
   getUserVotes(userId: string): Promise<Vote[]>;
   getUserUniqueMatchups(userId: string): Promise<number>;
+  getUserVotedPairs(userId: string): Promise<Set<string>>;
   getRecentActivity(limit?: number): Promise<VoteActivity[]>;
 }
 
 export interface IStorage extends IUserStorage, IDiveSiteStorage, IMatchupStorage, IVoteStorage {
   getUserUniqueMatchups(userId: string): Promise<number>;
+  getUserVotedPairs(userId: string): Promise<Set<string>>;
 }

@@ -7,7 +7,7 @@ import { createRateLimiter } from "./middleware/logging";
 import { requestAnalytics } from "./logger";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { verifyJWT } from "./middleware/auth";
+import { verifyJWT, optionalAuth } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rate limiting for voting
@@ -372,15 +372,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get random matchup for voting
-  app.get("/api/matchup", readLimit, async (req, res) => {
+  app.get("/api/matchup", readLimit, optionalAuth, async (req, res) => {
     try {
       const winnerId = req.query.winnerId ? Number(req.query.winnerId) : undefined;
       const winnerSide = req.query.winnerSide as 'A' | 'B' | undefined;
+      const userId = req.userId; // Will be undefined for anonymous users
       
-      const matchup = await storage.getRandomMatchup(winnerId, winnerSide);
+      const matchup = await storage.getRandomMatchup(winnerId, winnerSide, userId);
       res.json(matchup);
     } catch (error) {
       console.error("Matchup fetch error:", error);
+      
+      // Handle completion scenario gracefully
+      if (error instanceof Error && error.message === "COMPLETED_ALL_MATCHUPS") {
+        res.json({ 
+          completed: true, 
+          message: "Congratulations! You've voted on all possible dive site matchups!",
+          totalMatchups: 903
+        });
+        return;
+      }
+      
       res.status(500).json({ message: "Failed to fetch matchup" });
     }
   });

@@ -19,8 +19,11 @@ export default function VotingSection() {
 
   // Get matchup data with champion preferences
   const { data: matchup, isLoading, isError, error, refetch } = useQuery<{
-    diveSiteA: DiveSite;
-    diveSiteB: DiveSite;
+    diveSiteA?: DiveSite;
+    diveSiteB?: DiveSite;
+    completed?: boolean;
+    message?: string;
+    totalMatchups?: number;
   }>({
     queryKey: ["/api/matchup", champion?.diveSite.id, champion?.side],
     queryFn: async () => {
@@ -186,7 +189,59 @@ export default function VotingSection() {
     );
   }
 
-  const { diveSiteA, diveSiteB } = matchup!;
+  // Handle completion scenario
+  if (matchup?.completed) {
+    return (
+      <div className="mb-12">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
+          <div className="p-6 text-center">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Congratulations!
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
+              {matchup.message}
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+              You've completed all {matchup.totalMatchups} possible unique matchups!
+            </p>
+            <button 
+              onClick={() => {
+                setChampion(null);
+                queryClient.invalidateQueries({ queryKey: ["/api/matchup"] });
+              }}
+              className="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
+            >
+              View Final Rankings
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure we have valid dive sites before rendering
+  if (!matchup?.diveSiteA || !matchup?.diveSiteB) {
+    return (
+      <div className="mb-12">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
+          <div className="p-6 text-center">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+              No matchup available
+            </h2>
+            <button 
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/matchup"] })}
+              className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { diveSiteA, diveSiteB } = matchup;
 
   return (
     <div className="mb-12">

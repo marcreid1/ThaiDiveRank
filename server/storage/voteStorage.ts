@@ -88,6 +88,11 @@ export class VoteStorage implements IVoteStorage {
   }
 
   async getUserUniqueMatchups(userId: string): Promise<number> {
+    const votedPairs = await this.getUserVotedPairs(userId);
+    return votedPairs.size;
+  }
+
+  async getUserVotedPairs(userId: string): Promise<Set<string>> {
     const userVotes = await db
       .select({ winnerId: votes.winnerId, loserId: votes.loserId })
       .from(votes)
@@ -101,7 +106,7 @@ export class VoteStorage implements IVoteStorage {
       uniqueMatchups.add(`${id1}-${id2}`);
     });
 
-    return uniqueMatchups.size;
+    return uniqueMatchups;
   }
 
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {

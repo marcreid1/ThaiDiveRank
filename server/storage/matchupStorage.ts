@@ -4,37 +4,20 @@ import { eq, or } from "drizzle-orm";
 import { IMatchupStorage } from "./interfaces";
 
 export class MatchupStorage implements IMatchupStorage {
-  async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B'): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+  async getRandomMatchup(winnerId?: number, winnerSide?: 'A' | 'B', userId?: string): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
     const allSites = await db.select().from(diveSites).orderBy(diveSites.name);
     
     if (allSites.length < 2) {
       throw new Error("Not enough dive sites for matchup");
     }
 
-    // If we have a winner from previous round, try to find unfaced opponents
-    if (winnerId) {
-      const unfacedOpponents = await this.getUnfacedOpponents(winnerId, allSites);
-      
-      if (unfacedOpponents.length > 0) {
-        // Champion vs unfaced opponent
-        const champion = allSites.find(site => site.id === winnerId);
-        if (!champion) {
-          throw new Error("Champion not found");
-        }
-        
-        const randomOpponent = unfacedOpponents[Math.floor(Math.random() * unfacedOpponents.length)];
-        
-        // Respect the side preference
-        if (winnerSide === 'A') {
-          return { diveSiteA: champion, diveSiteB: randomOpponent };
-        } else {
-          return { diveSiteA: randomOpponent, diveSiteB: champion };
-        }
-      }
+    // If user is authenticated, ensure no duplicate matchups across their entire history
+    if (userId) {
+      return this.getUniqueMatchupForUser(allSites, userId, winnerId, winnerSide);
     }
 
-    // Fallback: Random matchup that avoids duplicates
-    return await this.getRandomUniqueMatchup(allSites);
+    // Anonymous user - use legacy global duplicate prevention
+    return this.getLegacyMatchup(allSites, winnerId, winnerSide);
   }
 
   // Helper method to find opponents a champion hasn't faced
@@ -102,5 +85,124 @@ export class MatchupStorage implements IMatchupStorage {
       diveSiteA: shuffled[0],
       diveSiteB: shuffled[1],
     };
+  }
+
+  // New user-specific matchup logic
+  private async getUniqueMatchupForUser(
+    allSites: DiveSite[], 
+    userId: string, 
+    winnerId?: number, 
+    winnerSide?: 'A' | 'B'
+  ): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+    // Get user's voting history
+    const votedPairs = await db
+      .select({ winnerId: votes.winnerId, loserId: votes.loserId })
+      .from(votes)
+      .where(eq(votes.userId, userId));
+
+    // Create set of voted pairs (normalized)
+    const userVotedPairs = new Set<string>();
+    votedPairs.forEach(vote => {
+      const [id1, id2] = [vote.winnerId, vote.loserId].sort((a, b) => a - b);
+      userVotedPairs.add(`${id1}-${id2}`);
+    });
+
+    // Check if user has completed all possible matchups
+    const totalPossibleMatchups = (allSites.length * (allSites.length - 1)) / 2;
+    if (userVotedPairs.size >= totalPossibleMatchups) {
+      throw new Error("COMPLETED_ALL_MATCHUPS");
+    }
+
+    // If we have a champion, try to find unvoted opponents
+    if (winnerId) {
+      const champion = allSites.find(site => site.id === winnerId);
+      if (!champion) {
+        throw new Error("Champion dive site not found");
+      }
+
+      const availableOpponents = allSites.filter(site => {
+        if (site.id === winnerId) return false;
+        
+        // Check if this pair has been voted on by this user
+        const [id1, id2] = [winnerId, site.id].sort((a, b) => a - b);
+        const pairKey = `${id1}-${id2}`;
+        return !userVotedPairs.has(pairKey);
+      });
+
+      if (availableOpponents.length > 0) {
+        const randomOpponent = availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
+        
+        // Maintain champion position based on winnerSide
+        if (winnerSide === 'A') {
+          return { diveSiteA: champion, diveSiteB: randomOpponent };
+        } else {
+          return { diveSiteA: randomOpponent, diveSiteB: champion };
+        }
+      }
+      
+      // Champion has no available opponents, break champion streak and find new pair
+    }
+
+    // Generate completely new matchup from unvoted pairs
+    return this.getRandomUnvotedPairForUser(allSites, userVotedPairs);
+  }
+
+  private getRandomUnvotedPairForUser(allSites: DiveSite[], userVotedPairs: Set<string>): { diveSiteA: DiveSite, diveSiteB: DiveSite } {
+    const availablePairs: { diveSiteA: DiveSite, diveSiteB: DiveSite }[] = [];
+    
+    // Generate all possible pairs that haven't been voted on by this user
+    for (let i = 0; i < allSites.length; i++) {
+      for (let j = i + 1; j < allSites.length; j++) {
+        const site1 = allSites[i];
+        const site2 = allSites[j];
+        
+        const [id1, id2] = [site1.id, site2.id].sort((a, b) => a - b);
+        const pairKey = `${id1}-${id2}`;
+        
+        if (!userVotedPairs.has(pairKey)) {
+          availablePairs.push({ diveSiteA: site1, diveSiteB: site2 });
+        }
+      }
+    }
+
+    if (availablePairs.length === 0) {
+      throw new Error("COMPLETED_ALL_MATCHUPS");
+    }
+
+    // Return random unvoted pair
+    const randomIndex = Math.floor(Math.random() * availablePairs.length);
+    return availablePairs[randomIndex];
+  }
+
+  // Legacy matchup logic for anonymous users
+  private async getLegacyMatchup(
+    allSites: DiveSite[], 
+    winnerId?: number, 
+    winnerSide?: 'A' | 'B'
+  ): Promise<{ diveSiteA: DiveSite, diveSiteB: DiveSite }> {
+    // If we have a winner from previous round, try to find unfaced opponents
+    if (winnerId) {
+      const unfacedOpponents = await this.getUnfacedOpponents(winnerId, allSites);
+      
+      if (unfacedOpponents.length > 0) {
+        // Champion vs unfaced opponent
+        const champion = allSites.find(site => site.id === winnerId);
+        if (!champion) {
+          throw new Error("Champion not found");
+        }
+        
+        const randomOpponent = unfacedOpponents[Math.floor(Math.random() * unfacedOpponents.length)];
+        
+        // Respect the side preference
+        if (winnerSide === 'A') {
+          return { diveSiteA: champion, diveSiteB: randomOpponent };
+        } else {
+          return { diveSiteA: randomOpponent, diveSiteB: champion };
+        }
+      }
+    }
+
+    // Fallback: Random matchup that avoids global duplicates
+    return await this.getRandomUniqueMatchup(allSites);
   }
 }

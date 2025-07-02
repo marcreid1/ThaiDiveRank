@@ -129,6 +129,17 @@ Changelog:
 - July 02, 2025. Enhanced About page with ELO explanation:
   * Added section explaining why sites with fewer votes can rank higher
   * Clarifies quality vs quantity principle of ELO rating system
+- July 02, 2025. Implemented comprehensive duplicate prevention system:
+  * MAJOR: Complete elimination of duplicate matchups across user's entire voting history
+  * User-specific voting history tracking to ensure true unique matchups
+  * Enhanced matchup generation with bidirectional duplicate checks
+  * Graceful completion handling when users finish all 903 possible matchups
+  * Added unique matchups counter (X/903) with progress bar on dashboard
+  * Champion system now respects user's voting history for opponent selection
+  * Automatic champion retirement when no unvoted opponents available
+  * Performance optimization with efficient database queries and in-memory caching
+  * Anonymous users continue using legacy global duplicate prevention
+  * Authenticated users get guaranteed unique matchups throughout their journey
 ```
 
 ## User Preferences
