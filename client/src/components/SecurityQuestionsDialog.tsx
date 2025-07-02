@@ -198,8 +198,8 @@ export function SecurityQuestionsDialog({ open, onOpenChange }: SecurityQuestion
                             <p className="font-medium text-sm text-slate-600 dark:text-slate-300">
                               Your Answer:
                             </p>
-                            <p className="text-slate-900 dark:text-white font-mono bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded">
-                              {securityData.answers[index]}
+                            <p className="text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded italic">
+                              [Hidden for security - use "Edit Questions" to modify]
                             </p>
                           </div>
                         )}

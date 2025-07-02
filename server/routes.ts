@@ -302,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         questions: [user.securityQuestion1, user.securityQuestion2, user.securityQuestion3],
-        answers: [user.securityAnswer1, user.securityAnswer2, user.securityAnswer3]
+        answers: ["[Hidden]", "[Hidden]", "[Hidden]"] // Don't expose hashed answers
       });
       
     } catch (error) {
