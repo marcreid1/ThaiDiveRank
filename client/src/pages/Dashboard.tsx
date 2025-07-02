@@ -176,7 +176,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 
           <Card>
             <CardContent className="p-6 text-center">
@@ -232,17 +232,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="flex items-center justify-center mb-3">
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Member Since</p>
-              </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
-                {memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </p>
-              <Calendar className="h-8 w-8 text-purple-500 mx-auto" />
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* Champion Dive Site Section */}
@@ -378,7 +368,7 @@ export default function Dashboard() {
                   {lastVoteDate 
                     ? lastVoteDate.toLocaleDateString('en-US', { 
                         year: 'numeric', 
-                        month: 'short', 
+                        month: 'long', 
                         day: 'numeric' 
                       })
                     : 'No votes yet'
