@@ -10,7 +10,7 @@ export default function Privacy() {
       
       <div className="max-w-3xl mx-auto prose dark:prose-invert prose-slate">
         <p className="text-slate-600 dark:text-slate-400">
-          Effective Date: May 20, 2025
+          Effective Date: July 2, 2025
         </p>
 
         <p className="text-slate-700 dark:text-slate-300">
@@ -20,23 +20,38 @@ export default function Privacy() {
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">1. Information We Collect</h2>
 
         <p className="text-slate-700 dark:text-slate-300">
-          We collect two types of information:
+          We collect four categories of information:
         </p>
 
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">a) Personal Information (if provided):</h3>
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">a) Personal Information (when you create an account):</h3>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li>Email address (only if you sign up for newsletters or create an account)</li>
-          <li>Username (if applicable)</li>
+          <li>Email address (required for account creation)</li>
+          <li>Encrypted password (stored securely using bcrypt hashing)</li>
         </ul>
 
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">b) Non-Personal Information:</h3>
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">b) Voting and Activity Data:</h3>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li>Voting activity (e.g. which dive sites you vote for)</li>
-          <li>IP address</li>
-          <li>Browser type and version</li>
+          <li>Voting activity (dive site matchups you vote on, winners and losers)</li>
+          <li>ELO rating changes from your votes</li>
+          <li>Vote timestamps and frequency</li>
+        </ul>
+
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">c) Technical and Security Information:</h3>
+        <ul className="text-slate-700 dark:text-slate-300">
+          <li>IP address (for security monitoring and rate limiting)</li>
+          <li>Browser type and version (User-Agent header)</li>
           <li>Device type and operating system</li>
-          <li>Pages visited and time spent on the site</li>
-          <li>Referral source</li>
+          <li>HTTP request details (URLs visited, response times, status codes)</li>
+          <li>Authentication tokens (JWT tokens stored locally on your device)</li>
+        </ul>
+
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">d) Security and Monitoring Logs:</h3>
+        <ul className="text-slate-700 dark:text-slate-300">
+          <li>Failed login attempts with timestamps</li>
+          <li>Rate limiting violations</li>
+          <li>Suspicious activity patterns (attempted security breaches, malicious requests)</li>
+          <li>Unauthorized access attempts to protected areas</li>
+          <li>Error logs and system performance data</li>
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
@@ -49,41 +64,63 @@ export default function Privacy() {
           We use collected data to:
         </p>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li>Aggregate and display head-to-head voting results</li>
-          <li>Improve user experience and interface</li>
-          <li>Monitor and prevent spam or fraudulent voting</li>
-          <li>Understand user engagement with dive site content</li>
-          <li>Send optional updates (if you subscribe)</li>
+          <li>Process and display dive site voting results using ELO rating calculations</li>
+          <li>Authenticate users and maintain secure login sessions</li>
+          <li>Prevent spam, fraudulent voting, and abuse through rate limiting (max 10 votes per minute)</li>
+          <li>Monitor security threats and unauthorized access attempts</li>
+          <li>Analyze system performance and troubleshoot technical issues</li>
+          <li>Generate dive site rankings and activity feeds</li>
+          <li>Ensure fair voting by tracking user voting patterns</li>
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          We do not sell your personal data to third parties.
+          We do not sell your personal data to third parties. All data processing is done internally to operate the dive site ranking platform.
         </p>
 
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">3. Cookies</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">3. Data Storage and Authentication</h2>
 
         <p className="text-slate-700 dark:text-slate-300">
-          Our site uses cookies to:
+          Our site uses local browser storage to:
         </p>
         <ul className="text-slate-700 dark:text-slate-300">
-          <li>Remember your previous votes (so you don't vote twice on the same matchup)</li>
-          <li>Track overall site performance and engagement through analytics tools (like Google Analytics)</li>
+          <li>Store JWT authentication tokens locally in your browser (localStorage)</li>
+          <li>Maintain your login session without requiring frequent re-authentication</li>
+          <li>Remember your voting preferences and session state</li>
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          You can control or delete cookies through your browser settings at any time.
+          We do not use traditional cookies for authentication. Instead, we use JWT tokens stored in your browser's localStorage, which you can clear through your browser settings. Logging out will also remove these tokens.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">4. Third-Party Services</h2>
 
         <p className="text-slate-700 dark:text-slate-300">
-          We may use third-party services for analytics, hosting, and email newsletters. These services may collect data consistent with their own privacy policies. We ensure these providers comply with relevant data protection laws.
+          We use the following third-party services:
+        </p>
+        <ul className="text-slate-700 dark:text-slate-300">
+          <li><strong>Neon Database:</strong> For secure PostgreSQL database hosting of user accounts, dive sites, and voting data</li>
+          <li><strong>Replit:</strong> For application hosting and deployment</li>
+        </ul>
+
+        <p className="text-slate-700 dark:text-slate-300">
+          We do not currently use third-party analytics services like Google Analytics. All data collection and analysis is performed directly by our application. These hosting providers may collect standard server logs as part of their service operations, subject to their own privacy policies.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">5. Data Retention</h2>
 
         <p className="text-slate-700 dark:text-slate-300">
-          We retain non-personal voting data for analytical and ranking purposes indefinitely. If you've shared personal information with us (like your email), we retain it only as long as needed to provide the service you've opted into.
+          We retain different types of data for varying periods:
+        </p>
+        <ul className="text-slate-700 dark:text-slate-300">
+          <li><strong>Account Data:</strong> Email and password information retained as long as your account exists</li>
+          <li><strong>Voting Data:</strong> Vote records and ELO ratings retained indefinitely for ranking calculations</li>
+          <li><strong>Security Logs:</strong> Failed login attempts, rate limiting violations, and suspicious activity logs retained for 14 days</li>
+          <li><strong>Application Logs:</strong> HTTP request logs, error logs, and system performance data retained for 30 days</li>
+          <li><strong>Session Data:</strong> JWT tokens expire after 7 days and are stored locally on your device</li>
+        </ul>
+
+        <p className="text-slate-700 dark:text-slate-300">
+          When you delete your account, we will remove your personal information but may retain anonymized voting data for ranking integrity.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">6. Your Rights</h2>
@@ -98,7 +135,7 @@ export default function Privacy() {
         </ul>
 
         <p className="text-slate-700 dark:text-slate-300">
-          To make a request, please email us at privacy@diverank.com.
+          To make a request, please contact us through the Contact page on this website.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">7. Children's Privacy</h2>
