@@ -43,6 +43,23 @@ export default function About() {
             <li>It provides a statistically sound approach to subjective preferences</li>
           </ul>
 
+          <h3 className="text-slate-900 dark:text-slate-100">Why Fewer Votes Can Mean Higher Rankings</h3>
+          <p className="text-slate-700 dark:text-slate-300">
+            You might notice that sometimes a dive site with fewer total votes ranks higher than one with more votes. 
+            This isn't a mistake - it's the ELO system working as intended. Here's why:
+          </p>
+          <ul className="text-slate-700 dark:text-slate-300">
+            <li><strong>Quality over quantity:</strong> The ELO system values the strength of opponents you face, not just how many you face</li>
+            <li><strong>Opponent ratings matter:</strong> Beating a highly-rated dive site gives you more points than beating a lower-rated one</li>
+            <li><strong>Strategic victories:</strong> A site that consistently defeats top-tier competition will rank higher than one that beats many weaker sites</li>
+            <li><strong>Risk and reward:</strong> Sites that face tougher competition and win are rewarded more than those that play it safe</li>
+          </ul>
+          <p className="text-slate-700 dark:text-slate-300">
+            For example, a dive site that wins 8 out of 10 votes against highly-rated sites could rank higher than 
+            one that wins 15 out of 20 votes against lower-rated sites. This ensures our rankings reflect true quality, 
+            not just popularity or volume of votes.
+          </p>
+
           <h2 className="text-slate-900 dark:text-slate-100">About This Project</h2>
           <p className="text-slate-700 dark:text-slate-300">
             DiveRank was created to help divers discover the best diving experiences.
