@@ -164,6 +164,14 @@ Changelog:
   * Added secure JWT secret validation with proper production vs development handling
   * Enhanced security error handling without exposing internal implementation details
   * All fixes maintain backward compatibility with existing user accounts
+- July 02, 2025. Implemented user-based rate limiting for fair resource allocation:
+  * Replaced IP-based voting rate limits with per-user limits (10 votes/minute per user)
+  * Added user-based rate limiting for security operations (3 actions/15min per user)
+  * Maintained IP-based limits for unauthenticated endpoints (signup, signin, password reset)
+  * Created centralized rate limit configuration system for consistency
+  * Enhanced email validation to prevent SQL injection attacks in user registration
+  * Fixed weak password policy in password reset (now requires 8+ chars with complexity)
+  * All authenticated endpoints now use fair per-user rate limiting instead of shared IP limits
 ```
 
 ## User Preferences

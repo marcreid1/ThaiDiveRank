@@ -40,6 +40,7 @@ export function createRateLimiter(options: {
   message: string;
   skipSuccessfulRequests?: boolean;
   name: string;
+  useUserBasedLimiting?: boolean;
 }): RateLimitRequestHandler {
   return rateLimit({
     windowMs: options.windowMs,
@@ -48,9 +49,14 @@ export function createRateLimiter(options: {
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: options.skipSuccessfulRequests || false,
-    // Use a secure key generator that combines multiple factors
+    // Use user-based rate limiting for authenticated endpoints, IP-based for others
     keyGenerator: (req: Request): string => {
-      // Get the real IP, fallback to connection IP if needed
+      // For authenticated endpoints, use user-based rate limiting
+      if (options.useUserBasedLimiting && (req as any).userId) {
+        return `user:${(req as any).userId}:${options.name}`;
+      }
+      
+      // For unauthenticated endpoints, use IP-based rate limiting
       const forwardedFor = req.get('X-Forwarded-For');
       const realIp = req.get('X-Real-IP');
       const ip = req.ip || req.connection.remoteAddress;
@@ -60,7 +66,7 @@ export function createRateLimiter(options: {
       
       // Combine IP with User-Agent for more accurate rate limiting
       const userAgent = req.get('User-Agent') || 'unknown';
-      return `${clientIp}:${userAgent.substring(0, 50)}`;
+      return `ip:${clientIp}:${userAgent.substring(0, 50)}:${options.name}`;
     },
     handler: (req: Request, res: Response) => {
       // Log rate limit exceeded
@@ -151,6 +157,24 @@ export const spikeDetection = (req: Request, res: Response, next: NextFunction) 
 
   next();
 };
+
+// User-based rate limiting middleware for authenticated routes
+export function createUserBasedRateLimiter(options: {
+  windowMs: number;
+  max: number;
+  message: string;
+  name: string;
+}) {
+  const limiter = createRateLimiter({
+    ...options,
+    useUserBasedLimiting: true
+  });
+
+  return (req: Request, res: Response, next: NextFunction) => {
+    // Apply rate limiting only after authentication has set userId
+    limiter(req, res, next);
+  };
+}
 
 // Error logging middleware
 export const errorLogger = (err: Error, req: Request, res: Response, next: NextFunction) => {

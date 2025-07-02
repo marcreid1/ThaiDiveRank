@@ -3,7 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoteSchema, insertUserSchema } from "@shared/schema";
 import { ZodError, z } from "zod";
-import { createRateLimiter } from "./middleware/logging";
+import { createRateLimiter, createUserBasedRateLimiter } from "./middleware/logging";
+import { rateLimiters } from "./config/rateLimits";
 import { requestAnalytics } from "./logger";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -11,30 +12,32 @@ import { verifyJWT, optionalAuth } from "./middleware/auth";
 import { SECURITY_CONSTANTS } from "./constants";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Rate limiting for voting
-  const voteLimit = createRateLimiter({
+  // User-based rate limiting for authenticated voting
+  const userVoteLimit = createUserBasedRateLimiter({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // limit each IP to 10 votes per minute
+    max: 10, // limit each user to 10 votes per minute
     message: "Too many votes, please slow down.",
     name: "vote"
   });
 
-  const readLimit = createRateLimiter({
+  // User-based rate limiting for security operations
+  const userSecurityLimit = createUserBasedRateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // generous limit for read operations
-    message: "Too many requests, please try again later.",
-    name: "read"
+    max: 3, // limit each user to 3 security operations per 15 minutes
+    message: "Too many security requests, please try again later.",
+    name: "security"
   });
 
-  const authLimit = createRateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // restored to original security limit
-    message: "Too many signup attempts, please try again later.",
-    name: "auth"
+  // User-based rate limiting for general authenticated actions
+  const userActionLimit = createUserBasedRateLimiter({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 50, // generous limit for user actions
+    message: "Too many actions, please slow down.",
+    name: "userActions"
   });
 
   // User signup
-  app.post("/api/signup", authLimit, async (req, res) => {
+  app.post("/api/signup", rateLimiters.auth, async (req, res) => {
     try {
       // Create signup schema that accepts password instead of hashedPassword
       const signupSchema = insertUserSchema.omit({ hashedPassword: true }).extend({
@@ -128,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // User signin
-  app.post("/api/signin", authLimit, async (req, res) => {
+  app.post("/api/signin", rateLimiters.auth, async (req, res) => {
     try {
       // Create signin schema that accepts password instead of hashedPassword
       const signinSchema = z.object({
@@ -197,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Forgot password - Get security questions
-  app.post("/api/auth/forgot-password", authLimit, async (req, res) => {
+  app.post("/api/auth/forgot-password", rateLimiters.auth, async (req, res) => {
     try {
       const schema = z.object({
         email: z.string()
@@ -241,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Verify security answers and reset password
-  app.post("/api/auth/reset-password", authLimit, async (req, res) => {
+  app.post("/api/auth/reset-password", rateLimiters.auth, async (req, res) => {
     try {
       const schema = z.object({
         userId: z.string().uuid("Invalid user ID format"),
@@ -309,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get security questions (for authenticated users)
-  app.get("/api/auth/security-questions", verifyJWT, async (req, res) => {
+  app.get("/api/auth/security-questions", verifyJWT, userSecurityLimit, async (req, res) => {
     try {
       const user = await storage.getUserById(req.userId!);
       if (!user) {
@@ -338,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create security questions (initial setup)
-  app.post("/api/auth/security-questions", verifyJWT, async (req, res) => {
+  app.post("/api/auth/security-questions", verifyJWT, userSecurityLimit, async (req, res) => {
     try {
       const schema = z.object({
         question1: z.string().min(1),
@@ -379,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update security questions (for existing users)
-  app.put("/api/auth/security-questions", verifyJWT, async (req, res) => {
+  app.put("/api/auth/security-questions", verifyJWT, userSecurityLimit, async (req, res) => {
     try {
       const schema = z.object({
         question1: z.string().min(1),
@@ -446,7 +449,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Deactivate user account (requires authentication)
-  app.post("/api/account/deactivate", verifyJWT, async (req, res) => {
+  app.post("/api/account/deactivate", verifyJWT, userActionLimit, async (req, res) => {
     try {
       const userId = req.userId!;
       
@@ -481,7 +484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete user account (requires authentication)
-  app.delete("/api/account", verifyJWT, async (req, res) => {
+  app.delete("/api/account", verifyJWT, userActionLimit, async (req, res) => {
     try {
       const userId = req.userId!;
       
@@ -516,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reset all votes for a user (requires authentication)
-  app.delete("/api/votes/reset", verifyJWT, async (req, res) => {
+  app.delete("/api/votes/reset", verifyJWT, userActionLimit, async (req, res) => {
     try {
       const userId = req.userId!;
       
@@ -555,8 +558,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Vote on dive sites (requires authentication)
-  app.post("/api/vote", voteLimit, verifyJWT, async (req, res) => {
+  // Vote on dive sites (requires authentication) - now with user-based rate limiting
+  app.post("/api/vote", verifyJWT, userVoteLimit, async (req, res) => {
     try {
       const voteData = insertVoteSchema.parse(req.body);
       
@@ -599,7 +602,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's votes (requires authentication)
-  app.get("/api/my-votes", readLimit, verifyJWT, async (req, res) => {
+  app.get("/api/my-votes", rateLimiters.read, verifyJWT, async (req, res) => {
     try {
       const userVotes = await storage.getUserVotes(req.userId!);
       const uniqueMatchups = await storage.getUserUniqueMatchups(req.userId!);
@@ -618,7 +621,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get dive site rankings
-  app.get("/api/rankings", readLimit, async (req, res) => {
+  app.get("/api/rankings", rateLimiters.read, async (req, res) => {
     try {
       const rankings = await storage.getDiveSiteRankings();
       res.json(rankings);
@@ -629,7 +632,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all dive sites
-  app.get("/api/dive-sites", readLimit, async (req, res) => {
+  app.get("/api/dive-sites", rateLimiters.read, async (req, res) => {
     try {
       const diveSites = await storage.getAllDiveSites();
       res.json(diveSites);
@@ -640,7 +643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get dive sites grouped by region
-  app.get("/api/dive-sites-by-region", readLimit, async (req, res) => {
+  app.get("/api/dive-sites-by-region", rateLimiters.read, async (req, res) => {
     try {
       const diveSitesByRegion = await storage.getDiveSitesByRegion();
       res.json(diveSitesByRegion);
@@ -651,7 +654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get random matchup for voting
-  app.get("/api/matchup", readLimit, optionalAuth, async (req, res) => {
+  app.get("/api/matchup", rateLimiters.read, optionalAuth, async (req, res) => {
     try {
       const winnerId = req.query.winnerId ? Number(req.query.winnerId) : undefined;
       const winnerSide = req.query.winnerSide as 'A' | 'B' | undefined;
@@ -677,7 +680,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get recent activity
-  app.get("/api/activities", readLimit, async (req, res) => {
+  app.get("/api/activities", rateLimiters.read, async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const activities = await storage.getRecentActivity(limit);
