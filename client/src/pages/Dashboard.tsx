@@ -176,102 +176,71 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center">
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Votes</p>
-                    <TooltipHelp 
-                      title="Total Votes"
-                      description="The total number of votes you've cast. This includes all your voting activity across different dive site matchups."
-                    />
-                  </div>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalVotes}</p>
-                </div>
-                <VoteIcon className="h-8 w-8 text-ocean-500" />
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <div className="flex items-center">
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
-                    <TooltipHelp 
-                      title="Unique Matchups"
-                      description="The number of different dive site pairs you've voted on out of 903 total possible combinations. Each unique pair counts once toward your completion progress."
-                    />
-                  </div>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                    {uniqueMatchups}<span className="text-lg text-slate-500">/{totalPossibleMatchups}</span>
-                  </p>
-                </div>
-                <Target className="h-8 w-8 text-blue-500" />
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Unique Matchups</p>
+                <TooltipHelp 
+                  title="Unique Matchups"
+                  description="The number of different dive site pairs you've voted on out of 903 total possible combinations. Each unique pair counts once toward your completion progress."
+                />
               </div>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                {uniqueMatchups}<span className="text-lg text-slate-500">/{totalPossibleMatchups}</span>
+              </p>
               {/* Progress bar */}
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
                 <div 
                   className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                   style={{ width: `${(uniqueMatchups / totalPossibleMatchups) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                 {((uniqueMatchups / totalPossibleMatchups) * 100).toFixed(1)}% complete
               </p>
+              <Target className="h-8 w-8 text-blue-500 mx-auto" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center">
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Points Influenced</p>
-                    <TooltipHelp 
-                      title="Points Influenced"
-                      description="The cumulative impact of all your votes on dive site rankings. Higher numbers indicate greater influence on the overall ranking system."
-                    />
-                  </div>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalPointsInfluenced}</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Points Influenced</p>
+                <TooltipHelp 
+                  title="Points Influenced"
+                  description="The cumulative impact of all your votes on dive site rankings. Higher numbers indicate greater influence on the overall ranking system."
+                />
               </div>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-8">{totalPointsInfluenced}</p>
+              <TrendingUp className="h-8 w-8 text-green-500 mx-auto" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center">
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
-                    <TooltipHelp 
-                      title="Average Impact"
-                      description="The typical influence per vote on rankings. Higher values suggest you often vote on matchups between dive sites with very different ratings."
-                    />
-                  </div>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{averageImpact}</p>
-                </div>
-                <Trophy className="h-8 w-8 text-yellow-500" />
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Average Impact</p>
+                <TooltipHelp 
+                  title="Average Impact"
+                  description="The typical ELO influence per vote on rankings. Higher values suggest you often vote on matchups between dive sites with very different ratings."
+                />
               </div>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-8">{averageImpact}</p>
+              <Trophy className="h-8 w-8 text-yellow-500 mx-auto" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Member Since</p>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white">
-                    {memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                  </p>
-                </div>
-                <Calendar className="h-8 w-8 text-purple-500" />
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Member Since</p>
               </div>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
+                {memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </p>
+              <Calendar className="h-8 w-8 text-purple-500 mx-auto" />
             </CardContent>
           </Card>
         </div>
