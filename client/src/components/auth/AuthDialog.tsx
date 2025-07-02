@@ -13,10 +13,12 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSuccess }: AuthDialogProps) {
   const [mode, setMode] = useState<"signin" | "signup">(defaultMode);
 
-  // Update mode when defaultMode changes
+  // Update mode when defaultMode changes or dialog opens
   useEffect(() => {
-    setMode(defaultMode);
-  }, [defaultMode]);
+    if (open) {
+      setMode(defaultMode);
+    }
+  }, [defaultMode, open]);
 
   const handleSuccess = () => {
     onOpenChange(false);
@@ -25,9 +27,17 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSucce
     }
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      // Reset mode to default when closing
+      setMode(defaultMode);
+    }
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md" key={`auth-dialog-${mode}`}>
         <DialogHeader>
           <DialogTitle className="sr-only">
             {mode === "signin" ? "Sign In" : "Sign Up"}
@@ -42,15 +52,17 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "signin", onSucce
         
         {mode === "signin" ? (
           <SignInForm
+            key="signin-form"
             onSuccess={handleSuccess}
             onSwitchToSignUp={() => setMode("signup")}
-            onClose={() => onOpenChange(false)}
+            onClose={() => handleOpenChange(false)}
           />
         ) : (
           <SignUpForm
+            key="signup-form"
             onSuccess={handleSuccess}
             onSwitchToSignIn={() => setMode("signin")}
-            onClose={() => onOpenChange(false)}
+            onClose={() => handleOpenChange(false)}
           />
         )}
       </DialogContent>
