@@ -140,14 +140,6 @@ Changelog:
   * Performance optimization with efficient database queries and in-memory caching
   * Anonymous users continue using legacy global duplicate prevention
   * Authenticated users get guaranteed unique matchups throughout their journey
-- July 02, 2025. Added complete security questions password reset system:
-  * Database schema updated with security question fields for all users
-  * Three new API endpoints: forgot password, reset password, security setup
-  * Frontend pages for password reset flow and security questions setup
-  * Integrated "Forgot Password" link in sign-in form for easy discovery
-  * Dashboard Security section with prominent setup button for new users
-  * Security features: bcrypt hashed answers, requires 2/3 correct answers, rate limiting
-  * User-friendly onboarding flow eliminating need to know specific URLs
 ```
 
 ## User Preferences
