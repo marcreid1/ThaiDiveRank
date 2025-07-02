@@ -185,7 +185,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Votes</p>
                     <TooltipHelp 
                       title="Total Votes"
-                      description="The total number of votes you've cast. This includes all your voting activity, even if you voted on the same dive site pair multiple times."
+                      description="The total number of votes you've cast. This includes all your voting activity across different dive site matchups."
                     />
                   </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalVotes}</p>
@@ -203,7 +203,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
                     <TooltipHelp 
                       title="Unique Matchups"
-                      description="The number of different dive site pairs you've voted on out of 903 total possible combinations. Each pair only counts once, regardless of how many times you voted on it."
+                      description="The number of different dive site pairs you've voted on out of 903 total possible combinations. Each unique pair counts once toward your completion progress."
                     />
                   </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">
@@ -233,7 +233,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Points Influenced</p>
                     <TooltipHelp 
                       title="Points Influenced"
-                      description="The total ELO rating points you've moved between dive sites through your votes. Higher numbers mean you've had more impact on the rankings overall."
+                      description="The cumulative impact of all your votes on dive site rankings. Higher numbers indicate greater influence on the overall ranking system."
                     />
                   </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalPointsInfluenced}</p>
@@ -251,7 +251,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
                     <TooltipHelp 
                       title="Average Impact"
-                      description="The average ELO points that change hands with each of your votes. Higher numbers mean you typically vote on matchups between dive sites with very different ratings."
+                      description="The typical influence per vote on rankings. Higher values suggest you often vote on matchups between dive sites with very different ratings."
                     />
                   </div>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{averageImpact}</p>
