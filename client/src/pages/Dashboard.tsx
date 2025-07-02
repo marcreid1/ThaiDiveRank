@@ -273,9 +273,9 @@ export default function Dashboard() {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-32rem)]">
           {/* Recent Voting Activity */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-ocean-500" />
@@ -323,7 +323,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Account Information */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-ocean-500" />
