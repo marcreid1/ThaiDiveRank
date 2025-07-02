@@ -8,6 +8,7 @@ import { requestAnalytics } from "./logger";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyJWT, optionalAuth } from "./middleware/auth";
+import { SECURITY_CONSTANTS } from "./constants";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rate limiting for voting
@@ -54,8 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Hash the password using bcrypt
-      const saltRounds = 12;
-      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+      const hashedPassword = await bcrypt.hash(userData.password, SECURITY_CONSTANTS.BCRYPT_SALT_ROUNDS);
       
       // Store user in database
       const user = await storage.createUser({
@@ -102,9 +102,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // JWT generation middleware function
+  // JWT generation helper function
   const generateJWT = (user: { id: string; email: string }) => {
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET environment variable not set');
+    }
     return jwt.sign(
       { 
         userId: user.id, 
@@ -256,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Hash new password and update
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(newPassword, SECURITY_CONSTANTS.BCRYPT_SALT_ROUNDS);
       const success = await storage.resetPassword(userId, hashedPassword);
       
       if (!success) {

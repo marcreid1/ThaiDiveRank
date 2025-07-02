@@ -157,6 +157,13 @@ Changelog:
   * Added constants.ts file to eliminate magic numbers throughout codebase
   * Created queryHelpers.ts for reusable database query patterns
   * All changes maintain existing functionality while improving code organization
+- July 02, 2025. Fixed critical security vulnerabilities:
+  * Removed hardcoded JWT secret fallbacks - production now requires proper environment configuration
+  * Standardized bcrypt salt rounds to 12 across all password and security question hashing
+  * Centralized security constants to prevent inconsistent hashing strengths
+  * Added secure JWT secret validation with proper production vs development handling
+  * Enhanced security error handling without exposing internal implementation details
+  * All fixes maintain backward compatibility with existing user accounts
 ```
 
 ## User Preferences

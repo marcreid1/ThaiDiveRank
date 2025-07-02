@@ -6,7 +6,14 @@ import { appLogger } from "./logger";
 
 // Ensure JWT_SECRET is set for authentication
 if (!process.env.JWT_SECRET) {
-  process.env.JWT_SECRET = "Qf5F0wLUb9ntCelZgRNvw2jlfX+6lm3ZE74sKg4XaVg=";
+  if (process.env.NODE_ENV === 'production') {
+    console.error("JWT_SECRET environment variable is required for secure authentication in production");
+    process.exit(1);
+  } else {
+    // Development fallback with a secure random key
+    console.warn("JWT_SECRET not found in environment, using secure development fallback");
+    process.env.JWT_SECRET = "EIuonJQMa283RWswFbqrsOXbbTQSsf785Slrpw9foYI=";
+  }
 }
 
 const app = express();

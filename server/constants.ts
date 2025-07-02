@@ -7,6 +7,7 @@ export const ELO_CONSTANTS = {
 // Security Constants
 export const SECURITY_CONSTANTS = {
   BCRYPT_SALT_ROUNDS: 12,
+  BCRYPT_SECURITY_ROUNDS: 12, // For security questions
   JWT_EXPIRES_IN: "7d",
   MIN_PASSWORD_LENGTH: 8,
   REQUIRED_SECURITY_QUESTIONS: 3,

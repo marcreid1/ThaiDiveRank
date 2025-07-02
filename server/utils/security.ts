@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
+import { SECURITY_CONSTANTS } from "../constants";
 
 export async function hashSecurityAnswer(answer: string): Promise<string> {
   // Normalize the answer (lowercase, trim whitespace)
   const normalizedAnswer = answer.toLowerCase().trim();
-  return await bcrypt.hash(normalizedAnswer, 10);
+  return await bcrypt.hash(normalizedAnswer, SECURITY_CONSTANTS.BCRYPT_SECURITY_ROUNDS);
 }
 
 export async function verifySecurityAnswer(answer: string, hashedAnswer: string): Promise<boolean> {
