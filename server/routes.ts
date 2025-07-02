@@ -38,6 +38,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Create signup schema that accepts password instead of hashedPassword
       const signupSchema = insertUserSchema.omit({ hashedPassword: true }).extend({
+        email: z.string()
+          .email("Invalid email format")
+          .max(254, "Email too long")
+          .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid email format")
+          .refine(email => !email.includes("'") && !email.includes('"') && !email.includes('--') && !email.includes(';'), {
+            message: "Invalid email format"
+          }),
         password: z.string()
           .min(8, "Password must be at least 8 characters")
           .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one lowercase letter, one uppercase letter, and one number")
@@ -125,7 +132,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Create signin schema that accepts password instead of hashedPassword
       const signinSchema = z.object({
-        email: z.string().email(),
+        email: z.string()
+          .email("Invalid email format")
+          .max(254, "Email too long")
+          .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid email format")
+          .refine(email => !email.includes("'") && !email.includes('"') && !email.includes('--') && !email.includes(';'), {
+            message: "Invalid email format"
+          }),
         password: z.string().min(1, "Password is required")
       });
       
@@ -187,7 +200,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/forgot-password", authLimit, async (req, res) => {
     try {
       const schema = z.object({
-        email: z.string().email()
+        email: z.string()
+          .email("Invalid email format")
+          .max(254, "Email too long")
+          .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid email format")
+          .refine(email => !email.includes("'") && !email.includes('"') && !email.includes('--') && !email.includes(';'), {
+            message: "Invalid email format"
+          })
       });
       
       const { email } = schema.parse(req.body);
@@ -225,9 +244,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/reset-password", authLimit, async (req, res) => {
     try {
       const schema = z.object({
-        userId: z.string(),
-        answers: z.array(z.string().min(1)).length(3),
-        newPassword: z.string().min(6, "Password must be at least 6 characters")
+        userId: z.string().uuid("Invalid user ID format"),
+        answers: z.array(z.string().min(1).max(100)).length(3),
+        newPassword: z.string()
+          .min(8, "Password must be at least 8 characters")
+          .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one lowercase letter, one uppercase letter, and one number")
       });
       
       const { userId, answers, newPassword } = schema.parse(req.body);
@@ -239,7 +260,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify at least 2 out of 3 security answers
-      const { verifySecurityAnswer } = await import("../utils/security");
+      const { verifySecurityAnswer } = await import("./utils/security");
       let correctAnswers = 0;
       
       if (user.securityAnswer1 && await verifySecurityAnswer(answers[0], user.securityAnswer1)) {
