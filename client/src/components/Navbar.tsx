@@ -15,16 +15,20 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<string | undefined>(undefined);
   const { user, isAuthenticated, logout } = useAuth();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authDialogMode, setAuthDialogMode] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setCurrentTheme(theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    setCurrentTheme(newTheme);
   };
 
   const openSignInDialog = () => {
@@ -156,7 +160,7 @@ export default function Navbar() {
                 className="rounded-full"
                 aria-label="Toggle dark mode"
               >
-                {theme === "dark" ? (
+                {currentTheme === "dark" ? (
                   <Sun className="h-5 w-5" />
                 ) : (
                   <Moon className="h-5 w-5" />
