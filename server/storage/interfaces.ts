@@ -30,7 +30,7 @@ export interface IMatchupStorage {
 }
 
 export interface IVoteStorage {
-  createVote(vote: InsertVote): Promise<Vote>;
+  createVote(vote: any): Promise<Vote>; // Allow vote with userId extension
   getVotes(limit?: number): Promise<Vote[]>;
   getUserVotes(userId: string): Promise<Vote[]>;
   getUserUniqueMatchups(userId: string): Promise<number>;

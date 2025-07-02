@@ -4,24 +4,46 @@ import { eq, desc, sql } from "drizzle-orm";
 import { calculateEloChange } from "../utils/elo";
 import { IVoteStorage } from "./interfaces";
 
+// Extended vote type that includes userId for storage operations
+interface InsertVoteWithUser extends InsertVote {
+  userId: string;
+}
+
 export class VoteStorage implements IVoteStorage {
-  async createVote(insertVote: InsertVote): Promise<Vote> {
+  async createVote(insertVote: any): Promise<Vote> {
     console.log(`[STORAGE] createVote called with data:`, insertVote);
     console.log(`[STORAGE] User ID from insertVote: ${insertVote.userId}`);
     
-    // Get current ratings for ELO calculation
-    const [winner] = await db.select().from(diveSites).where(eq(diveSites.id, insertVote.winnerId));
-    const [loser] = await db.select().from(diveSites).where(eq(diveSites.id, insertVote.loserId));
-
-    if (!winner || !loser) {
-      throw new Error("Invalid dive site IDs");
-    }
-
-    console.log(`[STORAGE] Winner: ${winner.name} (Rating: ${winner.rating})`);
-    console.log(`[STORAGE] Loser: ${loser.name} (Rating: ${loser.rating})`);
-
-    // Use database transaction for atomic operations
+    // Use database transaction for atomic operations including duplicate check
     return await db.transaction(async (tx) => {
+      // Check for existing vote on this exact pair by this user (prevents race conditions)
+      const [id1, id2] = [insertVote.winnerId, insertVote.loserId].sort((a, b) => a - b);
+      
+      // Efficient duplicate check: look for any vote by this user on this pair
+      const duplicateCheck = await tx
+        .select({ winnerId: votes.winnerId, loserId: votes.loserId })
+        .from(votes)
+        .where(eq(votes.userId, insertVote.userId));
+
+      // Check if this specific pair has been voted on by this user
+      for (const vote of duplicateCheck) {
+        const [existingId1, existingId2] = [vote.winnerId, vote.loserId].sort((a, b) => a - b);
+        if (existingId1 === id1 && existingId2 === id2) {
+          throw new Error("You have already voted on this matchup");
+        }
+      }
+
+      // Get current ratings for ELO calculation
+      const [winner] = await tx.select().from(diveSites).where(eq(diveSites.id, insertVote.winnerId));
+      const [loser] = await tx.select().from(diveSites).where(eq(diveSites.id, insertVote.loserId));
+
+      if (!winner || !loser) {
+        throw new Error("Invalid dive site IDs");
+      }
+
+      console.log(`[STORAGE] Winner: ${winner.name} (Rating: ${winner.rating})`);
+      console.log(`[STORAGE] Loser: ${loser.name} (Rating: ${loser.rating})`);
+    
       // Calculate ELO change
       const eloChange = calculateEloChange(winner.rating, loser.rating);
       console.log(`[STORAGE] Calculated ELO change: ${eloChange} points`);
