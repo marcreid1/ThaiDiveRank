@@ -8,6 +8,12 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   hashedPassword: text("hashed_password").notNull(),
   isActive: boolean("is_active").notNull().default(true),
+  securityQuestion1: text("security_question_1"),
+  securityAnswer1: text("security_answer_1"),
+  securityQuestion2: text("security_question_2"),
+  securityAnswer2: text("security_answer_2"),
+  securityQuestion3: text("security_question_3"),
+  securityAnswer3: text("security_answer_3"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

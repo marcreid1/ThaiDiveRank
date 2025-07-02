@@ -151,6 +151,16 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
           </Button>
         </form>
 
+        <div className="mt-4 text-center">
+          <Link 
+            href="/forgot-password" 
+            className="text-sm text-primary hover:underline"
+            onClick={onClose}
+          >
+            Forgot your password?
+          </Link>
+        </div>
+
         {onSwitchToSignUp && (
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">

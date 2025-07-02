@@ -53,6 +53,28 @@ export class DatabaseStorage implements IStorage {
     return this.userStorage.deleteUser(id);
   }
 
+  async updateSecurityQuestions(userId: string, securityData: {
+    question1: string;
+    answer1: string;
+    question2: string;
+    answer2: string;
+    question3: string;
+    answer3: string;
+  }): Promise<boolean> {
+    return this.userStorage.updateSecurityQuestions(userId, securityData);
+  }
+
+  async getUserSecurityQuestions(email: string): Promise<{
+    questions: [string, string, string] | null;
+    userId: string | null;
+  }> {
+    return this.userStorage.getUserSecurityQuestions(email);
+  }
+
+  async resetPassword(userId: string, newHashedPassword: string): Promise<boolean> {
+    return this.userStorage.resetPassword(userId, newHashedPassword);
+  }
+
   // Dive site methods
   async getAllDiveSites(): Promise<DiveSite[]> {
     return this.diveSiteStorage.getAllDiveSites();

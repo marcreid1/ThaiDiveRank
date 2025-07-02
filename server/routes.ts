@@ -180,6 +180,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Forgot password - Get security questions
+  app.post("/api/auth/forgot-password", authLimit, async (req, res) => {
+    try {
+      const schema = z.object({
+        email: z.string().email()
+      });
+      
+      const { email } = schema.parse(req.body);
+      
+      const result = await storage.getUserSecurityQuestions(email);
+      
+      if (!result.questions) {
+        return res.status(404).json({ 
+          message: "No security questions found for this email. Contact support for assistance." 
+        });
+      }
+      
+      res.json({
+        message: "Security questions retrieved",
+        questions: result.questions,
+        userId: result.userId
+      });
+      
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          message: "Invalid email format",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Forgot password error:", error);
+        res.status(500).json({ 
+          message: "Server error" 
+        });
+      }
+    }
+  });
+
+  // Verify security answers and reset password
+  app.post("/api/auth/reset-password", authLimit, async (req, res) => {
+    try {
+      const schema = z.object({
+        userId: z.string(),
+        answers: z.array(z.string().min(1)).length(3),
+        newPassword: z.string().min(6, "Password must be at least 6 characters")
+      });
+      
+      const { userId, answers, newPassword } = schema.parse(req.body);
+      
+      // Get user to verify security answers
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Verify at least 2 out of 3 security answers
+      const { verifySecurityAnswer } = await import("../utils/security");
+      let correctAnswers = 0;
+      
+      if (user.securityAnswer1 && await verifySecurityAnswer(answers[0], user.securityAnswer1)) {
+        correctAnswers++;
+      }
+      if (user.securityAnswer2 && await verifySecurityAnswer(answers[1], user.securityAnswer2)) {
+        correctAnswers++;
+      }
+      if (user.securityAnswer3 && await verifySecurityAnswer(answers[2], user.securityAnswer3)) {
+        correctAnswers++;
+      }
+      
+      if (correctAnswers < 2) {
+        return res.status(400).json({ 
+          message: "Security answers incorrect. At least 2 out of 3 must be correct." 
+        });
+      }
+      
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const success = await storage.resetPassword(userId, hashedPassword);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to reset password" 
+        });
+      }
+      
+      res.json({
+        message: "Password reset successful. You can now sign in with your new password."
+      });
+      
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          message: "Invalid input data",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Reset password error:", error);
+        res.status(500).json({ 
+          message: "Server error" 
+        });
+      }
+    }
+  });
+
+  // Update security questions (for existing users)
+  app.post("/api/auth/security-questions", verifyJWT, async (req, res) => {
+    try {
+      const schema = z.object({
+        securityData: z.object({
+          question1: z.string().min(1),
+          answer1: z.string().min(2).max(100),
+          question2: z.string().min(1),
+          answer2: z.string().min(2).max(100),
+          question3: z.string().min(1),
+          answer3: z.string().min(2).max(100),
+        })
+      });
+      
+      const { securityData } = schema.parse(req.body);
+      
+      const success = await storage.updateSecurityQuestions(req.userId!, securityData);
+      
+      if (!success) {
+        return res.status(500).json({ 
+          message: "Failed to update security questions" 
+        });
+      }
+      
+      res.json({
+        message: "Security questions updated successfully"
+      });
+      
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          message: "Invalid input data",
+          errors: error.errors 
+        });
+      } else {
+        console.error("Update security questions error:", error);
+        res.status(500).json({ 
+          message: "Server error" 
+        });
+      }
+    }
+  });
+
   // Protected route to test JWT middleware
   app.get("/api/profile", verifyJWT, async (req, res) => {
     try {
