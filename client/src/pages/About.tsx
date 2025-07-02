@@ -1,3 +1,5 @@
+import { Link } from "wouter";
+
 export default function About() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 flex flex-col items-center">
@@ -54,12 +56,12 @@ export default function About() {
           </p>
 
           <div className="mt-12 text-center w-full flex justify-center">
-            <a
+            <Link
               href="/"
               className="inline-block px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-ocean-600 hover:bg-ocean-700 dark:bg-ocean-700 dark:hover:bg-ocean-600 md:py-4 md:text-lg md:px-8"
             >
               Back to Voting
-            </a>
+            </Link>
           </div>
         </div>
       </div>
