@@ -3,7 +3,7 @@ import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { IUserStorage } from "./interfaces";
 import { hashSecurityAnswer } from "../utils/security";
-import { eloService } from "../services/eloService";
+import { calculateEloChange } from "../utils/elo";
 
 export class UserStorage implements IUserStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -67,8 +67,46 @@ export class UserStorage implements IUserStorage {
   }
 
   private async recalculateAllEloRatings(tx: any): Promise<void> {
-    // Use the centralized ELO service to recalculate all ratings
-    await eloService.recalculateAllRatings();
+    // Reset all dive sites to default values
+    await tx.update(diveSites).set({
+      rating: 1500,
+      wins: 0,
+      losses: 0
+    });
+
+    // Get all remaining votes ordered by timestamp
+    const allVotes = await tx
+      .select()
+      .from(votes)
+      .orderBy(votes.timestamp);
+
+    // Replay all votes to recalculate ELO ratings
+    for (const vote of allVotes) {
+      // Get current ratings
+      const [winner] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.winnerId));
+      const [loser] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.loserId));
+
+      if (winner && loser) {
+        // Calculate ELO change using the same algorithm
+        const eloChange = calculateEloChange(winner.rating, loser.rating);
+
+        // Update winner
+        await tx.update(diveSites)
+          .set({
+            rating: winner.rating + eloChange,
+            wins: winner.wins + 1
+          })
+          .where(eq(diveSites.id, vote.winnerId));
+
+        // Update loser
+        await tx.update(diveSites)
+          .set({
+            rating: loser.rating - eloChange,
+            losses: loser.losses + 1
+          })
+          .where(eq(diveSites.id, vote.loserId));
+      }
+    }
   }
 
   async updateSecurityQuestions(userId: string, securityData: {

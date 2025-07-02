@@ -148,15 +148,6 @@ Changelog:
   * Security answers properly hidden for security (not displayed in plain text)
   * Fixed JSON parsing issues with improved error handling in API responses
   * Both new and existing users can manage their security questions securely
-- July 02, 2025. Completed critical database refactoring and architecture improvements:
-  * MAJOR: Removed redundant wins/losses columns from dive_sites schema (single source of truth)
-  * Created centralized EloService class with unified rating calculations
-  * Migrated all storage classes to use the new ELO service instead of duplicate logic
-  * Enhanced duplicate prevention with optimized SQL queries and better caching
-  * Improved security questions management with proper utility functions
-  * Added comprehensive security logging for password reset attempts
-  * Fixed all data consistency issues between votes table and dive site aggregates
-  * Optimized matchup generation with more efficient user voting history tracking
 ```
 
 ## User Preferences
