@@ -284,21 +284,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update security questions (for existing users)
-  app.post("/api/auth/security-questions", verifyJWT, async (req, res) => {
+  // Get security questions (for authenticated users)
+  app.get("/api/auth/security-questions", verifyJWT, async (req, res) => {
     try {
-      const schema = z.object({
-        securityData: z.object({
-          question1: z.string().min(1),
-          answer1: z.string().min(2).max(100),
-          question2: z.string().min(1),
-          answer2: z.string().min(2).max(100),
-          question3: z.string().min(1),
-          answer3: z.string().min(2).max(100),
-        })
+      const user = await storage.getUserById(req.userId!);
+      if (!user) {
+        return res.status(404).json({ 
+          message: "User not found" 
+        });
+      }
+
+      if (!user.securityQuestion1 || !user.securityQuestion2 || !user.securityQuestion3) {
+        return res.status(404).json({ 
+          message: "No security questions found for this user" 
+        });
+      }
+
+      res.json({
+        questions: [user.securityQuestion1, user.securityQuestion2, user.securityQuestion3],
+        answers: [user.securityAnswer1, user.securityAnswer2, user.securityAnswer3]
       });
       
-      const { securityData } = schema.parse(req.body);
+    } catch (error) {
+      console.error("Get security questions error:", error);
+      res.status(500).json({ 
+        message: "Server error" 
+      });
+    }
+  });
+
+  // Update security questions (for existing users)
+  app.put("/api/auth/security-questions", verifyJWT, async (req, res) => {
+    try {
+      const schema = z.object({
+        question1: z.string().min(1),
+        answer1: z.string().min(2).max(100),
+        question2: z.string().min(1),
+        answer2: z.string().min(2).max(100),
+        question3: z.string().min(1),
+        answer3: z.string().min(2).max(100),
+      });
+      
+      const securityData = schema.parse(req.body);
       
       const success = await storage.updateSecurityQuestions(req.userId!, securityData);
       

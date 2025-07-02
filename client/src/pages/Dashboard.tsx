@@ -7,11 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX, RotateCcw } from "lucide-react";
+import { Trophy, Vote as VoteIcon, TrendingUp, Clock, User, Calendar, Target, Trash2, UserX, RotateCcw, Shield } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TooltipHelp } from "@/components/ui/tooltip-help";
+import { SecurityQuestionsDialog } from "@/components/SecurityQuestionsDialog";
 
 interface MyVotesResponse {
   message: string;
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [resetVotesDialogOpen, setResetVotesDialogOpen] = useState(false);
+  const [securityQuestionsDialogOpen, setSecurityQuestionsDialogOpen] = useState(false);
 
   const { data: myVotesData, isLoading: votesLoading } = useQuery({
     queryKey: ["/api/my-votes", user?.id],
@@ -469,6 +471,16 @@ export default function Dashboard() {
                 <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
                   <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Account Management</h4>
                   <div className="space-y-2">
+                    {/* View Security Questions */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start" 
+                      onClick={() => setSecurityQuestionsDialogOpen(true)}
+                    >
+                      <Shield className="h-4 w-4 mr-2" />
+                      View Security Questions
+                    </Button>
+                    
                     {/* Deactivate Account */}
                     <AlertDialog open={deactivateDialogOpen} onOpenChange={setDeactivateDialogOpen}>
                       <AlertDialogTrigger asChild>
@@ -538,6 +550,11 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+      
+      <SecurityQuestionsDialog 
+        open={securityQuestionsDialogOpen} 
+        onOpenChange={setSecurityQuestionsDialogOpen}
+      />
     </div>
   );
 }
