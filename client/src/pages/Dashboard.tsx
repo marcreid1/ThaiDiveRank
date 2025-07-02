@@ -275,7 +275,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Voting Activity */}
-          <Card>
+          <Card className="flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-ocean-500" />
@@ -285,7 +285,7 @@ export default function Dashboard() {
                 Your latest votes and their impact on rankings
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col">
               {votesWithSites.length === 0 ? (
                 <div className="text-center py-8">
                   <VoteIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-4 max-h-[calc(100vh-24rem)] min-h-96 overflow-y-auto">
+                <div className="space-y-4 flex-1 overflow-y-auto">
                   {votesWithSites.slice(0, 8).map((vote) => (
                     <div key={vote.id} className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                       <div className="flex-1 min-w-0">
@@ -323,7 +323,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Account Information */}
-          <Card className="flex flex-col">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-ocean-500" />
@@ -333,7 +333,7 @@ export default function Dashboard() {
                 Your account details and preferences
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 flex-1 flex flex-col">
+            <CardContent className="space-y-6">
               <div className="flex items-center justify-between py-3 border-b border-slate-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Email</span>
                 <span className="text-sm text-slate-900 dark:text-white">{user?.email}</span>
@@ -364,7 +364,7 @@ export default function Dashboard() {
                 </span>
               </div>
 
-              <div className="pt-4 flex-1 flex flex-col">
+              <div className="pt-4">
                 <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Quick Actions</h4>
                 <div className="space-y-2">
                   <Button asChild variant="outline" className="w-full justify-start">
@@ -387,7 +387,7 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 
-                <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-auto">
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
                   <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-3">Account Management</h4>
                   <div className="space-y-2">
                     {/* Deactivate Account */}
