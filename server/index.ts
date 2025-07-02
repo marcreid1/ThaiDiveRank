@@ -1,10 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
-import cors from "cors";
-import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { httpLogger, securityMonitor, spikeDetection, errorLogger } from "./middleware/logging";
-import { securityAuditMiddleware } from "./middleware/securityAudit";
 import { appLogger } from "./logger";
 
 // Ensure JWT_SECRET is set for authentication
@@ -24,66 +21,63 @@ const app = express();
 // Trust proxy for accurate IP addresses (fixes rate limiting issues)
 app.set('trust proxy', true);
 
-// Comprehensive security headers with helmet
-app.use(helmet({
-  contentSecurityPolicy: {
-    useDefaults: true,
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      fontSrc: ["'self'"],
-      connectSrc: ["'self'"],
-      frameAncestors: ["'none'"],
-    },
-  },
-  crossOriginEmbedderPolicy: false, // Allow Vite HMR in development
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
+// Security headers middleware
+app.use((req, res, next) => {
+  // Prevent clickjacking
+  res.setHeader('X-Frame-Options', 'DENY');
+  
+  // Prevent MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // Enable XSS protection
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Referrer policy
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy
+  res.setHeader('Content-Security-Policy', 
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data: blob:; " +
+    "font-src 'self'; " +
+    "connect-src 'self'; " +
+    "frame-ancestors 'none';"
+  );
+  
+  next();
+});
+
+// CORS configuration
+app.use((req, res, next) => {
+  const origin = req.get('origin');
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5000'
+  ];
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
-}));
-
-// Enhanced CORS configuration
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5000',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:5000'
-    ];
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Check if the origin is in the allowed list
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    // Allow Replit preview domains in development
-    if (process.env.NODE_ENV === 'development' && origin.includes('.replit.dev')) {
-      return callback(null, true);
-    }
-    
-    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-    return callback(new Error(msg), false);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
+  next();
+});
 
 // Security and logging middleware
 app.use(securityMonitor);
 app.use(spikeDetection);
-app.use(...securityAuditMiddleware);
 app.use(httpLogger);
 
 // Request size limits (protect against DoS)

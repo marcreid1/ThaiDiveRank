@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
 import { securityLogger } from '../logger';
-import { SECURITY_CONSTANTS } from '../constants';
 import jwt from 'jsonwebtoken';
 
 // Extend Request interface to include user info
@@ -53,23 +52,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
       console.error('[AUTH] JWT_SECRET environment variable not set');
       return res.status(500).json({ message: "Server configuration error" });
     }
-    
-    // Enhanced JWT verification with backward compatibility
-    let decoded: { userId: string; email: string };
-    try {
-      // First try with enhanced validation (for new tokens)
-      decoded = jwt.verify(token, jwtSecret, {
-        issuer: SECURITY_CONSTANTS.JWT_ISSUER,
-        audience: SECURITY_CONSTANTS.JWT_AUDIENCE,
-        algorithms: ['HS256']
-      }) as { userId: string; email: string };
-    } catch (enhancedError) {
-      // Fall back to basic validation (for existing tokens)
-      console.log(`[AUTH] Enhanced validation failed, trying basic validation`);
-      decoded = jwt.verify(token, jwtSecret, {
-        algorithms: ['HS256']
-      }) as { userId: string; email: string };
-    }
+    const decoded = jwt.verify(token, jwtSecret) as { userId: string; email: string };
     
     // Validate decoded payload
     if (!decoded.userId || !decoded.email) {
@@ -144,21 +127,7 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
           next();
           return;
         }
-        // Enhanced JWT verification with backward compatibility
-        let decoded: { userId: string; email: string };
-        try {
-          // First try with enhanced validation (for new tokens)
-          decoded = jwt.verify(token, jwtSecret, {
-            issuer: SECURITY_CONSTANTS.JWT_ISSUER,
-            audience: SECURITY_CONSTANTS.JWT_AUDIENCE,
-            algorithms: ['HS256']
-          }) as { userId: string; email: string };
-        } catch (enhancedError) {
-          // Fall back to basic validation (for existing tokens)
-          decoded = jwt.verify(token, jwtSecret, {
-            algorithms: ['HS256']
-          }) as { userId: string; email: string };
-        }
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string; email: string };
         
         req.userId = decoded.userId;
         req.user = { userId: decoded.userId, email: decoded.email };

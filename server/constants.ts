@@ -8,12 +8,9 @@ export const ELO_CONSTANTS = {
 export const SECURITY_CONSTANTS = {
   BCRYPT_SALT_ROUNDS: 12,
   BCRYPT_SECURITY_ROUNDS: 12, // For security questions
-  JWT_EXPIRES_IN: "24h", // Reduced from 7d for better security
-  JWT_ISSUER: "diverank-app",
-  JWT_AUDIENCE: "diverank-users",
+  JWT_EXPIRES_IN: "7d",
   MIN_PASSWORD_LENGTH: 8,
   REQUIRED_SECURITY_QUESTIONS: 3,
-  JWT_SECRET_MIN_LENGTH: 32,
 } as const;
 
 // Database Constants
