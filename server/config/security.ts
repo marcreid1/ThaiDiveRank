@@ -41,40 +41,16 @@ export const securityHeaders = helmet({
   permittedCrossDomainPolicies: false
 });
 
-// Enhanced CORS Configuration
+// Enhanced CORS Configuration - Permissive for development
 export const corsConfig = cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    // List of allowed origins
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5000',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:5000',
-      // Replit domains
-      /\.replit\.dev$/,
-      /\.repl\.co$/,
-      /\.replit\.app$/
-    ];
-    
-    // Check if origin is allowed
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      } else {
-        return allowedOrigin.test(origin);
-      }
-    });
-    
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      appLogger.error(`CORS blocked origin: ${origin}`, new Error('CORS_BLOCKED'));
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins for development
+  // origin: (origin, callback) => {
+  //   // Allow requests with no origin (mobile apps, etc.)
+  //   if (!origin) return callback(null, true);
+  //   
+  //   // For development, allow all origins
+  //   callback(null, true);
+  // },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
