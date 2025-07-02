@@ -13,6 +13,7 @@ import { useLocation, Link } from "wouter";
 import { setToken } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { ForgotPasswordDialog } from "./ForgotPasswordDialog";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -30,6 +31,7 @@ interface SignInFormProps {
 export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormProps) {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { login } = useAuth();
@@ -89,6 +91,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
   };
 
   return (
+    <>
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
@@ -152,13 +155,13 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
         </form>
 
         <div className="mt-4 text-center">
-          <Link 
-            href="/forgot-password" 
+          <button
+            type="button"
+            onClick={() => setShowForgotPassword(true)}
             className="text-sm text-primary hover:underline"
-            onClick={onClose}
           >
             Forgot your password?
-          </Link>
+          </button>
         </div>
 
         {onSwitchToSignUp && (
@@ -190,5 +193,12 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
         </div>
       </CardContent>
     </Card>
+    
+    <ForgotPasswordDialog 
+      open={showForgotPassword}
+      onOpenChange={setShowForgotPassword}
+      onBackToSignIn={() => setShowForgotPassword(false)}
+    />
+    </>
   );
 }
