@@ -37,9 +37,7 @@ export default function RankingsTable() {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Score
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Total Votes
-                  </th>
+
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Change
                   </th>
@@ -64,9 +62,6 @@ export default function RankingsTable() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                       <Skeleton className="h-4 w-12" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      <Skeleton className="h-4 w-8" />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                       <Skeleton className="h-4 w-8" />
@@ -130,9 +125,7 @@ export default function RankingsTable() {
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Score
                 </th>
-                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Total Votes
-                </th>
+
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Change
                 </th>
@@ -158,9 +151,7 @@ export default function RankingsTable() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 text-center">
                     {Math.round(site.rating)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 text-center">
-                    {site.totalVotes}
-                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 text-center">
                     {site.rankChange > 0 ? (
                       <Badge variant="green" className="inline-flex items-center">
