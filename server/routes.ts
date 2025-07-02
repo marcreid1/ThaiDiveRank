@@ -133,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.status(401).json({ 
-          message: "Invalid email or password" 
+          message: "User does not have an account" 
         });
       }
       
