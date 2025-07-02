@@ -14,6 +14,7 @@ export interface IUserStorage {
   deactivateUser(id: string): Promise<boolean>;
   reactivateUser(id: string): Promise<boolean>;
   deleteUser(id: string): Promise<boolean>;
+  deleteUserAccountAndVotes(userId: string): Promise<boolean>;
   updateSecurityQuestions(userId: string, securityData: {
     question1: string;
     answer1: string;
@@ -56,6 +57,7 @@ export interface IStorage extends IUserStorage, IDiveSiteStorage, IMatchupStorag
   getUserUniqueMatchups(userId: string): Promise<number>;
   getUserVotedPairs(userId: string): Promise<Set<string>>;
   resetUserVotes(userId: string): Promise<boolean>;
+  deleteUserAccountAndVotes(userId: string): Promise<boolean>;
   updateSecurityQuestions(userId: string, securityData: {
     question1: string;
     answer1: string;

@@ -53,6 +53,10 @@ export class DatabaseStorage implements IStorage {
     return this.userStorage.deleteUser(id);
   }
 
+  async deleteUserAccountAndVotes(userId: string): Promise<boolean> {
+    return this.userStorage.deleteUserAccountAndVotes(userId);
+  }
+
   async updateSecurityQuestions(userId: string, securityData: {
     question1: string;
     answer1: string;

@@ -41,15 +41,23 @@ export class UserStorage implements IUserStorage {
   }
 
   async deleteUser(id: string): Promise<boolean> {
+    return this.deleteUserAccountAndVotes(id);
+  }
+
+  async deleteUserAccountAndVotes(userId: string): Promise<boolean> {
     try {
-      // For complete deletion, remove all the user's voting history
-      await db.delete(votes).where(eq(votes.userId, id));
-      
-      // Then delete the user account
-      const result = await db.delete(users).where(eq(users.id, id));
-      return result.rowCount !== null && result.rowCount > 0;
+      await db.transaction(async (tx) => {
+        // First delete all votes associated with the user
+        await tx.delete(votes).where(eq(votes.userId, userId));
+        
+        // Then delete the user account
+        await tx.delete(users).where(eq(users.id, userId));
+      });
+
+      console.log(`[ACCOUNT_DELETION] User account and votes deleted successfully: ${userId}`);
+      return true;
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error('Error deleting user account and votes:', error);
       return false;
     }
   }
