@@ -1,8 +1,9 @@
-import { users, votes, type User, type InsertUser } from "@shared/schema";
+import { users, votes, diveSites, type User, type InsertUser } from "@shared/schema";
 import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { IUserStorage } from "./interfaces";
 import { hashSecurityAnswer } from "../utils/security";
+import { calculateEloChange } from "../utils/elo";
 
 export class UserStorage implements IUserStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -52,13 +53,59 @@ export class UserStorage implements IUserStorage {
         
         // Then delete the user account
         await tx.delete(users).where(eq(users.id, userId));
+        
+        // Recalculate all ELO ratings and win/loss counts from remaining votes
+        await this.recalculateAllEloRatings(tx);
       });
 
-      console.log(`[ACCOUNT_DELETION] User account and votes deleted successfully: ${userId}`);
+      console.log(`[ACCOUNT_DELETION] User account and votes deleted successfully, ELO ratings recalculated: ${userId}`);
       return true;
     } catch (error) {
       console.error('Error deleting user account and votes:', error);
       return false;
+    }
+  }
+
+  private async recalculateAllEloRatings(tx: any): Promise<void> {
+    // Reset all dive sites to default values
+    await tx.update(diveSites).set({
+      rating: 1500,
+      wins: 0,
+      losses: 0
+    });
+
+    // Get all remaining votes ordered by timestamp
+    const allVotes = await tx
+      .select()
+      .from(votes)
+      .orderBy(votes.timestamp);
+
+    // Replay all votes to recalculate ELO ratings
+    for (const vote of allVotes) {
+      // Get current ratings
+      const [winner] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.winnerId));
+      const [loser] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.loserId));
+
+      if (winner && loser) {
+        // Calculate ELO change using the same algorithm
+        const eloChange = calculateEloChange(winner.rating, loser.rating);
+
+        // Update winner
+        await tx.update(diveSites)
+          .set({
+            rating: winner.rating + eloChange,
+            wins: winner.wins + 1
+          })
+          .where(eq(diveSites.id, vote.winnerId));
+
+        // Update loser
+        await tx.update(diveSites)
+          .set({
+            rating: loser.rating - eloChange,
+            losses: loser.losses + 1
+          })
+          .where(eq(diveSites.id, vote.loserId));
+      }
     }
   }
 
