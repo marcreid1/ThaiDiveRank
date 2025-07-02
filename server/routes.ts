@@ -323,9 +323,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/my-votes", readLimit, verifyJWT, async (req, res) => {
     try {
       const userVotes = await storage.getUserVotes(req.userId!);
+      const uniqueMatchups = await storage.getUserUniqueMatchups(req.userId!);
       res.json({
         message: "User votes retrieved successfully",
-        votes: userVotes
+        votes: userVotes,
+        uniqueMatchups: uniqueMatchups,
+        totalPossibleMatchups: 903 // C(43,2) = 43 * 42 / 2
       });
     } catch (error) {
       console.error("User votes fetch error:", error);

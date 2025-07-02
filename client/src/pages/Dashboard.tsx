@@ -15,6 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 interface MyVotesResponse {
   message: string;
   votes: Vote[];
+  uniqueMatchups: number;
+  totalPossibleMatchups: number;
 }
 
 interface VoteWithSites extends Vote {
@@ -125,6 +127,8 @@ export default function Dashboard() {
 
   const votes = myVotesData?.votes || [];
   const sites = diveSites || [];
+  const uniqueMatchups = myVotesData?.uniqueMatchups || 0;
+  const totalPossibleMatchups = myVotesData?.totalPossibleMatchups || 903;
   
   // Create a map of site IDs to names for quick lookup
   const siteMap = sites.reduce((acc, site) => {
@@ -171,7 +175,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -180,6 +184,20 @@ export default function Dashboard() {
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalVotes}</p>
                 </div>
                 <VoteIcon className="h-8 w-8 text-ocean-500" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Unique Matchups</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white">
+                    {uniqueMatchups}<span className="text-lg text-slate-500">/{totalPossibleMatchups}</span>
+                  </p>
+                </div>
+                <Target className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -203,7 +221,7 @@ export default function Dashboard() {
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Average Impact</p>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">{averageImpact}</p>
                 </div>
-                <Target className="h-8 w-8 text-purple-500" />
+                <Trophy className="h-8 w-8 text-yellow-500" />
               </div>
             </CardContent>
           </Card>
@@ -217,7 +235,7 @@ export default function Dashboard() {
                     {memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-blue-500" />
+                <Calendar className="h-8 w-8 text-purple-500" />
               </div>
             </CardContent>
           </Card>

@@ -96,6 +96,10 @@ export class DatabaseStorage implements IStorage {
     return this.voteStorage.getUserVotes(userId);
   }
 
+  async getUserUniqueMatchups(userId: string): Promise<number> {
+    return this.voteStorage.getUserUniqueMatchups(userId);
+  }
+
   async getRecentActivity(limit?: number): Promise<VoteActivity[]> {
     return this.voteStorage.getRecentActivity(limit);
   }

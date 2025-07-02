@@ -87,6 +87,23 @@ export class VoteStorage implements IVoteStorage {
       .orderBy(desc(votes.timestamp));
   }
 
+  async getUserUniqueMatchups(userId: string): Promise<number> {
+    const userVotes = await db
+      .select({ winnerId: votes.winnerId, loserId: votes.loserId })
+      .from(votes)
+      .where(eq(votes.userId, userId));
+
+    // Create unique matchup pairs (normalize to avoid A-B vs B-A duplicates)
+    const uniqueMatchups = new Set<string>();
+    userVotes.forEach(vote => {
+      // Sort IDs to create consistent pair representation
+      const [id1, id2] = [vote.winnerId, vote.loserId].sort((a, b) => a - b);
+      uniqueMatchups.add(`${id1}-${id2}`);
+    });
+
+    return uniqueMatchups.size;
+  }
+
   async getRecentActivity(limit = 10): Promise<VoteActivity[]> {
     const recentVotes = await db
       .select({

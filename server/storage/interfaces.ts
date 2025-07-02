@@ -33,7 +33,10 @@ export interface IVoteStorage {
   createVote(vote: InsertVote): Promise<Vote>;
   getVotes(limit?: number): Promise<Vote[]>;
   getUserVotes(userId: string): Promise<Vote[]>;
+  getUserUniqueMatchups(userId: string): Promise<number>;
   getRecentActivity(limit?: number): Promise<VoteActivity[]>;
 }
 
-export interface IStorage extends IUserStorage, IDiveSiteStorage, IMatchupStorage, IVoteStorage {}
+export interface IStorage extends IUserStorage, IDiveSiteStorage, IMatchupStorage, IVoteStorage {
+  getUserUniqueMatchups(userId: string): Promise<number>;
+}
