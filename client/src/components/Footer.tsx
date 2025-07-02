@@ -7,12 +7,6 @@ export default function Footer() {
     { href: "/terms", label: "Terms" },
     { href: "/contact", label: "Contact" }
   ];
-  
-  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
-    e.preventDefault();
-    window.location.href = path;
-    window.scrollTo(0, 0);
-  };
 
   return (
     <footer className="bg-background border-t border-border">
@@ -20,13 +14,12 @@ export default function Footer() {
         <nav className="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
           {footerLinks.map((link) => (
             <div key={link.href} className="px-5 py-2">
-              <a 
+              <Link 
                 href={link.href} 
                 className="text-base text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
-                onClick={(e) => handleNavigation(e, link.href)}
               >
                 {link.label}
-              </a>
+              </Link>
             </div>
           ))}
         </nav>
