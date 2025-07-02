@@ -57,7 +57,7 @@ export const votes = pgTable("votes", {
   winnerId: integer("winner_id").notNull().references(() => diveSites.id),
   loserId: integer("loser_id").notNull().references(() => diveSites.id),
   pointsChanged: integer("points_changed").notNull(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id").references(() => users.id),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 

@@ -221,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Log account deletion for security
-      console.log(`[ACCOUNT_DELETION] User account deleted: ${user.email} (ID: ${userId})`);
+      console.log(`[ACCOUNT_DELETION] User account deleted successfully: ${user.email} (ID: ${userId})`);
       
       res.json({
         message: "Account deleted successfully"
