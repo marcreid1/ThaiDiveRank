@@ -49,6 +49,9 @@ export default function VotingSection() {
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
       queryClient.invalidateQueries({ queryKey: ["/api/my-votes"] });
       
+      // Only fetch new matchup on successful vote
+      refetch();
+      
       toast({
         title: "Vote recorded!",
         description: "Your vote has been successfully counted.",
@@ -89,15 +92,14 @@ export default function VotingSection() {
       return;
     }
 
-    // Submit vote
+    // Update champion state first
+    setChampion({ diveSite: winner, side });
+
+    // Submit vote (refetch will happen in onSuccess callback)
     voteMutation.mutate({ 
       winnerId: winner.id, 
       loserId: loser.id 
     });
-
-    // Update champion state and refetch with new parameters
-    setChampion({ diveSite: winner, side });
-    refetch();
   };
 
   const handleAuthSuccess = () => {
