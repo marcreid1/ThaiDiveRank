@@ -151,7 +151,7 @@ export class VoteStorage implements IVoteStorage {
     for (const vote of recentVotes) {
       const [winner] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.winnerId));
       const [loser] = await db.select({ name: diveSites.name }).from(diveSites).where(eq(diveSites.id, vote.loserId));
-      const [user] = vote.userId ? await db.select({ email: users.email }).from(users).where(eq(users.id, vote.userId)) : [null];
+      const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, vote.userId));
       
       if (winner && loser && user) {
         // Extract username from email (part before @)

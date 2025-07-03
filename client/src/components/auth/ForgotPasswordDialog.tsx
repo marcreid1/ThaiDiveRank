@@ -158,9 +158,9 @@ export function ForgotPasswordDialog({ open, onOpenChange, onBackToSignIn }: For
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <h2 className="text-xl font-semibold">Forgot Password?</h2>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Enter your email address and we'll help you reset your password using your security questions.
-                  </div>
+                  </p>
                 </div>
 
                 <form onSubmit={emailForm.handleSubmit(handleEmailSubmit)} className="space-y-4">
@@ -203,9 +203,9 @@ export function ForgotPasswordDialog({ open, onOpenChange, onBackToSignIn }: For
                     <Key className="h-6 w-6 text-primary" />
                   </div>
                   <h2 className="text-xl font-semibold">Security Questions</h2>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Please answer your security questions to reset your password.
-                  </div>
+                  </p>
                 </div>
 
                 <form onSubmit={resetForm.handleSubmit(handleResetSubmit)} className="space-y-4">
@@ -318,9 +318,9 @@ export function ForgotPasswordDialog({ open, onOpenChange, onBackToSignIn }: For
                     <h2 className="text-xl font-semibold text-green-600 dark:text-green-400">
                       Password Reset Complete!
                     </h2>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       Your password has been successfully reset. You can now sign in with your new password.
-                    </div>
+                    </p>
                   </div>
                 </div>
 

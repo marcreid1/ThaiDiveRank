@@ -10,7 +10,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyJWT, optionalAuth } from "./middleware/auth";
 import { SECURITY_CONSTANTS } from "./constants";
-import { verifyCaptcha } from "./utils/captcha";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // User-based rate limiting for authenticated voting
@@ -134,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User signin
   app.post("/api/signin", rateLimiters.auth, async (req, res) => {
     try {
-      // Create signin schema that accepts password and captcha token
+      // Create signin schema that accepts password instead of hashedPassword
       const signinSchema = z.object({
         email: z.string()
           .email("Invalid email format")
@@ -143,22 +142,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .refine(email => !email.includes("'") && !email.includes('"') && !email.includes('--') && !email.includes(';'), {
             message: "Invalid email format"
           }),
-        password: z.string().min(1, "Password is required"),
-        captchaToken: z.string().optional()
+        password: z.string().min(1, "Password is required")
       });
       
       // Validate input with Zod
-      const { email, password, captchaToken } = signinSchema.parse(req.body);
-      
-      // Verify captcha if token is provided
-      if (captchaToken) {
-        const isCaptchaValid = await verifyCaptcha(captchaToken, process.env.HCAPTCHA_SECRET_KEY);
-        if (!isCaptchaValid) {
-          return res.status(400).json({ 
-            message: "Captcha verification failed. Please try again." 
-          });
-        }
-      }
+      const { email, password } = signinSchema.parse(req.body);
       
       // Find user by email
       const user = await storage.getUserByEmail(email);

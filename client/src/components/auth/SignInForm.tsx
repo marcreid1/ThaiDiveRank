@@ -14,7 +14,6 @@ import { setToken } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { ForgotPasswordDialog } from "./ForgotPasswordDialog";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -33,7 +32,6 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { login } = useAuth();
@@ -49,14 +47,9 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
 
   const signInMutation = useMutation({
     mutationFn: async (data: SignInFormData) => {
-      if (!captchaToken) {
-        throw new Error("Please complete the captcha verification");
-      }
-      
       const response = await apiRequest("POST", "/api/signin", {
         email: data.email,
         password: data.password,
-        captchaToken,
       });
       return await response.json() as { token: string; user: { id: string; email: string; createdAt: string } };
     },
@@ -65,19 +58,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       setToken(result.token);
       
       // Immediately update auth context with user data
-      login({
-        id: result.user.id,
-        email: result.user.email,
-        hashedPassword: '', // Not needed on client
-        isActive: true,
-        securityQuestion1: null,
-        securityAnswer1: null,
-        securityQuestion2: null,
-        securityAnswer2: null,
-        securityQuestion3: null,
-        securityAnswer3: null,
-        createdAt: new Date(result.user.createdAt)
-      });
+      login(result.user);
       
       // Also refetch user state for consistency
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
@@ -161,21 +142,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
             )}
           </div>
 
-          {/* hCaptcha Component */}
-          <div className="space-y-2">
-            <HCaptcha
-              sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
-              onVerify={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-              onError={() => setCaptchaToken(null)}
-              theme="light"
-            />
-            {!captchaToken && signInMutation.isError && (
-              <p className="text-sm text-red-500">Please complete the captcha verification</p>
-            )}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={signInMutation.isPending || !captchaToken}>
+          <Button type="submit" className="w-full" disabled={signInMutation.isPending}>
             {signInMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
