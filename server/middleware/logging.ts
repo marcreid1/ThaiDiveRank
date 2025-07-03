@@ -133,11 +133,17 @@ export const securityMonitor = (req: Request, res: Response, next: NextFunction)
 
 // Request spike detection
 const requestCounts = new Map<string, { count: number; timestamp: number }>();
-const SPIKE_THRESHOLD = 100; // requests per minute (increased to reduce false positives)
+const SPIKE_THRESHOLD = process.env.NODE_ENV === 'production' ? 150 : 500; // Higher threshold for development
 const SPIKE_WINDOW = 60 * 1000; // 1 minute
 
 export const spikeDetection = (req: Request, res: Response, next: NextFunction) => {
   const ip = req.ip || 'unknown';
+  
+  // Skip spike detection for localhost in development
+  if (process.env.NODE_ENV === 'development' && (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost')) {
+    return next();
+  }
+  
   const now = Date.now();
   const existing = requestCounts.get(ip);
 
