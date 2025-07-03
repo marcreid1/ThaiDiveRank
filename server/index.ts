@@ -174,7 +174,22 @@ app.use((req, res, next) => {
     if (app.get("env") === "development") {
       await setupVite(app, server);
     } else {
-      serveStatic(app);
+      try {
+        serveStatic(app);
+      } catch (error) {
+        console.error("Production static file serving failed:", error);
+        console.error("This usually means the build directory is missing.");
+        console.error("Please run 'npm run build' before starting in production mode.");
+        
+        // Provide a helpful error page instead of crashing
+        app.use("*", (req, res) => {
+          res.status(500).json({
+            error: "Application not properly built for production",
+            message: "The build directory is missing. Please run 'npm run build' before deployment.",
+            timestamp: new Date().toISOString()
+          });
+        });
+      }
     }
 
     // ALWAYS serve the app on port 5000

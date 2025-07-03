@@ -193,6 +193,13 @@ Changelog:
   * Improved error message parsing for better user experience
   * Fixed both signup and signin forms to handle API error responses correctly
   * Password requirements now clearly visible: 8+ chars with lowercase, uppercase, and number
+- July 03, 2025. Resolved production deployment signup failure:
+  * Identified root cause: missing build directory (dist/public) in deployed environment
+  * Added graceful error handling for missing production build assets
+  * Created deployment guide with proper build process requirements
+  * Enhanced server error messages for better deployment debugging
+  * Fixed API client error handling to preserve validation error structure
+  * Production deployments now require: npm run build before npm start
 ```
 
 ## User Preferences
