@@ -56,11 +56,8 @@ export function ForgotPasswordDialog({ open, onOpenChange, onBackToSignIn }: For
 
   const getSecurityQuestionsMutation = useMutation({
     mutationFn: async (email: string) => {
-      const response = await apiRequest("/api/auth/security-questions", {
-        method: "POST",
-        body: { email },
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/auth/security-questions", { email });
+      return response.json();
     },
     onSuccess: (data) => {
       if (data.questions && data.userId) {
@@ -86,17 +83,14 @@ export function ForgotPasswordDialog({ open, onOpenChange, onBackToSignIn }: For
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (data: ResetFormData) => {
-      const response = await apiRequest("/api/auth/reset-password", {
-        method: "POST",
-        body: {
-          userId,
-          answer1: data.question1,
-          answer2: data.question2,
-          answer3: data.question3,
-          newPassword: data.newPassword,
-        },
+      const response = await apiRequest("POST", "/api/auth/reset-password", {
+        userId,
+        answer1: data.question1,
+        answer2: data.question2,
+        answer3: data.question3,
+        newPassword: data.newPassword,
       });
-      return response;
+      return response.json();
     },
     onSuccess: () => {
       setStep("success");
