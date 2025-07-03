@@ -3,7 +3,7 @@ import { createRateLimiter } from "../middleware/logging";
 export const rateLimitConfigs = {
   vote: {
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // limit each user to 10 votes per minute
+    max: 30, // limit each user to 30 votes per minute
     message: "Too many votes, please slow down.",
     name: "vote",
     useUserBasedLimiting: true // Per-user limits for authenticated voting
