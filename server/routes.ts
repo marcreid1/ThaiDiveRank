@@ -26,7 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User-based rate limiting for authenticated voting
   const userVoteLimit = createUserBasedRateLimiter({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // limit each user to 10 votes per minute
+    max: 100, // limit each user to 100 votes per minute (generous for active voting)
     message: "Too many votes, please slow down.",
     name: "vote"
   });
@@ -42,7 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User-based rate limiting for general authenticated actions
   const userActionLimit = createUserBasedRateLimiter({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 50, // generous limit for user actions
+    max: 200, // very generous limit for user actions
     message: "Too many actions, please slow down.",
     name: "userActions"
   });
