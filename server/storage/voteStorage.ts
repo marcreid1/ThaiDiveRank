@@ -173,12 +173,62 @@ export class VoteStorage implements IVoteStorage {
 
   async resetUserVotes(userId: string): Promise<boolean> {
     try {
-      // Delete all votes for the specified user
-      await db.delete(votes).where(eq(votes.userId, userId));
+      await db.transaction(async (tx) => {
+        // Delete all votes for the specified user
+        await tx.delete(votes).where(eq(votes.userId, userId));
+        
+        // Recalculate all ELO ratings and win/loss counts from remaining votes
+        await this.recalculateAllEloRatings(tx);
+      });
+      
+      console.log(`[VOTE_RESET] User votes deleted and ELO ratings recalculated: ${userId}`);
       return true;
     } catch (error) {
       console.error("Error resetting user votes:", error);
       return false;
+    }
+  }
+
+  private async recalculateAllEloRatings(tx: any): Promise<void> {
+    // Reset all dive sites to default values
+    await tx.update(diveSites).set({
+      rating: 1500,
+      wins: 0,
+      losses: 0
+    });
+
+    // Get all remaining votes ordered by timestamp
+    const allVotes = await tx
+      .select()
+      .from(votes)
+      .orderBy(votes.timestamp);
+
+    // Replay all votes to recalculate ELO ratings
+    for (const vote of allVotes) {
+      // Get current ratings
+      const [winner] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.winnerId));
+      const [loser] = await tx.select().from(diveSites).where(eq(diveSites.id, vote.loserId));
+
+      if (winner && loser) {
+        // Calculate ELO change using the same algorithm
+        const eloChange = calculateEloChange(winner.rating, loser.rating);
+
+        // Update winner
+        await tx.update(diveSites)
+          .set({
+            rating: winner.rating + eloChange,
+            wins: winner.wins + 1
+          })
+          .where(eq(diveSites.id, vote.winnerId));
+
+        // Update loser
+        await tx.update(diveSites)
+          .set({
+            rating: loser.rating - eloChange,
+            losses: loser.losses + 1
+          })
+          .where(eq(diveSites.id, vote.loserId));
+      }
     }
   }
 }
