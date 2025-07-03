@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
@@ -125,14 +125,14 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
 
   return (
     <>
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
-        <CardDescription className="text-center">
+    <div className="w-full max-w-md mx-auto">
+      <div className="space-y-1 mb-6">
+        <h2 className="text-2xl font-bold text-center">Sign Up</h2>
+        <p className="text-center text-muted-foreground">
           Join DiveRank to vote on your favorite dive sites
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -244,8 +244,8 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
             </Link>
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
     
     <SecuritySetupDialog 
       open={showSecurityDialog} 
