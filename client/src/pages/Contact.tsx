@@ -73,25 +73,27 @@ export default function Contact() {
       </div>
 
       {/* Contact Reasons Grid */}
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-        {contactReasons.map((reason, index) => {
-          const IconComponent = reason.icon;
-          return (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <CardHeader className="pb-4">
-                <div className={`w-12 h-12 ${reason.bgColor} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <IconComponent className={`w-6 h-6 ${reason.color}`} />
-                </div>
-                <CardTitle className="text-lg">{reason.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  {reason.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          );
-        })}
+      <div className="max-w-3xl mx-auto mb-12">
+        <div className="grid md:grid-cols-2 gap-6">
+          {contactReasons.map((reason, index) => {
+            const IconComponent = reason.icon;
+            return (
+              <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardHeader className="pb-4">
+                  <div className={`w-12 h-12 ${reason.bgColor} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className={`w-6 h-6 ${reason.color}`} />
+                  </div>
+                  <CardTitle className="text-lg">{reason.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed break-words">
+                    {reason.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
       {/* Main Contact Card */}
