@@ -92,10 +92,21 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
       setShowSecurityDialog(true);
     },
     onError: (error: any) => {
+      console.error("Signup error:", error);
+      
+      let errorMessage = "Something went wrong. Please try again.";
+      
+      // Handle validation errors from the API
+      if (error.errors && Array.isArray(error.errors)) {
+        errorMessage = error.errors.map((err: any) => err.message).join(", ");
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Sign up failed",
-        description: error.message || "Something went wrong. Please try again.",
+        description: errorMessage,
       });
     },
   });
@@ -170,6 +181,9 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
             {errors.password && (
               <p className="text-sm text-red-500">{errors.password.message}</p>
             )}
+            <p className="text-xs text-gray-500 mt-1">
+              Password must be at least 8 characters with one lowercase, one uppercase, and one number
+            </p>
           </div>
 
           <div className="space-y-2">

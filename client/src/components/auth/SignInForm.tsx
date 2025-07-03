@@ -57,10 +57,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       // Store JWT using auth helper
       setToken(result.token);
       
-      // Immediately update auth context with user data
-      login(result.user);
-      
-      // Also refetch user state for consistency
+      // Refetch user state to get complete user data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
@@ -78,10 +75,21 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       }
     },
     onError: (error: any) => {
+      console.error("Signin error:", error);
+      
+      let errorMessage = "Invalid email or password.";
+      
+      // Handle validation errors from the API
+      if (error.errors && Array.isArray(error.errors)) {
+        errorMessage = error.errors.map((err: any) => err.message).join(", ");
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Sign in failed",
-        description: error.message || "Invalid email or password.",
+        description: errorMessage,
       });
     },
   });
