@@ -10,9 +10,11 @@ if (!process.env.JWT_SECRET) {
     console.error("JWT_SECRET environment variable is required for secure authentication in production");
     process.exit(1);
   } else {
-    // Development fallback with a secure random key
-    console.warn("JWT_SECRET not found in environment, using secure development fallback");
-    process.env.JWT_SECRET = "EIuonJQMa283RWswFbqrsOXbbTQSsf785Slrpw9foYI=";
+    // Development fallback with a dynamically generated secure random key
+    const crypto = require('crypto');
+    const randomSecret = crypto.randomBytes(32).toString('base64');
+    console.warn("JWT_SECRET not found in environment, using dynamically generated development fallback");
+    process.env.JWT_SECRET = randomSecret;
   }
 }
 
