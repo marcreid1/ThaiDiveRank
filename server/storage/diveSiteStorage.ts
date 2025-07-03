@@ -88,7 +88,7 @@ export class DiveSiteStorage implements IDiveSiteStorage {
       },
       {
         region: "Surin Islands",
-        description: "Located in the northern Andaman Sea, the Surin Islands feature pristine reefs with exceptional visibility. These protected waters host an incredible diversity of marine life, with shallow reef systems in the north and more varied dive conditions in the south.",
+        description: "The Surin Islands are an archipelago of five islands in the northern Andaman Sea, renowned for having excellent hard coral diversity, crystal-clear waters, and pristine reef systems. It is a protected National Marine Park offering world-class diving experiences with gentle slopes and granite boulder formations.",
         diveSites: [],
         subregions: [
           {
