@@ -138,7 +138,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className={errors.email ? "border-red-500" : ""}
+              className={errors.email ? "border-red-500 border-none" : "border-none"}
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -153,7 +153,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 {...register("password")}
-                className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                className={errors.password ? "border-red-500 pr-10 border-none" : "pr-10 border-none"}
               />
               <button
                 type="button"
@@ -180,7 +180,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 {...register("confirmPassword")}
-                className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                className={errors.confirmPassword ? "border-red-500 pr-10 border-none" : "pr-10 border-none"}
               />
               <button
                 type="button"
