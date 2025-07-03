@@ -172,6 +172,13 @@ Changelog:
   * Enhanced email validation to prevent SQL injection attacks in user registration
   * Fixed weak password policy in password reset (now requires 8+ chars with complexity)
   * All authenticated endpoints now use fair per-user rate limiting instead of shared IP limits
+- July 03, 2025. Enhanced user experience with dialog-based interactions:
+  * Fixed sign in/sign up button switching issues with improved state management
+  * Created ForgotPasswordDialog component replacing page redirect with modal experience
+  * Enhanced Contact Us page with modern design, interactive elements, and visual appeal
+  * Added email copy functionality, contact reason cards, and improved responsive layout
+  * Implemented multi-step password reset flow: email → security questions → new password
+  * All user authentication flows now use consistent dialog-based interactions
 ```
 
 ## User Preferences
