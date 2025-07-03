@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { httpLogger, securityMonitor, spikeDetection, errorLogger } from "./middleware/logging";
 import { appLogger } from "./logger";
+import { randomBytes } from "crypto";
 
 // Ensure JWT_SECRET is set for authentication
 if (!process.env.JWT_SECRET) {
@@ -11,8 +12,7 @@ if (!process.env.JWT_SECRET) {
     process.exit(1);
   } else {
     // Development fallback with a dynamically generated secure random key
-    const crypto = require('crypto');
-    const randomSecret = crypto.randomBytes(32).toString('base64');
+    const randomSecret = randomBytes(32).toString('base64');
     console.warn("JWT_SECRET not found in environment, using dynamically generated development fallback");
     process.env.JWT_SECRET = randomSecret;
   }
