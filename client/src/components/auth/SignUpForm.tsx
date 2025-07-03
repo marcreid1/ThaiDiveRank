@@ -92,7 +92,10 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
       setShowSecurityDialog(true);
     },
     onError: (error: any) => {
-      console.error("Signup error:", error);
+      console.error("Signup error - full object:", error);
+      console.error("Error message:", error.message);
+      console.error("Error errors:", error.errors);
+      console.error("Error keys:", Object.keys(error));
       
       let errorMessage = "Something went wrong. Please try again.";
       
