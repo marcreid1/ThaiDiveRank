@@ -59,20 +59,14 @@ export default function Contact() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl"></div>
-          </div>
-          <div className="relative mx-auto w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mb-6 shadow-lg">
-            <Mail className="w-10 h-10 text-white" />
-          </div>
-        </div>
-        
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 sm:text-5xl mb-4">
+      {/* PageHeader */}
+      <div className="text-center my-8">
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-4xl">
           Contact Us
         </h1>
+      </div>
+      
+      <div className="text-center mb-16">
         <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
           We'd love to hear your feedback, feature ideas, and help resolve any issues you're experiencing.
         </p>
