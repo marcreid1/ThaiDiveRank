@@ -12,6 +12,17 @@ import { verifyJWT, optionalAuth } from "./middleware/auth";
 import { SECURITY_CONSTANTS } from "./constants";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for deployment monitoring
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV,
+      version: process.env.npm_package_version || '1.0.0'
+    });
+  });
+
   // User-based rate limiting for authenticated voting
   const userVoteLimit = createUserBasedRateLimiter({
     windowMs: 1 * 60 * 1000, // 1 minute

@@ -9,7 +9,18 @@ import { randomBytes } from "crypto";
 if (!process.env.JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
     console.error("JWT_SECRET environment variable is required for secure authentication in production");
-    process.exit(1);
+    console.error("Please add JWT_SECRET to your deployment secrets");
+    
+    // Instead of immediately exiting, give a grace period for logging
+    setTimeout(() => {
+      console.error("Shutting down due to missing JWT_SECRET");
+      process.exit(1);
+    }, 5000);
+    
+    // Provide a temporary fallback to prevent immediate crash
+    const randomSecret = randomBytes(32).toString('base64');
+    console.warn("Using temporary JWT_SECRET for graceful startup - this is not secure for production");
+    process.env.JWT_SECRET = randomSecret;
   } else {
     // Development fallback with a dynamically generated secure random key
     const randomSecret = randomBytes(32).toString('base64');
@@ -60,6 +71,12 @@ app.use((req, res, next) => {
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5000'
   ];
+  
+  // Add Replit production domains
+  if (process.env.NODE_ENV === 'production' && process.env.REPLIT_DOMAINS) {
+    const replitDomains = process.env.REPLIT_DOMAINS.split(',');
+    allowedOrigins.push(...replitDomains.map(domain => `https://${domain.trim()}`));
+  }
   
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -128,33 +145,64 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  // Use the enhanced error logger
-  app.use(errorLogger);
+    // Use the enhanced error logger
+    app.use(errorLogger);
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-    appLogger.info(`Server started on port ${port}`, { 
-      environment: app.get("env"),
-      nodeVersion: process.version 
+    // Global error handler to prevent crashes
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught Exception:', error);
+      appLogger.error('Uncaught Exception', error);
+      // Don't exit immediately in production, give time for logging
+      if (process.env.NODE_ENV === 'production') {
+        setTimeout(() => process.exit(1), 1000);
+      } else {
+        process.exit(1);
+      }
     });
-  });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+      appLogger.error('Unhandled Rejection', reason instanceof Error ? reason : new Error(String(reason)));
+    });
+
+    // importantly only setup vite in development and after
+    // setting up all the other routes so the catch-all route
+    // doesn't interfere with the other routes
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
+
+    // ALWAYS serve the app on port 5000
+    // this serves both the API and the client.
+    // It is the only port that is not firewalled.
+    const port = 5000;
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`serving on port ${port}`);
+      appLogger.info(`Server started on port ${port}`, { 
+        environment: app.get("env"),
+        nodeVersion: process.version,
+        host: "0.0.0.0"
+      });
+    });
+
+    // Handle server errors gracefully
+    server.on('error', (error) => {
+      console.error('Server error:', error);
+      appLogger.error('Server error', error);
+    });
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    appLogger.error('Failed to start server', error instanceof Error ? error : new Error(String(error)));
+    process.exit(1);
+  }
 })();
