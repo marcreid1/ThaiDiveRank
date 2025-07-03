@@ -57,7 +57,10 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       // Store JWT using auth helper
       setToken(result.token);
       
-      // Refetch user state to get complete user data
+      // Set user data immediately in cache to prevent UI flickering
+      queryClient.setQueryData(["/api/auth/me"], result.user);
+      
+      // Also refetch to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
@@ -70,8 +73,10 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect to home page
-        setLocation("/");
+        // Small delay to ensure state updates before navigation
+        setTimeout(() => {
+          setLocation("/");
+        }, 100);
       }
     },
     onError: (error: any) => {

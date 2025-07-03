@@ -25,17 +25,26 @@ export function useAuth() {
 export function useAuthState() {
   const queryClient = useQueryClient();
   const token = getToken();
+  const hasValidToken = !!token && isLoggedIn();
 
   // Query to get current user from server using JWT token
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: getQueryFn<User>({ on401: "returnNull" }),
-    enabled: !!token && isLoggedIn(), // Only run if token exists and is valid
-    retry: false,
+    enabled: hasValidToken, // Only run if token exists and is valid
+    retry: (failureCount, error: any) => {
+      // Don't retry on 401 (unauthorized) errors
+      if (error?.status === 401) return false;
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isAuthenticated = !!token && !!user;
+  // Improve authentication logic for production reliability
+  // If we have a valid token but the API call is still loading or failed with non-401 error,
+  // we can still consider the user authenticated based on token alone
+  const isAuthenticated = hasValidToken && (!!user || (isLoading && !error) || (error && error?.status !== 401));
 
   const login = (user: User) => {
     // Update the cache with the new user data
@@ -55,8 +64,13 @@ export function useAuthState() {
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
   };
 
+  // Fallback user data from token if API call is still loading or failed with non-401 error
+  const fallbackUser = hasValidToken && !user && (isLoading || (error && error?.status !== 401)) 
+    ? getCurrentUser() 
+    : null;
+
   return {
-    user: user || null,
+    user: user || fallbackUser,
     isAuthenticated,
     isLoading,
     login,

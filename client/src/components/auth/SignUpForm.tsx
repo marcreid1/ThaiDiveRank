@@ -64,21 +64,10 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
       // Store JWT using auth helper
       setToken(result.token);
       
-      // Immediately update auth context with user data
-      login({
-        ...result.user,
-        hashedPassword: '', // Not needed for client-side user object
-        isActive: true, // New accounts are active by default
-        securityQuestion1: null,
-        securityAnswer1: null,
-        securityQuestion2: null,
-        securityAnswer2: null,
-        securityQuestion3: null,
-        securityAnswer3: null,
-        createdAt: new Date(result.user.createdAt)
-      });
+      // Set user data immediately in cache to prevent UI flickering
+      queryClient.setQueryData(["/api/auth/me"], result.user);
       
-      // Also refetch user state for consistency
+      // Also refetch to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       
       toast({
