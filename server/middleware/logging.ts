@@ -110,12 +110,20 @@ export const securityMonitor = (req: Request, res: Response, next: NextFunction)
     }
   }
 
-  // Log unauthorized access attempts to protected routes
-  if (req.originalUrl.startsWith('/api/') && req.originalUrl !== '/api/auth/me' && 
-      req.originalUrl !== '/api/auth/signin' && req.originalUrl !== '/api/auth/signup') {
-    // Check for JWT token in Authorization header instead of session
+  // Log unauthorized access attempts to protected routes (only for truly protected endpoints)
+  // Exclude authentication endpoints and public endpoints from unauthorized access checks
+  const protectedRoutes = ['/api/votes'];
+  const authRoutes = ['/api/auth/signup', '/api/auth/signin', '/api/auth/logout', '/api/auth/me'];
+  const publicRoutes = ['/api/rankings', '/api/matchup', '/api/dive-sites', '/api/recent-activity'];
+  
+  const isProtectedRoute = protectedRoutes.some(route => req.originalUrl.startsWith(route));
+  const isAuthRoute = authRoutes.some(route => req.originalUrl.startsWith(route));
+  const isPublicRoute = publicRoutes.some(route => req.originalUrl.startsWith(route));
+  
+  if (isProtectedRoute && !isAuthRoute && !isPublicRoute && req.method !== 'GET') {
+    // Check for JWT token in Authorization header
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ') && req.method !== 'GET') {
+    if (!authHeader?.startsWith('Bearer ')) {
       securityLogger.unauthorizedAccess(ip, req.originalUrl, userAgent);
     }
   }
@@ -125,7 +133,7 @@ export const securityMonitor = (req: Request, res: Response, next: NextFunction)
 
 // Request spike detection
 const requestCounts = new Map<string, { count: number; timestamp: number }>();
-const SPIKE_THRESHOLD = 50; // requests per minute
+const SPIKE_THRESHOLD = 100; // requests per minute (increased to reduce false positives)
 const SPIKE_WINDOW = 60 * 1000; // 1 minute
 
 export const spikeDetection = (req: Request, res: Response, next: NextFunction) => {

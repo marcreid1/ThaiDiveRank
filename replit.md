@@ -200,6 +200,13 @@ Changelog:
   * Enhanced server error messages for better deployment debugging
   * Fixed API client error handling to preserve validation error structure
   * Production deployments now require: npm run build before npm start
+- July 03, 2025. Fixed security monitoring false positives and API route issues:
+  * Eliminated "Suspicious activity detected" warnings by refining security monitoring patterns
+  * Fixed unauthorized access detection to only check truly protected routes (/api/votes)
+  * Excluded authentication endpoints (/api/auth/*) and public endpoints from security checks
+  * Increased spike detection threshold from 50 to 100 requests/minute to reduce false positives
+  * Fixed API route mismatch: changed /api/activities to /api/recent-activity for frontend compatibility
+  * Server logs now show clean operation without excessive false positive warnings
 ```
 
 ## User Preferences

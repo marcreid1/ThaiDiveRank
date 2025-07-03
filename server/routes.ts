@@ -691,7 +691,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get recent activity
-  app.get("/api/activities", rateLimiters.read, async (req, res) => {
+  app.get("/api/recent-activity", rateLimiters.read, async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const activities = await storage.getRecentActivity(limit);
