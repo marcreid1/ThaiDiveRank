@@ -62,7 +62,6 @@ export class SessionStorage extends BaseStorage {
         .select({
           id: users.id,
           email: users.email,
-          username: users.username,
           isActive: users.isActive
         })
         .from(users)

@@ -65,7 +65,19 @@ export function SignInForm({ onSuccess, onSwitchToSignUp, onClose }: SignInFormP
       setToken(result.token);
       
       // Immediately update auth context with user data
-      login(result.user);
+      login({
+        id: result.user.id,
+        email: result.user.email,
+        hashedPassword: '', // Not needed on client
+        isActive: true,
+        securityQuestion1: null,
+        securityAnswer1: null,
+        securityQuestion2: null,
+        securityAnswer2: null,
+        securityQuestion3: null,
+        securityAnswer3: null,
+        createdAt: new Date(result.user.createdAt)
+      });
       
       // Also refetch user state for consistency
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
