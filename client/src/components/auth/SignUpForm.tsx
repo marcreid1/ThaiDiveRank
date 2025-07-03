@@ -138,7 +138,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className={errors.email ? "border-red-500 border-none" : "border-none"}
+              className={errors.email ? "border-red-500" : ""}
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
