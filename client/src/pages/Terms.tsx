@@ -46,7 +46,7 @@ export default function Terms() {
         </p>
         <ul className="text-slate-700 dark:text-slate-300">
           <li>Vote honestly based on personal diving preferences and experiences</li>
-          <li>Respect the rate limiting system (maximum 10 votes per minute)</li>
+          <li>Respect the rate limiting system (maximum 30 votes per minute)</li>
           <li>Not use automated systems, bots, or scripts to inflate votes</li>
           <li>Not attempt to manipulate the ELO rating system through coordinated voting</li>
           <li>Not create multiple accounts to bypass rate limits or voting restrictions</li>
