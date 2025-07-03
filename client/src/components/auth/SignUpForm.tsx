@@ -153,7 +153,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 {...register("password")}
-                className={errors.password ? "border-red-500 pr-10 border-none" : "pr-10 border-none"}
+                className={errors.password ? "border-red-500 pr-10" : "pr-10"}
               />
               <button
                 type="button"
@@ -180,7 +180,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn, onClose }: SignUpFormP
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 {...register("confirmPassword")}
-                className={errors.confirmPassword ? "border-red-500 pr-10 border-none" : "pr-10 border-none"}
+                className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
               />
               <button
                 type="button"
