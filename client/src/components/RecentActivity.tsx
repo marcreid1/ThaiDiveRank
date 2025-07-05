@@ -79,7 +79,7 @@ export default function RecentActivity() {
                       {' '}(+{activity.pointsChanged} points)
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {formatDistanceToNow(new Date(activity.timestamp))} ago
+                      {formatDistanceToNow(new Date(activity.timestamp))}
                     </p>
                   </div>
                 </div>

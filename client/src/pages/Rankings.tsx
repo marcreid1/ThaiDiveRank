@@ -119,7 +119,7 @@ export default function Rankings() {
             Complete Rankings
           </h2>
           <Badge variant="ocean" className="px-3 text-xs whitespace-nowrap">
-            Updated {formatDistanceToNow(new Date(lastUpdated))} ago
+            Updated {formatDistanceToNow(new Date(lastUpdated))}
           </Badge>
         </div>
         <div className="overflow-x-auto">
